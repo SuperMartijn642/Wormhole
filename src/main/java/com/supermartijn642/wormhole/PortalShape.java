@@ -112,13 +112,13 @@ public class PortalShape {
         BlockPos dir2pos = axis == Direction.Axis.Z ? BlockPos.ZERO.east() : BlockPos.ZERO.north();
         BlockPos dir2neg = axis == Direction.Axis.Z ? BlockPos.ZERO.west() : BlockPos.ZERO.south();
         for(BlockPos corner : corners){
-            if(!validateCorner(world,area,frame,stabilizers,corner,dir1pos,dir2pos))
+            if(!validateCorner(world, area, frame, stabilizers, corner, dir1pos, dir2pos))
                 return false;
-            if(!validateCorner(world,area,frame,stabilizers,corner,dir1pos,dir2neg))
+            if(!validateCorner(world, area, frame, stabilizers, corner, dir1pos, dir2neg))
                 return false;
-            if(!validateCorner(world,area,frame,stabilizers,corner,dir1neg,dir2pos))
+            if(!validateCorner(world, area, frame, stabilizers, corner, dir1neg, dir2pos))
                 return false;
-            if(!validateCorner(world,area,frame,stabilizers,corner,dir1neg,dir2neg))
+            if(!validateCorner(world, area, frame, stabilizers, corner, dir1neg, dir2neg))
                 return false;
         }
         return true;

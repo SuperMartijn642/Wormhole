@@ -35,7 +35,7 @@ public class PortalGroupTile extends TileEntity implements IPortalGroupTile, ITi
     public CompoundNBT write(CompoundNBT compound){
         super.write(compound);
         if(this.group != null && this.group.isController(this))
-            compound.put("group",this.group.write());
+            compound.put("group", this.group.write());
         return compound;
     }
 

@@ -56,9 +56,9 @@ public class TargetItem extends Item {
         PortalTarget target = tag.contains("target") ? PortalTarget.read(tag.getCompound("target")) : null;
         String info = target == null ? I18n.format("wormhole.target_device.info.unset") :
             I18n.format("wormhole.target_device.info.set")
-            .replace("$x$", "" + target.x)
-            .replace("$y$", "" + target.y)
-            .replace("$z$", "" + target.z);
+                .replace("$x$", "" + target.x)
+                .replace("$y$", "" + target.y)
+                .replace("$z$", "" + target.z);
         tooltip.add(new StringTextComponent(info).applyTextStyle(TextFormatting.YELLOW));
     }
 

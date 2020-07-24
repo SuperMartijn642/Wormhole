@@ -6,7 +6,9 @@ package com.supermartijn642.wormhole;
 public interface IPortalGroupTile {
 
     void setGroup(PortalGroup group);
+
     boolean hasGroup();
+
     void onBreak();
 
 }

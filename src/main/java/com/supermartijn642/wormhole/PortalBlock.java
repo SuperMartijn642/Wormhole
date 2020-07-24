@@ -32,7 +32,7 @@ public class PortalBlock extends PortalGroupBlock {
         SHAPE_Z = VoxelShapes.create(0, 0, 6 / 16d, 1, 1, 10 / 16d);
 
     public static final EnumProperty<Direction.Axis> AXIS_PROPERTY = EnumProperty.create("axis", Direction.Axis.class, Direction.Axis.values());
-    public static final EnumProperty<DyeColor> COLOR_PROPERTY = EnumProperty.create("color",DyeColor.class, DyeColor.values());
+    public static final EnumProperty<DyeColor> COLOR_PROPERTY = EnumProperty.create("color", DyeColor.class, DyeColor.values());
 
     public PortalBlock(){
         super(Properties.create(Material.PORTAL).doesNotBlockMovement().hardnessAndResistance(-1.0F).sound(SoundType.GLASS).lightValue(11).noDrops(), "portal", PortalTile::new);

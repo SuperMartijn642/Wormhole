@@ -44,7 +44,7 @@ public class PortalGroupBlock extends Block {
 
     @Override
     public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving){
-        if(state.getBlock() != newState.getBlock()) {
+        if(state.getBlock() != newState.getBlock()){
             TileEntity tile = worldIn.getTileEntity(pos);
             if(tile instanceof IPortalGroupTile)
                 ((IPortalGroupTile)tile).onBreak();
