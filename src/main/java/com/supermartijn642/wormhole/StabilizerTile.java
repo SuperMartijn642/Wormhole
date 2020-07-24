@@ -41,7 +41,7 @@ public class StabilizerTile extends PortalGroupTile {
                     player.sendMessage(new TranslationTextComponent("wormhole.target_device.error").applyTextStyle(TextFormatting.RED));
             }
             return true;
-        }else if(player.isShiftKeyDown() && player.getHeldItem(hand).isEmpty()){
+        }else if(player.isSneaking() && player.getHeldItem(hand).isEmpty()){
             if(!this.world.isRemote){
                 if(this.group != null){
                     this.group.removeTarget();

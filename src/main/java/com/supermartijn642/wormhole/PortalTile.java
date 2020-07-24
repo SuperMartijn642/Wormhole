@@ -34,12 +34,12 @@ public class PortalTile extends PortalGroupTile {
                     entity.stopRiding();
 
                     if(player.isSleeping())
-                        player.func_225652_a_(true, true);
+                        player.wakeUpPlayer(true, true, false);
 
                     if(world == entity.world)
                         player.connection.setPlayerLocation(target.x + .5, target.y, target.z + .5, target.yaw, 0, Collections.emptySet());
                     else
-                        player.teleport(world, target.x + .5, target.y, target.z + .5, target.yaw, 0);
+                        player.func_200619_a(world, target.x + .5, target.y, target.z + .5, target.yaw, 0);
 
                     entity.setRotationYawHead(target.yaw);
                 }else{

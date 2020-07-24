@@ -25,11 +25,11 @@ public class StabilizerBlock extends PortalGroupBlock {
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_){
+    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_){
         TileEntity tile = worldIn.getTileEntity(pos);
         if(tile instanceof StabilizerTile)
-            return ((StabilizerTile)tile).activate(player, handIn) ? ActionResultType.SUCCESS : ActionResultType.PASS;
-        return ActionResultType.PASS;
+            return ((StabilizerTile)tile).activate(player, handIn);
+        return false;
     }
 
     @Override

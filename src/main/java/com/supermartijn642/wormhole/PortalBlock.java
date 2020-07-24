@@ -1,6 +1,7 @@
 package com.supermartijn642.wormhole;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -11,6 +12,7 @@ import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -40,10 +42,10 @@ public class PortalBlock extends PortalGroupBlock {
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_){
+    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_){
         TileEntity tile = worldIn.getTileEntity(pos);
         if(tile instanceof PortalTile)
-            return ((PortalTile)tile).activate(player, handIn) ? ActionResultType.SUCCESS : ActionResultType.PASS;
+            return ((PortalTile)tile).activate(player, handIn);
         return super.onBlockActivated(state, worldIn, pos, player, handIn, p_225533_6_);
     }
 
@@ -63,5 +65,10 @@ public class PortalBlock extends PortalGroupBlock {
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context){
         Direction.Axis axis = state.get(AXIS_PROPERTY);
         return axis == Direction.Axis.X ? SHAPE_X : axis == Direction.Axis.Y ? SHAPE_Y : axis == Direction.Axis.Z ? SHAPE_Z : VoxelShapes.empty();
+    }
+
+    @Override
+    public BlockRenderLayer getRenderLayer(){
+        return BlockRenderLayer.TRANSLUCENT;
     }
 }

@@ -33,7 +33,7 @@ public class TargetItem extends Item {
         if(!worldIn.isRemote){
             ItemStack stack = playerIn.getHeldItem(handIn);
             CompoundNBT tag = stack.getOrCreateTag();
-            if(playerIn.isShiftKeyDown()){
+            if(playerIn.isSneaking()){
                 tag.remove("target");
                 playerIn.sendMessage(new TranslationTextComponent("wormhole.target_device.clear").applyTextStyle(TextFormatting.YELLOW));
             }else{
