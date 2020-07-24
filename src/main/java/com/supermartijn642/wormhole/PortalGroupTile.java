@@ -1,5 +1,6 @@
 package com.supermartijn642.wormhole;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -40,8 +41,8 @@ public class PortalGroupTile extends TileEntity implements IPortalGroupTile, ITi
     }
 
     @Override
-    public void read(CompoundNBT compound){
-        super.read(compound);
+    public void func_230337_a_(BlockState state, CompoundNBT compound){
+        super.func_230337_a_(state, compound);
         if(compound.contains("group"))
             this.group = new PortalGroup(compound.getCompound("group"));
     }

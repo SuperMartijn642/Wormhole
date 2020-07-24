@@ -33,18 +33,18 @@ public class TargetItem extends Item {
         if(!worldIn.isRemote){
             ItemStack stack = playerIn.getHeldItem(handIn);
             CompoundNBT tag = stack.getOrCreateTag();
-            if(playerIn.isShiftKeyDown()){
+            if(playerIn.isSneaking()){
                 tag.remove("target");
-                playerIn.sendMessage(new TranslationTextComponent("wormhole.target_device.clear").applyTextStyle(TextFormatting.YELLOW));
+                playerIn.sendMessage(new TranslationTextComponent("wormhole.target_device.clear").func_240699_a_(TextFormatting.YELLOW), playerIn.getUniqueID());
             }else{
-                tag.put("target", new PortalTarget(worldIn, playerIn.getPosition(), Math.round(playerIn.rotationYaw / 90) * 90).write());
+                tag.put("target", new PortalTarget(worldIn, playerIn.func_233580_cy_(), Math.round(playerIn.rotationYaw / 90) * 90).write());
                 playerIn.sendMessage(new StringTextComponent(I18n.format("wormhole.target_device.set")
-                    .replace("$x$", "" + playerIn.getPosition().getX())
-                    .replace("$y$", "" + playerIn.getPosition().getY())
-                    .replace("$z$", "" + playerIn.getPosition().getZ())
-                    .replace("$dim$", worldIn.dimension.getType().getRegistryName().getPath())
-                    .replace("$dir$", I18n.format("wormhole.facing." + Direction.fromAngle(playerIn.rotationYaw).getName())))
-                    .applyTextStyle(TextFormatting.YELLOW));
+                    .replace("$x$", "" + playerIn.func_233580_cy_().getX())
+                    .replace("$y$", "" + playerIn.func_233580_cy_().getY())
+                    .replace("$z$", "" + playerIn.func_233580_cy_().getZ())
+                    .replace("$dim$", worldIn.func_234923_W_().getRegistryName().getPath())
+                    .replace("$dir$", I18n.format("wormhole.facing." + Direction.fromAngle(playerIn.rotationYaw).func_176610_l())))
+                    .func_240699_a_(TextFormatting.YELLOW), playerIn.getUniqueID());
             }
         }
         return super.onItemRightClick(worldIn, playerIn, handIn);
@@ -59,7 +59,7 @@ public class TargetItem extends Item {
                 .replace("$x$", "" + target.x)
                 .replace("$y$", "" + target.y)
                 .replace("$z$", "" + target.z);
-        tooltip.add(new StringTextComponent(info).applyTextStyle(TextFormatting.YELLOW));
+        tooltip.add(new StringTextComponent(info).func_240699_a_(TextFormatting.YELLOW));
     }
 
     public static boolean hasTarget(ItemStack stack){

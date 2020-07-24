@@ -25,27 +25,27 @@ public class StabilizerTile extends PortalGroupTile {
 
                     if(this.group != null){
                         this.group.setTarget(target);
-                        player.sendMessage(new TranslationTextComponent("wormhole.portal_stabilizer.success").applyTextStyle(TextFormatting.YELLOW));
+                        player.sendMessage(new TranslationTextComponent("wormhole.portal_stabilizer.success").func_240699_a_(TextFormatting.YELLOW), player.getUniqueID());
                     }else{
                         PortalShape shape = PortalShape.find(this.world, this.pos);
                         if(shape == null)
-                            player.sendMessage(new TranslationTextComponent("wormhole.portal_stabilizer.error").applyTextStyle(TextFormatting.RED));
+                            player.sendMessage(new TranslationTextComponent("wormhole.portal_stabilizer.error").func_240699_a_(TextFormatting.RED), player.getUniqueID());
                         else{
                             this.group = new PortalGroup(shape);
                             this.group.tick(this.world);
                             this.group.setTarget(target);
-                            player.sendMessage(new TranslationTextComponent("wormhole.portal_stabilizer.success").applyTextStyle(TextFormatting.YELLOW));
+                            player.sendMessage(new TranslationTextComponent("wormhole.portal_stabilizer.success").func_240699_a_(TextFormatting.YELLOW), player.getUniqueID());
                         }
                     }
                 }else
-                    player.sendMessage(new TranslationTextComponent("wormhole.target_device.error").applyTextStyle(TextFormatting.RED));
+                    player.sendMessage(new TranslationTextComponent("wormhole.target_device.error").func_240699_a_(TextFormatting.RED), player.getUniqueID());
             }
             return true;
-        }else if(player.isShiftKeyDown() && player.getHeldItem(hand).isEmpty()){
+        }else if(player.isSneaking() && player.getHeldItem(hand).isEmpty()){
             if(!this.world.isRemote){
                 if(this.group != null){
                     this.group.removeTarget();
-                    player.sendMessage(new TranslationTextComponent("wormhole.portal_stabilizer.clear").applyTextStyle(TextFormatting.YELLOW));
+                    player.sendMessage(new TranslationTextComponent("wormhole.portal_stabilizer.clear").func_240699_a_(TextFormatting.YELLOW), player.getUniqueID());
                 }
             }
             return true;

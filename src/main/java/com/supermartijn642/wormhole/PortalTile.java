@@ -1,6 +1,7 @@
 package com.supermartijn642.wormhole;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -9,7 +10,7 @@ import net.minecraft.item.DyeColor;
 import net.minecraft.item.DyeItem;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 
 import java.util.Collections;
@@ -34,7 +35,7 @@ public class PortalTile extends PortalGroupTile {
                     entity.stopRiding();
 
                     if(player.isSleeping())
-                        player.func_225652_a_(true, true);
+                        player.stopSleepInBed(true, true);
 
                     if(world == entity.world)
                         player.connection.setPlayerLocation(target.x + .5, target.y, target.z + .5, target.yaw, 0, Collections.emptySet());
@@ -48,7 +49,6 @@ public class PortalTile extends PortalGroupTile {
                         entity.setRotationYawHead(target.yaw);
                     }else{
                         entity.detach();
-                        entity.dimension = world.dimension.getType();
                         Entity newEntity = entity.getType().create(world);
                         if(newEntity == null)
                             return;
@@ -56,13 +56,17 @@ public class PortalTile extends PortalGroupTile {
                         newEntity.copyDataFromOld(entity);
                         newEntity.setLocationAndAngles(target.x + .5, target.y, target.z + .5, target.yaw, 0);
                         newEntity.setRotationYawHead(target.yaw);
-                        world.func_217460_e(entity);
+                        world.addFromAnotherDimension(newEntity);
                     }
                 }
 
                 if(!(entity instanceof LivingEntity) || !((LivingEntity)entity).isElytraFlying()){
-                    entity.setMotion(Vec3d.ZERO);
-                    entity.onGround = true;
+                    entity.setMotion(Vector3d.ZERO);
+                    entity.func_230245_c_(true);
+                }
+
+                if(entity instanceof CreatureEntity){
+                    ((CreatureEntity)entity).getNavigator().clearPath();
                 }
             });
         }

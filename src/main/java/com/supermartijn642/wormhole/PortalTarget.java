@@ -2,11 +2,11 @@ package com.supermartijn642.wormhole;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
-import net.minecraftforge.common.DimensionManager;
 
 import java.util.Optional;
 
@@ -28,7 +28,7 @@ public class PortalTarget {
     }
 
     public PortalTarget(World world, BlockPos pos, float yaw){
-        this(world.dimension.getType().getRegistryName().toString(), pos.getX(), pos.getY(), pos.getZ(), yaw);
+        this(world.func_234923_W_().getRegistryName().toString(), pos.getX(), pos.getY(), pos.getZ(), yaw);
     }
 
     public PortalTarget(CompoundNBT tag){
@@ -50,10 +50,8 @@ public class PortalTarget {
     }
 
     public Optional<World> getWorld(MinecraftServer server){
-        DimensionType type = DimensionType.byName(new ResourceLocation(this.dimension));
-        if(type == null)
-            return Optional.empty();
-        return Optional.ofNullable(DimensionManager.getWorld(server, type, false, true));
+        RegistryKey<World> key = RegistryKey.func_240903_a_(Registry.field_239699_ae_, new ResourceLocation(this.dimension));
+        return Optional.ofNullable(server.getWorld(key));
     }
 
     public BlockPos getPos(){
