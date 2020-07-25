@@ -51,7 +51,7 @@ public class Wormhole {
         @SubscribeEvent
         public static void onItemRegistry(final RegistryEvent.Register<Item> e){
             e.getRegistry().register(new BlockItem(portal_frame, new Item.Properties().group(ItemGroup.SEARCH)).setRegistryName(portal_frame.getRegistryName()));
-            e.getRegistry().register(new BlockItem(portal, new Item.Properties().group(ItemGroup.SEARCH)).setRegistryName(portal.getRegistryName()));
+            e.getRegistry().register(new BlockItem(portal, new Item.Properties()).setRegistryName(portal.getRegistryName()));
             e.getRegistry().register(new BlockItem(portal_stabilizer, new Item.Properties().group(ItemGroup.SEARCH)).setRegistryName(portal_stabilizer.getRegistryName()));
 
             e.getRegistry().register(new TargetItem());
