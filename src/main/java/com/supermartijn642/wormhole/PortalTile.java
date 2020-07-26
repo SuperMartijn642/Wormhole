@@ -65,9 +65,8 @@ public class PortalTile extends PortalGroupTile {
                     entity.func_230245_c_(true);
                 }
 
-                if(entity instanceof CreatureEntity){
+                if(entity instanceof CreatureEntity)
                     ((CreatureEntity)entity).getNavigator().clearPath();
-                }
             });
         }
     }

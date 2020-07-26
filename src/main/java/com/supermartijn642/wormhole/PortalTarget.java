@@ -28,7 +28,7 @@ public class PortalTarget {
     }
 
     public PortalTarget(World world, BlockPos pos, float yaw){
-        this(world.func_234923_W_().getRegistryName().toString(), pos.getX(), pos.getY(), pos.getZ(), yaw);
+        this(world.func_234923_W_().func_240901_a_().toString(), pos.getX(), pos.getY(), pos.getZ(), yaw);
     }
 
     public PortalTarget(CompoundNBT tag){
