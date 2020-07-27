@@ -1,12 +1,10 @@
 package com.supermartijn642.wormhole;
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
-import net.minecraftforge.common.DimensionManager;
 
 import java.util.Optional;
 
@@ -28,32 +26,32 @@ public class PortalTarget {
     }
 
     public PortalTarget(World world, BlockPos pos, float yaw){
-        this(world.dimension.getType().getRegistryName().toString(), pos.getX(), pos.getY(), pos.getZ(), yaw);
+        this(world.provider.getDimensionType().getName(), pos.getX(), pos.getY(), pos.getZ(), yaw);
     }
 
-    public PortalTarget(CompoundNBT tag){
-        this(tag.getString("dimension"), tag.getInt("x"), tag.getInt("y"), tag.getInt("z"), tag.getFloat("yaw"));
+    public PortalTarget(NBTTagCompound tag){
+        this(tag.getString("dimension"), tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z"), tag.getFloat("yaw"));
     }
 
-    public static PortalTarget read(CompoundNBT tag){
+    public static PortalTarget read(NBTTagCompound tag){
         return new PortalTarget(tag);
     }
 
-    public CompoundNBT write(){
-        CompoundNBT tag = new CompoundNBT();
-        tag.putString("dimension", this.dimension);
-        tag.putInt("x", this.x);
-        tag.putInt("y", this.y);
-        tag.putInt("z", this.z);
-        tag.putFloat("yaw", this.yaw);
+    public NBTTagCompound write(){
+        NBTTagCompound tag = new NBTTagCompound();
+        tag.setString("dimension", this.dimension);
+        tag.setInteger("x", this.x);
+        tag.setInteger("y", this.y);
+        tag.setInteger("z", this.z);
+        tag.setFloat("yaw", this.yaw);
         return tag;
     }
 
     public Optional<World> getWorld(MinecraftServer server){
-        DimensionType type = DimensionType.byName(new ResourceLocation(this.dimension));
+        DimensionType type = DimensionType.byName(this.dimension);
         if(type == null)
             return Optional.empty();
-        return Optional.ofNullable(DimensionManager.getWorld(server, type, false, true));
+        return Optional.of(server.getWorld(type.getId()));
     }
 
     public BlockPos getPos(){

@@ -1,5 +1,5 @@
 {
   "variants": {
-    "": { "model": "wormhole:block/portal_frame" }
+    "normal": { "model": "wormhole:portal_frame" }
   }
 }

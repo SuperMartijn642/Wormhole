@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "color=white": { "model": "wormhole:portal/portal_z_white" },
+    "color=orange": { "model": "wormhole:portal/portal_z_orange" },
+    "color=magenta": { "model": "wormhole:portal/portal_z_magenta" },
+    "color=light_blue": { "model": "wormhole:portal/portal_z_light_blue" },
+    "color=yellow": { "model": "wormhole:portal/portal_z_yellow" },
+    "color=lime": { "model": "wormhole:portal/portal_z_lime" },
+    "color=pink": { "model": "wormhole:portal/portal_z_pink" },
+    "color=gray": { "model": "wormhole:portal/portal_z_gray" },
+    "color=silver": { "model": "wormhole:portal/portal_z_light_gray" },
+    "color=cyan": { "model": "wormhole:portal/portal_z_cyan" },
+    "color=purple": { "model": "wormhole:portal/portal_z_purple" },
+    "color=blue": { "model": "wormhole:portal/portal_z_blue" },
+    "color=brown": { "model": "wormhole:portal/portal_z_brown" },
+    "color=green": { "model": "wormhole:portal/portal_z_green" },
+    "color=red": { "model": "wormhole:portal/portal_z_red" },
+    "color=black": { "model": "wormhole:portal/portal_z_black" }
+  }
+}

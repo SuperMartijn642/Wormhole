@@ -1,7 +1,7 @@
 package com.supermartijn642.wormhole;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -22,10 +22,10 @@ public class PortalGroup {
         this.controller = shape.stabilizers.get(0);
     }
 
-    public PortalGroup(CompoundNBT tag){
-        this.shape = PortalShape.read(tag.getCompound("shape"));
-        this.target = tag.contains("target") ? PortalTarget.read(tag.getCompound("target")) : null;
-        this.controller = new BlockPos(tag.getInt("controllerX"), tag.getInt("controllerY"), tag.getInt("controllerZ"));
+    public PortalGroup(NBTTagCompound tag){
+        this.shape = PortalShape.read(tag.getCompoundTag("shape"));
+        this.target = tag.hasKey("target") ? PortalTarget.read(tag.getCompoundTag("target")) : null;
+        this.controller = new BlockPos(tag.getInteger("controllerX"), tag.getInteger("controllerY"), tag.getInteger("controllerZ"));
     }
 
     public void tick(World world){
@@ -71,9 +71,13 @@ public class PortalGroup {
 
     private void updateStabilizers(boolean on){
         for(BlockPos pos : this.shape.frame){
-            BlockState state = this.world.getBlockState(pos);
-            if(state.getBlock() instanceof StabilizerBlock && state.get(StabilizerBlock.ON_PROPERTY) != on)
-                this.world.setBlockState(pos, state.with(StabilizerBlock.ON_PROPERTY, on));
+            IBlockState state = this.world.getBlockState(pos);
+            if(state.getBlock() instanceof StabilizerBlock && state.getValue(StabilizerBlock.ON_PROPERTY) != on){
+                this.world.setBlockState(pos, state.withProperty(StabilizerBlock.ON_PROPERTY, on));
+                TileEntity tile = this.world.getTileEntity(pos);
+                if(tile instanceof StabilizerTile)
+                    ((StabilizerTile)tile).setGroup(this);
+            }
         }
     }
 
@@ -90,14 +94,14 @@ public class PortalGroup {
         }
     }
 
-    public CompoundNBT write(){
-        CompoundNBT tag = new CompoundNBT();
-        tag.put("shape", this.shape.write());
+    public NBTTagCompound write(){
+        NBTTagCompound tag = new NBTTagCompound();
+        tag.setTag("shape", this.shape.write());
         if(this.target != null)
-            tag.put("target", this.target.write());
-        tag.putInt("controllerX", this.controller.getX());
-        tag.putInt("controllerY", this.controller.getY());
-        tag.putInt("controllerZ", this.controller.getZ());
+            tag.setTag("target", this.target.write());
+        tag.setInteger("controllerX", this.controller.getX());
+        tag.setInteger("controllerY", this.controller.getY());
+        tag.setInteger("controllerZ", this.controller.getZ());
         return tag;
     }
 

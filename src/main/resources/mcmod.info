@@ -1,0 +1,16 @@
+[
+{
+  "modid": "wormhole",
+  "name": "Wormhole (Portals)",
+  "description": "Wormhole allows you to construct portals with the use of wormhole stabilizer technology!",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["SuperMartijn642"],
+  "credits": "",
+  "logoFile": "wormhole.png",
+  "screenshots": [],
+  "dependencies": []
+}
+]

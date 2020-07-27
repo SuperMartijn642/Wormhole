@@ -1,15 +1,13 @@
 package com.supermartijn642.wormhole;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ToolType;
 
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
@@ -21,34 +19,35 @@ public class PortalGroupBlock extends Block {
 
     private final Supplier<? extends TileEntity> tileSupplier;
 
-    public PortalGroupBlock(Properties properties, String registryName, Supplier<? extends TileEntity> tileSupplier){
-        super(properties);
+    public PortalGroupBlock(Material material, MapColor color, String registryName, Supplier<? extends TileEntity> tileSupplier){
+        super(material, color);
         this.setRegistryName(registryName);
+        this.setUnlocalizedName(Wormhole.MODID + "." + registryName);
         this.tileSupplier = tileSupplier;
     }
 
     public PortalGroupBlock(String registryName, Supplier<? extends TileEntity> tileSupplier){
-        this(Properties.create(Material.IRON, MaterialColor.GRAY).sound(SoundType.METAL).harvestLevel(1).harvestTool(ToolType.PICKAXE), registryName, tileSupplier);
+        this(Material.IRON, MapColor.GRAY, registryName, tileSupplier);
+        this.setSoundType(SoundType.METAL);
+        this.setHarvestLevel("pickaxe", 1);
     }
 
     @Override
-    public boolean hasTileEntity(BlockState state){
+    public boolean hasTileEntity(IBlockState state){
         return true;
     }
 
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world){
+    public TileEntity createTileEntity(World world, IBlockState state){
         return this.tileSupplier.get();
     }
 
     @Override
-    public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving){
-        if(state.getBlock() != newState.getBlock()){
-            TileEntity tile = worldIn.getTileEntity(pos);
-            if(tile instanceof IPortalGroupTile)
-                ((IPortalGroupTile)tile).onBreak();
-            worldIn.removeTileEntity(pos);
-        }
+    public void breakBlock(World worldIn, BlockPos pos, IBlockState state){
+        TileEntity tile = worldIn.getTileEntity(pos);
+        if(tile instanceof IPortalGroupTile)
+            ((IPortalGroupTile)tile).onBreak();
+        worldIn.removeTileEntity(pos);
     }
 }

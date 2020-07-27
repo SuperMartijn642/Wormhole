@@ -1,18 +1,17 @@
 package com.supermartijn642.wormhole;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.ITickable;
 
 /**
  * Created 7/24/2020 by SuperMartijn642
  */
-public class PortalGroupTile extends TileEntity implements IPortalGroupTile, ITickableTileEntity {
+public class PortalGroupTile extends TileEntity implements IPortalGroupTile, ITickable {
     protected PortalGroup group;
 
-    public PortalGroupTile(TileEntityType<?> tileEntityTypeIn){
-        super(tileEntityTypeIn);
+    public PortalGroupTile(){
+        super();
     }
 
     @Override
@@ -26,24 +25,24 @@ public class PortalGroupTile extends TileEntity implements IPortalGroupTile, ITi
     }
 
     @Override
-    public void tick(){
+    public void update(){
         if(this.group != null && this.group.isController(this))
             this.group.tick(this.world);
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT compound){
-        super.write(compound);
+    public NBTTagCompound writeToNBT(NBTTagCompound compound){
+        super.writeToNBT(compound);
         if(this.group != null && this.group.isController(this))
-            compound.put("group", this.group.write());
+            compound.setTag("group", this.group.write());
         return compound;
     }
 
     @Override
-    public void read(CompoundNBT compound){
-        super.read(compound);
-        if(compound.contains("group"))
-            this.group = new PortalGroup(compound.getCompound("group"));
+    public void readFromNBT(NBTTagCompound compound){
+        super.readFromNBT(compound);
+        if(compound.hasKey("group"))
+            this.group = new PortalGroup(compound.getCompoundTag("group"));
     }
 
     @Override

@@ -1,5 +1,5 @@
 {
-  "type": "minecraft:crafting_shaped",
+  "type": "forge:ore_shaped",
   "pattern": [
     "  R",
     "IEI",
@@ -7,13 +7,16 @@
   ],
   "key": {
     "R": {
-      "tag": "forge:dusts/redstone"
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
     },
     "I": {
-      "tag": "forge:ingots/iron"
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
     },
     "E": {
-      "tag": "forge:ender_pearls"
+      "type": "forge:ore_dict",
+      "ore": "enderpearl"
     },
     "C": {
       "item": "minecraft:compass"

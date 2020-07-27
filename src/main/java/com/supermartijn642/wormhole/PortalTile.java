@@ -1,16 +1,16 @@
 package com.supermartijn642.wormhole;
 
-import net.minecraft.block.BlockState;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.DyeItem;
-import net.minecraft.util.Hand;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.EnumDyeColor;
+import net.minecraft.item.ItemDye;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.WorldServer;
 
 import java.util.Collections;
 
@@ -20,62 +20,44 @@ import java.util.Collections;
 public class PortalTile extends PortalGroupTile {
 
     public PortalTile(){
-        super(Wormhole.portal_tile);
+        super();
     }
 
     public void teleport(Entity entity){
         if(this.group != null && this.group.getTarget() != null){
             PortalTarget target = this.group.getTarget();
-            target.getWorld(this.world.getServer()).filter(world -> world instanceof ServerWorld).map(ServerWorld.class::cast).ifPresent(world -> {
-                if(entity instanceof ServerPlayerEntity){
-                    ServerPlayerEntity player = (ServerPlayerEntity)entity;
-//                    ChunkPos chunkpos = new ChunkPos(target.getPos());
-//                    world.getChunkProvider().registerTicket(TicketType.POST_TELEPORT, chunkpos, 1, entity.getEntityId());
-                    entity.stopRiding();
+            target.getWorld(this.world.getMinecraftServer()).filter(world -> world instanceof WorldServer).map(WorldServer.class::cast).ifPresent(world -> {
+                entity.dismountRidingEntity();
 
-                    if(player.isSleeping())
-                        player.func_225652_a_(true, true);
+                if(entity.getEntityWorld() != world)
+                    entity.changeDimension(world.provider.getDimensionType().getId());
 
-                    if(world == entity.world)
-                        player.connection.setPlayerLocation(target.x + .5, target.y, target.z + .5, target.yaw, 0, Collections.emptySet());
-                    else
-                        player.teleport(world, target.x + .5, target.y, target.z + .5, target.yaw, 0);
+                if(entity instanceof EntityPlayerMP)
+                    ((EntityPlayerMP)entity).connection.setPlayerLocation(target.x + .5, target.y, target.z + .5, target.yaw, 0, Collections.emptySet());
+                else
+                    entity.setLocationAndAngles(target.x + .5, target.y, target.z + .5, target.yaw, 0);
+                entity.setRotationYawHead(target.yaw);
 
-                    entity.setRotationYawHead(target.yaw);
-                }else{
-                    if(world == entity.world){
-                        entity.setLocationAndAngles(target.x + .5, target.y, target.z + .5, target.yaw, 0);
-                        entity.setRotationYawHead(target.yaw);
-                    }else{
-                        entity.detach();
-                        entity.dimension = world.dimension.getType();
-                        Entity newEntity = entity.getType().create(world);
-                        if(newEntity == null)
-                            return;
-
-                        newEntity.copyDataFromOld(entity);
-                        newEntity.setLocationAndAngles(target.x + .5, target.y, target.z + .5, target.yaw, 0);
-                        newEntity.setRotationYawHead(target.yaw);
-                        world.func_217460_e(entity);
-                    }
-                }
-
-                if(!(entity instanceof LivingEntity) || !((LivingEntity)entity).isElytraFlying()){
-                    entity.setMotion(Vec3d.ZERO);
+                if(!(entity instanceof EntityLivingBase) || !((EntityLivingBase)entity).isElytraFlying()){
+                    entity.motionY = 0.0D;
                     entity.onGround = true;
                 }
             });
         }
     }
 
-    public boolean activate(PlayerEntity player, Hand hand){
-        if(player.getHeldItem(hand).getItem() instanceof DyeItem){
-            DyeColor color = ((DyeItem)player.getHeldItem(hand).getItem()).getDyeColor();
+    public boolean activate(EntityPlayer player, EnumHand hand){
+        if(player.getHeldItem(hand).getItem() instanceof ItemDye){
+            EnumDyeColor color = EnumDyeColor.byDyeDamage(player.getHeldItem(hand).getMetadata());
             if(this.group != null && this.group.getTarget() != null){
                 for(BlockPos pos : this.group.shape.area){
-                    BlockState state = this.world.getBlockState(pos);
-                    if(state.getBlock() == Wormhole.portal && state.get(PortalBlock.COLOR_PROPERTY) != color)
-                        this.world.setBlockState(pos, state.with(PortalBlock.COLOR_PROPERTY, color));
+                    IBlockState state = this.world.getBlockState(pos);
+                    if(state.getBlock() == this.getBlockType() && state.getValue(PortalBlock.COLOR_PROPERTY) != color){
+                        this.world.setBlockState(pos, state.withProperty(PortalBlock.COLOR_PROPERTY, color));
+                        TileEntity tile = this.world.getTileEntity(pos);
+                        if(tile instanceof PortalTile)
+                            ((PortalTile)tile).setGroup(this.group);
+                    }
                 }
             }
             return true;
