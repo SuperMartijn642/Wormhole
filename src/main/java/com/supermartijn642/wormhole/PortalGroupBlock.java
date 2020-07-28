@@ -30,6 +30,8 @@ public class PortalGroupBlock extends Block {
         this(Material.IRON, MapColor.GRAY, registryName, tileSupplier);
         this.setSoundType(SoundType.METAL);
         this.setHarvestLevel("pickaxe", 1);
+        this.setHardness(1.5f);
+        this.setResistance(6);
     }
 
     @Override
