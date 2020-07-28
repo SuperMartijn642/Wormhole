@@ -1,6 +1,5 @@
 package com.supermartijn642.wormhole;
 
-import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -8,10 +7,8 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -38,12 +35,10 @@ public class TargetItem extends Item {
                 playerIn.sendMessage(new TranslationTextComponent("wormhole.target_device.clear").applyTextStyle(TextFormatting.YELLOW));
             }else{
                 tag.put("target", new PortalTarget(worldIn, playerIn.getPosition(), Math.round(playerIn.rotationYaw / 90) * 90).write());
-                playerIn.sendMessage(new StringTextComponent(I18n.format("wormhole.target_device.set")
-                    .replace("$x$", "" + playerIn.getPosition().getX())
-                    .replace("$y$", "" + playerIn.getPosition().getY())
-                    .replace("$z$", "" + playerIn.getPosition().getZ())
-                    .replace("$dim$", worldIn.dimension.getType().getRegistryName().getPath())
-                    .replace("$dir$", I18n.format("wormhole.facing." + Direction.fromAngle(playerIn.rotationYaw).getName())))
+                playerIn.sendMessage(new TranslationTextComponent("wormhole.target_device.set",
+                    playerIn.getPosition().getX(),
+                    playerIn.getPosition().getY(),
+                    playerIn.getPosition().getZ())
                     .applyTextStyle(TextFormatting.YELLOW));
             }
         }
@@ -54,12 +49,9 @@ public class TargetItem extends Item {
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
         CompoundNBT tag = stack.getOrCreateTag();
         PortalTarget target = tag.contains("target") ? PortalTarget.read(tag.getCompound("target")) : null;
-        String info = target == null ? I18n.format("wormhole.target_device.info.unset") :
-            I18n.format("wormhole.target_device.info.set")
-                .replace("$x$", "" + target.x)
-                .replace("$y$", "" + target.y)
-                .replace("$z$", "" + target.z);
-        tooltip.add(new StringTextComponent(info).applyTextStyle(TextFormatting.YELLOW));
+        ITextComponent info = target == null ? new TranslationTextComponent("wormhole.target_device.info.unset") :
+            new TranslationTextComponent("wormhole.target_device.info.set", target.x, target.y, target.z);
+        tooltip.add(info.applyTextStyle(TextFormatting.YELLOW));
     }
 
     public static boolean hasTarget(ItemStack stack){
