@@ -29,7 +29,7 @@ public class PortalTile extends PortalGroupTile {
         if(this.group != null && this.group.getTarget() != null){
             PortalTarget target = this.group.getTarget();
             if(!this.world.isRemote)
-                this.world.getServer().enqueue(new TickDelayedTask(0,() -> {
+                this.world.getServer().enqueue(new TickDelayedTask(0, () -> {
                     target.getWorld(this.world.getServer()).filter(world -> world instanceof ServerWorld).map(ServerWorld.class::cast).ifPresent(world -> {
                         if(entity instanceof ServerPlayerEntity){
                             ServerPlayerEntity player = (ServerPlayerEntity)entity;
