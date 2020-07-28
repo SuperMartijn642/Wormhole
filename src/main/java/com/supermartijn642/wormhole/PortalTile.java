@@ -26,23 +26,27 @@ public class PortalTile extends PortalGroupTile {
     public void teleport(Entity entity){
         if(this.group != null && this.group.getTarget() != null){
             PortalTarget target = this.group.getTarget();
-            target.getWorld(this.world.getMinecraftServer()).filter(world -> world instanceof WorldServer).map(WorldServer.class::cast).ifPresent(world -> {
-                entity.dismountRidingEntity();
 
-                if(entity.getEntityWorld() != world)
-                    entity.changeDimension(world.provider.getDimensionType().getId());
+            if(!this.world.isRemote)
+                this.world.getMinecraftServer().addScheduledTask(() -> {
+                    target.getWorld(this.world.getMinecraftServer()).filter(world -> world instanceof WorldServer).map(WorldServer.class::cast).ifPresent(world -> {
+                        entity.dismountRidingEntity();
 
-                if(entity instanceof EntityPlayerMP)
-                    ((EntityPlayerMP)entity).connection.setPlayerLocation(target.x + .5, target.y, target.z + .5, target.yaw, 0, Collections.emptySet());
-                else
-                    entity.setLocationAndAngles(target.x + .5, target.y, target.z + .5, target.yaw, 0);
-                entity.setRotationYawHead(target.yaw);
+                        if(entity.getEntityWorld() != world)
+                            entity.changeDimension(world.provider.getDimensionType().getId());
 
-                if(!(entity instanceof EntityLivingBase) || !((EntityLivingBase)entity).isElytraFlying()){
-                    entity.motionY = 0.0D;
-                    entity.onGround = true;
-                }
-            });
+                        if(entity instanceof EntityPlayerMP)
+                            ((EntityPlayerMP)entity).connection.setPlayerLocation(target.x + .5, target.y, target.z + .5, target.yaw, 0, Collections.emptySet());
+                        else
+                            entity.setLocationAndAngles(target.x + .5, target.y, target.z + .5, target.yaw, 0);
+                        entity.setRotationYawHead(target.yaw);
+
+                        if(!(entity instanceof EntityLivingBase) || !((EntityLivingBase)entity).isElytraFlying()){
+                            entity.motionY = 0.0D;
+                            entity.onGround = true;
+                        }
+                    });
+                });
         }
     }
 
