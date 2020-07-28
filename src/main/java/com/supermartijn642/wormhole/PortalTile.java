@@ -9,6 +9,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.DyeItem;
 import net.minecraft.util.Hand;
+import net.minecraft.util.concurrent.TickDelayedTask;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
@@ -27,47 +28,48 @@ public class PortalTile extends PortalGroupTile {
     public void teleport(Entity entity){
         if(this.group != null && this.group.getTarget() != null){
             PortalTarget target = this.group.getTarget();
-            target.getWorld(this.world.getServer()).filter(world -> world instanceof ServerWorld).map(ServerWorld.class::cast).ifPresent(world -> {
-                if(entity instanceof ServerPlayerEntity){
-                    ServerPlayerEntity player = (ServerPlayerEntity)entity;
-//                    ChunkPos chunkpos = new ChunkPos(target.getPos());
-//                    world.getChunkProvider().registerTicket(TicketType.POST_TELEPORT, chunkpos, 1, entity.getEntityId());
-                    entity.stopRiding();
+            if(!this.world.isRemote)
+                this.world.getServer().enqueue(new TickDelayedTask(0,() -> {
+                    target.getWorld(this.world.getServer()).filter(world -> world instanceof ServerWorld).map(ServerWorld.class::cast).ifPresent(world -> {
+                        if(entity instanceof ServerPlayerEntity){
+                            ServerPlayerEntity player = (ServerPlayerEntity)entity;
+                            entity.stopRiding();
 
-                    if(player.isSleeping())
-                        player.stopSleepInBed(true, true);
+                            if(player.isSleeping())
+                                player.stopSleepInBed(true, true);
 
-                    if(world == entity.world)
-                        player.connection.setPlayerLocation(target.x + .5, target.y, target.z + .5, target.yaw, 0, Collections.emptySet());
-                    else
-                        player.teleport(world, target.x + .5, target.y, target.z + .5, target.yaw, 0);
+                            if(world == entity.world)
+                                player.connection.setPlayerLocation(target.x + .5, target.y, target.z + .5, target.yaw, 0, Collections.emptySet());
+                            else
+                                player.teleport(world, target.x + .5, target.y, target.z + .5, target.yaw, 0);
 
-                    entity.setRotationYawHead(target.yaw);
-                }else{
-                    if(world == entity.world){
-                        entity.setLocationAndAngles(target.x + .5, target.y, target.z + .5, target.yaw, 0);
-                        entity.setRotationYawHead(target.yaw);
-                    }else{
-                        entity.detach();
-                        Entity newEntity = entity.getType().create(world);
-                        if(newEntity == null)
-                            return;
+                            entity.setRotationYawHead(target.yaw);
+                        }else{
+                            if(world == entity.world){
+                                entity.setLocationAndAngles(target.x + .5, target.y, target.z + .5, target.yaw, 0);
+                                entity.setRotationYawHead(target.yaw);
+                            }else{
+                                entity.detach();
+                                Entity newEntity = entity.getType().create(world);
+                                if(newEntity == null)
+                                    return;
 
-                        newEntity.copyDataFromOld(entity);
-                        newEntity.setLocationAndAngles(target.x + .5, target.y, target.z + .5, target.yaw, 0);
-                        newEntity.setRotationYawHead(target.yaw);
-                        world.addFromAnotherDimension(newEntity);
-                    }
-                }
+                                newEntity.copyDataFromOld(entity);
+                                newEntity.setLocationAndAngles(target.x + .5, target.y, target.z + .5, target.yaw, 0);
+                                newEntity.setRotationYawHead(target.yaw);
+                                world.addFromAnotherDimension(newEntity);
+                            }
+                        }
 
-                if(!(entity instanceof LivingEntity) || !((LivingEntity)entity).isElytraFlying()){
-                    entity.setMotion(Vector3d.ZERO);
-                    entity.func_230245_c_(true);
-                }
+                        if(!(entity instanceof LivingEntity) || !((LivingEntity)entity).isElytraFlying()){
+                            entity.setMotion(Vector3d.ZERO);
+                            entity.func_230245_c_(true);
+                        }
 
-                if(entity instanceof CreatureEntity)
-                    ((CreatureEntity)entity).getNavigator().clearPath();
-            });
+                        if(entity instanceof CreatureEntity)
+                            ((CreatureEntity)entity).getNavigator().clearPath();
+                    });
+                }));
         }
     }
 
