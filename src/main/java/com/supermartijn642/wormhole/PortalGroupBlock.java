@@ -28,7 +28,7 @@ public class PortalGroupBlock extends Block {
     }
 
     public PortalGroupBlock(String registryName, Supplier<? extends TileEntity> tileSupplier){
-        this(Properties.create(Material.IRON, MaterialColor.GRAY).sound(SoundType.METAL).harvestLevel(1).harvestTool(ToolType.PICKAXE), registryName, tileSupplier);
+        this(Properties.create(Material.IRON, MaterialColor.GRAY).sound(SoundType.METAL).harvestLevel(1).harvestTool(ToolType.PICKAXE).hardnessAndResistance(1.5f, 6), registryName, tileSupplier);
     }
 
     @Override
