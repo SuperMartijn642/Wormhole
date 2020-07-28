@@ -50,6 +50,8 @@ public class PortalTarget {
     }
 
     public Optional<World> getWorld(MinecraftServer server){
+        if(server == null)
+            return Optional.empty();
         DimensionType type = DimensionType.byName(new ResourceLocation(this.dimension));
         if(type == null)
             return Optional.empty();
