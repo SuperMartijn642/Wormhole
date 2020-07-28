@@ -10,10 +10,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.*;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -44,14 +41,11 @@ public class TargetItem extends Item {
                 playerIn.sendMessage(new TextComponentTranslation("wormhole.target_device.clear").setStyle(new Style().setColor(TextFormatting.YELLOW)));
             }else{
                 tag.setTag("target", new PortalTarget(worldIn, playerIn.getPosition(), Math.round(playerIn.rotationYaw / 90) * 90).write());
-                playerIn.sendMessage(new TextComponentString(I18n.format("wormhole.target_device.set")
-                    .replace("$x$", "" + playerIn.getPosition().getX())
-                    .replace("$y$", "" + playerIn.getPosition().getY())
-                    .replace("$z$", "" + playerIn.getPosition().getZ())
-                    .replace("$dim$", worldIn.provider.getDimensionType().getName())
-                    .replace("$dir$", I18n.format("wormhole.facing." + EnumFacing.fromAngle(playerIn.rotationYaw).getName())))
-                    .setStyle(new Style().setColor(TextFormatting.YELLOW))
-                );
+                playerIn.sendMessage(new TextComponentTranslation("wormhole.target_device.set",
+                    playerIn.getPosition().getX(),
+                    playerIn.getPosition().getY(),
+                    playerIn.getPosition().getZ())
+                    .setStyle(new Style().setColor(TextFormatting.YELLOW)));
             }
             stack.setTagCompound(tag);
         }
@@ -62,12 +56,9 @@ public class TargetItem extends Item {
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn){
         NBTTagCompound tag = stack.getTagCompound();
         PortalTarget target = tag != null && tag.hasKey("target") ? PortalTarget.read(tag.getCompoundTag("target")) : null;
-        String info = target == null ? I18n.format("wormhole.target_device.info.unset") :
-            I18n.format("wormhole.target_device.info.set")
-                .replace("$x$", "" + target.x)
-                .replace("$y$", "" + target.y)
-                .replace("$z$", "" + target.z);
-        tooltip.add(TextFormatting.YELLOW + info);
+        ITextComponent info = target == null ? new TextComponentTranslation("wormhole.target_device.info.unset") :
+            new TextComponentTranslation("wormhole.target_device.info.set", target.x, target.y, target.z);
+        tooltip.add(info.setStyle(new Style().setColor(TextFormatting.YELLOW)).getFormattedText());
     }
 
     public static boolean hasTarget(ItemStack stack){
