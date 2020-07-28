@@ -10,10 +10,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.*;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -38,12 +35,10 @@ public class TargetItem extends Item {
                 playerIn.sendMessage(new TranslationTextComponent("wormhole.target_device.clear").func_240699_a_(TextFormatting.YELLOW), playerIn.getUniqueID());
             }else{
                 tag.put("target", new PortalTarget(worldIn, playerIn.func_233580_cy_(), Math.round(playerIn.rotationYaw / 90) * 90).write());
-                playerIn.sendMessage(new StringTextComponent(I18n.format("wormhole.target_device.set")
-                    .replace("$x$", "" + playerIn.func_233580_cy_().getX())
-                    .replace("$y$", "" + playerIn.func_233580_cy_().getY())
-                    .replace("$z$", "" + playerIn.func_233580_cy_().getZ())
-                    .replace("$dim$", worldIn.func_234923_W_().getRegistryName().getPath())
-                    .replace("$dir$", I18n.format("wormhole.facing." + Direction.fromAngle(playerIn.rotationYaw).func_176610_l())))
+                playerIn.sendMessage(new TranslationTextComponent("wormhole.target_device.set",
+                    playerIn.func_233580_cy_().getX(),
+                    playerIn.func_233580_cy_().getY(),
+                    playerIn.func_233580_cy_().getZ())
                     .func_240699_a_(TextFormatting.YELLOW), playerIn.getUniqueID());
             }
         }
@@ -54,12 +49,9 @@ public class TargetItem extends Item {
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
         CompoundNBT tag = stack.getOrCreateTag();
         PortalTarget target = tag.contains("target") ? PortalTarget.read(tag.getCompound("target")) : null;
-        String info = target == null ? I18n.format("wormhole.target_device.info.unset") :
-            I18n.format("wormhole.target_device.info.set")
-                .replace("$x$", "" + target.x)
-                .replace("$y$", "" + target.y)
-                .replace("$z$", "" + target.z);
-        tooltip.add(new StringTextComponent(info).func_240699_a_(TextFormatting.YELLOW));
+        IFormattableTextComponent info = target == null ? new TranslationTextComponent("wormhole.target_device.info.unset") :
+            new TranslationTextComponent("wormhole.target_device.info.set", target.x, target.y, target.z);
+        tooltip.add(info.func_240699_a_(TextFormatting.YELLOW));
     }
 
     public static boolean hasTarget(ItemStack stack){
