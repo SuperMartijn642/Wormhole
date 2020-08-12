@@ -7,6 +7,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.DyeItem;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Hand;
 import net.minecraft.util.concurrent.TickDelayedTask;
 import net.minecraft.util.math.BlockPos;
@@ -20,6 +21,8 @@ import java.util.Collections;
  */
 public class PortalTile extends PortalGroupTile {
 
+    private static final int TELEPORT_COOLDOWN = 2 * 20; // 2 seconds
+
     public PortalTile(){
         super(Wormhole.portal_tile);
     }
@@ -32,24 +35,30 @@ public class PortalTile extends PortalGroupTile {
                     target.getWorld(this.world.getServer()).filter(world -> world instanceof ServerWorld).map(ServerWorld.class::cast).ifPresent(world -> {
                         if(entity instanceof ServerPlayerEntity){
                             ServerPlayerEntity player = (ServerPlayerEntity)entity;
-                            entity.stopRiding();
 
-                            if(player.isSleeping())
-                                player.func_225652_a_(true, true);
+                            CompoundNBT tag = player.getPersistentData();
+                            if(!tag.contains("wormhole:teleported") || player.ticksExisted - tag.getLong("wormhole:teleported") > TELEPORT_COOLDOWN){
+                                entity.stopRiding();
 
-                            if(world == entity.world)
-                                player.connection.setPlayerLocation(target.x + .5, target.y, target.z + .5, target.yaw, 0, Collections.emptySet());
-                            else
-                                player.teleport(world, target.x + .5, target.y, target.z + .5, target.yaw, 0);
+                                if(player.isSleeping())
+                                    player.func_225652_a_(true, true);
 
-                            entity.setRotationYawHead(target.yaw);
+                                if(world == entity.world)
+                                    player.connection.setPlayerLocation(target.x + .5, target.y, target.z + .5, target.yaw, 0, Collections.emptySet());
+                                else
+                                    player.teleport(world, target.x + .5, target.y, target.z + .5, target.yaw, 0);
+
+                                entity.setRotationYawHead(target.yaw);
+
+                                tag.putLong("wormhole:teleported", player.ticksExisted);
+                            }
                         }else{
                             if(world == entity.world){
                                 entity.setLocationAndAngles(target.x + .5, target.y, target.z + .5, target.yaw, 0);
                                 entity.setRotationYawHead(target.yaw);
                             }else{
                                 entity.detach();
-                                entity.dimension = world.dimension.getType();
+
                                 Entity newEntity = entity.getType().create(world);
                                 if(newEntity == null)
                                     return;
@@ -57,7 +66,9 @@ public class PortalTile extends PortalGroupTile {
                                 newEntity.copyDataFromOld(entity);
                                 newEntity.setLocationAndAngles(target.x + .5, target.y, target.z + .5, target.yaw, 0);
                                 newEntity.setRotationYawHead(target.yaw);
-                                world.func_217460_e(entity);
+                                world.func_217460_e(newEntity);
+
+                                entity.remove();
                             }
                         }
 
