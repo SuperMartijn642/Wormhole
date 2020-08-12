@@ -7,6 +7,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemDye;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
@@ -19,6 +20,8 @@ import java.util.Collections;
  */
 public class PortalTile extends PortalGroupTile {
 
+    public final int TELEPORT_COOLDOWN = 2 * 20; // 2 seconds
+
     public PortalTile(){
         super();
     }
@@ -30,20 +33,25 @@ public class PortalTile extends PortalGroupTile {
             if(!this.world.isRemote)
                 this.world.getMinecraftServer().addScheduledTask(() -> {
                     target.getWorld(this.world.getMinecraftServer()).filter(world -> world instanceof WorldServer).map(WorldServer.class::cast).ifPresent(world -> {
-                        entity.dismountRidingEntity();
+                        NBTTagCompound tag = entity.getEntityData();
+                        if(!tag.hasKey("wormhole:teleported") || tag.getLong("wormhole:teleported") < 0 || entity.ticksExisted - tag.getLong("wormhole:teleported") > TELEPORT_COOLDOWN){
+                            entity.dismountRidingEntity();
 
-                        if(entity.getEntityWorld() != world)
-                            entity.changeDimension(world.provider.getDimensionType().getId());
+                            if(entity.getEntityWorld() != world)
+                                entity.changeDimension(world.provider.getDimensionType().getId());
 
-                        if(entity instanceof EntityPlayerMP)
-                            ((EntityPlayerMP)entity).connection.setPlayerLocation(target.x + .5, target.y, target.z + .5, target.yaw, 0, Collections.emptySet());
-                        else
-                            entity.setLocationAndAngles(target.x + .5, target.y, target.z + .5, target.yaw, 0);
-                        entity.setRotationYawHead(target.yaw);
+                            if(entity instanceof EntityPlayerMP)
+                                ((EntityPlayerMP)entity).connection.setPlayerLocation(target.x + .5, target.y, target.z + .5, target.yaw, 0, Collections.emptySet());
+                            else
+                                entity.setLocationAndAngles(target.x + .5, target.y, target.z + .5, target.yaw, 0);
+                            entity.setRotationYawHead(target.yaw);
 
-                        if(!(entity instanceof EntityLivingBase) || !((EntityLivingBase)entity).isElytraFlying()){
-                            entity.motionY = 0.0D;
-                            entity.onGround = true;
+                            if(!(entity instanceof EntityLivingBase) || !((EntityLivingBase)entity).isElytraFlying()){
+                                entity.motionY = 0.0D;
+                                entity.onGround = true;
+                            }
+
+                            tag.setLong("wormhole:teleported", entity.ticksExisted);
                         }
                     });
                 });
