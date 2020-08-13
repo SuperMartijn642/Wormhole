@@ -1,0 +1,18 @@
+{
+  "block.wormhole.portal_frame": "Moldura de Portal",
+  "block.wormhole.portal": "Portal",
+  "block.wormhole.portal_stabilizer": "Estabilizador de Portal",
+  "item.wormhole.target_device": "Dispositivo de Definição de Destino",
+  "wormhole.target_device.set": "Destino definido para %1$d, %2$d, %3$d!",
+  "wormhole.target_device.clear": "Destino apagado!",
+  "wormhole.target_device.info.unset": "Nenhum destino definido",
+  "wormhole.target_device.info.set": "Destino definido para %1$d, %2$d, %3$d",
+  "wormhole.target_device.error": "Um destino deve ser definido para ativar um portal!",
+  "wormhole.portal_stabilizer.error": "Construção de portal inválida!",
+  "wormhole.portal_stabilizer.success": "Buraco de Minhoca estabilizado!",
+  "wormhole.portal_stabilizer.clear": "Portal desativado!",
+  "wormhole.facing.north": "Norte",
+  "wormhole.facing.east": "Leste",
+  "wormhole.facing.south": "Sul",
+  "wormhole.facing.west": "Oeste"
+}
