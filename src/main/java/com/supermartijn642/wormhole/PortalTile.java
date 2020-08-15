@@ -75,7 +75,7 @@ public class PortalTile extends PortalGroupTile {
 
                         if(!(entity instanceof LivingEntity) || !((LivingEntity)entity).isElytraFlying()){
                             entity.setMotion(Vector3d.ZERO);
-                            entity.func_230245_c_(true);
+                            entity.setOnGround(true);
                         }
 
                         if(entity instanceof CreatureEntity)

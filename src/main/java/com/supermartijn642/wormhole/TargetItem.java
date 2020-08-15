@@ -33,14 +33,14 @@ public class TargetItem extends Item {
             CompoundNBT tag = stack.getOrCreateTag();
             if(playerIn.isSneaking()){
                 tag.remove("target");
-                playerIn.sendMessage(new TranslationTextComponent("wormhole.target_device.clear").func_240699_a_(TextFormatting.YELLOW), playerIn.getUniqueID());
+                playerIn.sendMessage(new TranslationTextComponent("wormhole.target_device.clear").mergeStyle(TextFormatting.YELLOW), playerIn.getUniqueID());
             }else{
-                tag.put("target", new PortalTarget(worldIn, playerIn.func_233580_cy_(), Math.round(playerIn.rotationYaw / 90) * 90).write());
+                tag.put("target", new PortalTarget(worldIn, playerIn.getPosition(), Math.round(playerIn.rotationYaw / 90) * 90).write());
                 playerIn.sendMessage(new TranslationTextComponent("wormhole.target_device.set",
-                    playerIn.func_233580_cy_().getX(),
-                    playerIn.func_233580_cy_().getY(),
-                    playerIn.func_233580_cy_().getZ())
-                    .func_240699_a_(TextFormatting.YELLOW), playerIn.getUniqueID());
+                    playerIn.getPosition().getX(),
+                    playerIn.getPosition().getY(),
+                    playerIn.getPosition().getZ())
+                    .mergeStyle(TextFormatting.YELLOW), playerIn.getUniqueID());
             }
         }
         return super.onItemRightClick(worldIn, playerIn, handIn);
@@ -52,7 +52,7 @@ public class TargetItem extends Item {
         PortalTarget target = tag.contains("target") ? PortalTarget.read(tag.getCompound("target")) : null;
         IFormattableTextComponent info = target == null ? new TranslationTextComponent("wormhole.target_device.info.unset") :
             new TranslationTextComponent("wormhole.target_device.info.set", target.x, target.y, target.z);
-        tooltip.add(info.func_240699_a_(TextFormatting.YELLOW));
+        tooltip.add(info.mergeStyle(TextFormatting.YELLOW));
     }
 
     public static boolean hasTarget(ItemStack stack){

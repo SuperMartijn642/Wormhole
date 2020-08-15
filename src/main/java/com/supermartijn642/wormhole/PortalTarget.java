@@ -50,7 +50,7 @@ public class PortalTarget {
     }
 
     public Optional<World> getWorld(MinecraftServer server){
-        RegistryKey<World> key = RegistryKey.func_240903_a_(Registry.field_239699_ae_, new ResourceLocation(this.dimension));
+        RegistryKey<World> key = RegistryKey.func_240903_a_(Registry.WORLD_KEY, new ResourceLocation(this.dimension));
         return Optional.ofNullable(server.getWorld(key));
     }
 
