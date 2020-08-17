@@ -38,7 +38,7 @@ public class PortalTile extends PortalGroupTile {
                             ServerPlayerEntity player = (ServerPlayerEntity)entity;
 
                             CompoundNBT tag = player.getPersistentData();
-                            if(!tag.contains("wormhole:teleported") || player.ticksExisted - tag.getLong("wormhole:teleported") > TELEPORT_COOLDOWN){
+                            if(!tag.contains("wormhole:teleported") || player.ticksExisted - tag.getLong("wormhole:teleported") < 0 || player.ticksExisted - tag.getLong("wormhole:teleported") > TELEPORT_COOLDOWN){
                                 entity.stopRiding();
 
                                 if(player.isSleeping())
