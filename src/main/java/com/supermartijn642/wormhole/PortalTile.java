@@ -34,7 +34,7 @@ public class PortalTile extends PortalGroupTile {
                 this.world.getMinecraftServer().addScheduledTask(() -> {
                     target.getWorld(this.world.getMinecraftServer()).filter(world -> world instanceof WorldServer).map(WorldServer.class::cast).ifPresent(world -> {
                         NBTTagCompound tag = entity.getEntityData();
-                        if(!tag.hasKey("wormhole:teleported") || tag.getLong("wormhole:teleported") < 0 || entity.ticksExisted - tag.getLong("wormhole:teleported") > TELEPORT_COOLDOWN){
+                        if(!tag.hasKey("wormhole:teleported") || entity.ticksExisted - tag.getLong("wormhole:teleported") < 0 || entity.ticksExisted - tag.getLong("wormhole:teleported") > TELEPORT_COOLDOWN){
                             entity.dismountRidingEntity();
 
                             if(entity.getEntityWorld() != world)
