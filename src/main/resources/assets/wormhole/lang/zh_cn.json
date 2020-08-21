@@ -1,0 +1,18 @@
+{
+  "block.wormhole.portal_frame": "传送门框架",
+  "block.wormhole.portal": "传送门",
+  "block.wormhole.portal_stabilizer": "传送门稳定器",
+  "item.wormhole.target_device": "目的地设置装置",
+  "wormhole.target_device.set": "目的地设置为 %1$d, %2$d, %3$d！",
+  "wormhole.target_device.clear": "目的地清除！",
+  "wormhole.target_device.info.unset": "尚未设置目的地",
+  "wormhole.target_device.info.set": "目的地设置为 %1$d, %2$d, %3$d！",
+  "wormhole.target_device.error": "你需要先设置目的地才能激活传送门！",
+  "wormhole.portal_stabilizer.error": "非法的传送门结构！",
+  "wormhole.portal_stabilizer.success": "传送虫洞已稳定！",
+  "wormhole.portal_stabilizer.clear": "传送门失效！",
+  "wormhole.facing.north": "北",
+  "wormhole.facing.east": "东",
+  "wormhole.facing.south": "南",
+  "wormhole.facing.west": "西"
+}
