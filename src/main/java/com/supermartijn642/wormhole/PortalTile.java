@@ -38,7 +38,7 @@ public class PortalTile extends PortalGroupTile {
                             entity.dismountRidingEntity();
 
                             if(entity.getEntityWorld() != world)
-                                entity.changeDimension(world.provider.getDimensionType().getId());
+                                entity.changeDimension(world.provider.getDimensionType().getId(), (world1, entity1, yaw) -> entity1.moveToBlockPosAndAngles(target.getPos(), yaw, entity1.rotationPitch));
 
                             if(entity instanceof EntityPlayerMP)
                                 ((EntityPlayerMP)entity).connection.setPlayerLocation(target.x + .5, target.y, target.z + .5, target.yaw, 0, Collections.emptySet());
