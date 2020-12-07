@@ -11,8 +11,8 @@
   "wormhole.portal_stabilizer.error": "非法的传送门结构！",
   "wormhole.portal_stabilizer.success": "传送虫洞已稳定！",
   "wormhole.portal_stabilizer.clear": "传送门失效！",
-  "wormhole.facing.north": "北",
-  "wormhole.facing.east": "东",
-  "wormhole.facing.south": "南",
-  "wormhole.facing.west": "西"
+  "wormhole.direction.north": "北",
+  "wormhole.direction.east": "东",
+  "wormhole.direction.south": "南",
+  "wormhole.direction.west": "西"
 }

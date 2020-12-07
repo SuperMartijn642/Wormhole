@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IQI",
+    "RBR",
+    "IQI"
+  ],
+  "key": {
+    "I": {
+      "tag": "forge:ingots/iron"
+    },
+    "Q": {
+      "tag": "forge:gems/quartz"
+    },
+    "R": {
+      "item": "minecraft:repeater"
+    },
+    "B": {
+      "item": "wormhole:basic_energy_cell"
+    }
+  },
+  "result": {
+    "item": "wormhole:advanced_energy_cell"
+  }
+}

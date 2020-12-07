@@ -1,5 +1,7 @@
 package com.supermartijn642.wormhole;
 
+import com.supermartijn642.wormhole.portal.PortalGroupTile;
+import com.supermartijn642.wormhole.portal.PortalTarget;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.Entity;
@@ -13,7 +15,9 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.concurrent.TickDelayedTask;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.util.ITeleporter;
 
 import java.util.Collections;
 
@@ -29,67 +33,73 @@ public class PortalTile extends PortalGroupTile {
     }
 
     public void teleport(Entity entity){
-        if(this.group != null && this.group.getTarget() != null){
-            PortalTarget target = this.group.getTarget();
-            if(!this.world.isRemote)
-                this.world.getServer().enqueue(new TickDelayedTask(0, () -> {
-                    target.getWorld(this.world.getServer()).filter(world -> world instanceof ServerWorld).map(ServerWorld.class::cast).ifPresent(world -> {
-                        if(entity instanceof ServerPlayerEntity){
-                            ServerPlayerEntity player = (ServerPlayerEntity)entity;
+        if(this.hasGroup())
+            this.getGroup().teleport(entity);
+    }
 
-                            CompoundNBT tag = player.getPersistentData();
-                            if(!tag.contains("wormhole:teleported") || player.ticksExisted - tag.getLong("wormhole:teleported") < 0 || player.ticksExisted - tag.getLong("wormhole:teleported") > TELEPORT_COOLDOWN){
-                                entity.stopRiding();
+    public static void teleport(Entity entity, PortalTarget target){
+        World world = entity.world;
 
-                                if(player.isSleeping())
-                                    player.stopSleepInBed(true, true);
+        if(entity.world.isRemote)
+            return;
 
-                                if(world == entity.world)
-                                    player.connection.setPlayerLocation(target.x + .5, target.y, target.z + .5, target.yaw, 0, Collections.emptySet());
-                                else
-                                    player.teleport(world, target.x + .5, target.y, target.z + .5, target.yaw, 0);
+        world.getServer().enqueue(new TickDelayedTask(0, () -> {
+            target.getWorld(world.getServer()).filter(w -> w instanceof ServerWorld).map(ServerWorld.class::cast).ifPresent(w -> {
+                if(entity instanceof ServerPlayerEntity){
+                    ServerPlayerEntity player = (ServerPlayerEntity)entity;
 
-                                entity.setRotationYawHead(target.yaw);
+                    CompoundNBT tag = player.getPersistentData();
+                    if(!tag.contains("wormhole:teleported") || player.ticksExisted - tag.getLong("wormhole:teleported") < 0 || player.ticksExisted - tag.getLong("wormhole:teleported") > TELEPORT_COOLDOWN){
+                        entity.stopRiding();
 
-                                tag.putLong("wormhole:teleported", player.ticksExisted);
-                            }
-                        }else{
-                            if(world == entity.world){
-                                entity.setLocationAndAngles(target.x + .5, target.y, target.z + .5, target.yaw, 0);
-                                entity.setRotationYawHead(target.yaw);
-                            }else{
-                                entity.detach();
+                        if(player.isSleeping())
+                            player.stopSleepInBed(true, true);
 
-                                Entity newEntity = entity.getType().create(world);
-                                if(newEntity == null)
-                                    return;
+                        if(w == entity.world)
+                            player.connection.setPlayerLocation(target.x + .5, target.y, target.z + .5, target.yaw, 0, Collections.emptySet());
+                        else
+                            player.teleport(w, target.x + .5, target.y, target.z + .5, target.yaw, 0);
 
-                                newEntity.copyDataFromOld(entity);
-                                newEntity.setLocationAndAngles(target.x + .5, target.y, target.z + .5, target.yaw, 0);
-                                newEntity.setRotationYawHead(target.yaw);
-                                world.addFromAnotherDimension(newEntity);
+                        entity.setRotationYawHead(target.yaw);
 
-                                entity.remove();
-                            }
-                        }
+                        tag.putLong("wormhole:teleported", player.ticksExisted);
+                    }
+                }else{
+                    if(w == entity.world){
+                        entity.setLocationAndAngles(target.x + .5, target.y, target.z + .5, target.yaw, 0);
+                        entity.setRotationYawHead(target.yaw);
+                    }else{
+                        entity.detach();
 
-                        if(!(entity instanceof LivingEntity) || !((LivingEntity)entity).isElytraFlying()){
-                            entity.setMotion(Vector3d.ZERO);
-                            entity.setOnGround(true);
-                        }
+                        Entity newEntity = entity.getType().create(w);
+                        if(newEntity == null)
+                            return;
 
-                        if(entity instanceof CreatureEntity)
-                            ((CreatureEntity)entity).getNavigator().clearPath();
-                    });
-                }));
-        }
+                        newEntity.copyDataFromOld(entity);
+                        newEntity.setLocationAndAngles(target.x + .5, target.y, target.z + .5, target.yaw, 0);
+                        newEntity.setRotationYawHead(target.yaw);
+                        w.addFromAnotherDimension(newEntity);
+
+                        entity.remove();
+                    }
+                }
+
+                if(!(entity instanceof LivingEntity) || !((LivingEntity)entity).isElytraFlying()){
+                    entity.setMotion(Vector3d.ZERO);
+                    entity.setOnGround(true);
+                }
+
+                if(entity instanceof CreatureEntity)
+                    ((CreatureEntity)entity).getNavigator().clearPath();
+            });
+        }));
     }
 
     public boolean activate(PlayerEntity player, Hand hand){
         if(player.getHeldItem(hand).getItem() instanceof DyeItem){
             DyeColor color = ((DyeItem)player.getHeldItem(hand).getItem()).getDyeColor();
-            if(this.group != null && this.group.getTarget() != null){
-                for(BlockPos pos : this.group.shape.area){
+            if(this.hasGroup() && this.getGroup().getActiveTarget() != null){
+                for(BlockPos pos : this.getGroup().shape.area){
                     BlockState state = this.world.getBlockState(pos);
                     if(state.getBlock() == Wormhole.portal && state.get(PortalBlock.COLOR_PROPERTY) != color)
                         this.world.setBlockState(pos, state.with(PortalBlock.COLOR_PROPERTY, color));
@@ -102,7 +112,7 @@ public class PortalTile extends PortalGroupTile {
 
     @Override
     public void onBreak(){
-        if(this.group != null)
-            this.group.removeTarget();
+        if(this.hasGroup())
+            this.getGroup().deactivate();
     }
 }

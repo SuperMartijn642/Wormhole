@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "wormhole:energy_cells/basic_energy_cell_8"
+  }
+}

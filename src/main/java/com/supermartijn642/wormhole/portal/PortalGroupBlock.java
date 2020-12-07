@@ -1,5 +1,6 @@
-package com.supermartijn642.wormhole;
+package com.supermartijn642.wormhole.portal;
 
+import com.supermartijn642.wormhole.WormholeBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
@@ -17,13 +18,12 @@ import java.util.function.Supplier;
 /**
  * Created 7/23/2020 by SuperMartijn642
  */
-public class PortalGroupBlock extends Block {
+public class PortalGroupBlock extends WormholeBlock {
 
     private final Supplier<? extends TileEntity> tileSupplier;
 
     public PortalGroupBlock(Properties properties, String registryName, Supplier<? extends TileEntity> tileSupplier){
-        super(properties);
-        this.setRegistryName(registryName);
+        super(registryName, true, properties);
         this.tileSupplier = tileSupplier;
     }
 

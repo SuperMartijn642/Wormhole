@@ -1,13 +1,13 @@
-package com.supermartijn642.wormhole;
+package com.supermartijn642.wormhole.portal;
 
 /**
  * Created 7/23/2020 by SuperMartijn642
  */
 public interface IPortalGroupTile {
 
-    void setGroup(PortalGroup group);
-
     boolean hasGroup();
+
+    PortalGroup getGroup();
 
     void onBreak();
 
