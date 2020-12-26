@@ -88,7 +88,7 @@ repositories {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.16.3-34.1.42'
 
-//    runtimeOnly fg.deobf("curse.maven:block-renderer:2950930")
+    runtimeOnly fg.deobf("curse.maven:block-renderer:3149419")
 
     // compile against the JEI API but do not include it at runtime
     compileOnly fg.deobf("mezz.jei:jei-1.16.4:7.6.0.62:api")
