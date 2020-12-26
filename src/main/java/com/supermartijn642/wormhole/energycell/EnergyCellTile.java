@@ -1,5 +1,6 @@
 package com.supermartijn642.wormhole.energycell;
 
+import com.supermartijn642.wormhole.portal.IEnergyCellTile;
 import com.supermartijn642.wormhole.portal.PortalGroupTile;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -12,7 +13,7 @@ import net.minecraftforge.energy.IEnergyStorage;
 /**
  * Created 11/16/2020 by SuperMartijn642
  */
-public class EnergyCellTile extends PortalGroupTile implements IEnergyStorage {
+public class EnergyCellTile extends PortalGroupTile implements IEnergyCellTile {
 
     public static class BasicEnergyCellTile extends EnergyCellTile {
         public BasicEnergyCellTile(){
@@ -32,23 +33,28 @@ public class EnergyCellTile extends PortalGroupTile implements IEnergyStorage {
         }
 
         @Override
-        public int receiveEnergy(int maxReceive, boolean simulate){
+        public int receiveEnergy(int maxReceive, boolean simulate, boolean fromGroup){
             return 0;
         }
 
         @Override
-        public int extractEnergy(int maxExtract, boolean simulate){
+        public int extractEnergy(int maxExtract, boolean simulate, boolean fromGroup){
             return maxExtract;
         }
 
         @Override
-        public int getEnergyStored(){
+        public int getEnergyStored(boolean fromGroup){
             return this.getMaxEnergyStored();
         }
 
         @Override
+        public int getMaxEnergyStored(boolean fromGroup){
+            return this.type.getCapacity();
+        }
+
+        @Override
         public boolean canExtract(){
-            return false;
+            return true;
         }
 
         @Override
@@ -67,7 +73,7 @@ public class EnergyCellTile extends PortalGroupTile implements IEnergyStorage {
         }
     }
 
-    private final EnergyCellType type;
+    protected final EnergyCellType type;
     protected int energy = 0;
 
     public EnergyCellTile(EnergyCellType type){
@@ -76,10 +82,13 @@ public class EnergyCellTile extends PortalGroupTile implements IEnergyStorage {
     }
 
     @Override
-    public int receiveEnergy(int maxReceive, boolean simulate){
+    public int receiveEnergy(int maxReceive, boolean simulate, boolean fromGroup){
+        if(!fromGroup && this.hasGroup())
+            return this.getGroup().receiveEnergy(maxReceive, simulate);
+
         if(maxReceive < 0)
             return -this.extractEnergy(-maxReceive, simulate);
-        int absorb = Math.min(this.getMaxEnergyStored() - this.energy, maxReceive);
+        int absorb = Math.min(this.getMaxEnergyStored(true) - this.energy, maxReceive);
         if(!simulate){
             this.energy += absorb;
             if(absorb > 0)
@@ -89,7 +98,7 @@ public class EnergyCellTile extends PortalGroupTile implements IEnergyStorage {
     }
 
     @Override
-    public int extractEnergy(int maxExtract, boolean simulate){
+    public int extractEnergy(int maxExtract, boolean simulate, boolean fromGroup){
         if(maxExtract < 0)
             return -this.receiveEnergy(-maxExtract, simulate);
         int drain = Math.min(this.energy, maxExtract);
@@ -102,12 +111,18 @@ public class EnergyCellTile extends PortalGroupTile implements IEnergyStorage {
     }
 
     @Override
-    public int getEnergyStored(){
-        return Math.min(this.energy, this.getMaxEnergyStored());
+    public int getEnergyStored(boolean fromGroup){
+        if(!fromGroup && this.hasGroup())
+            return this.getGroup().getStoredEnergy();
+
+        return Math.min(this.energy, this.getMaxEnergyStored(true));
     }
 
     @Override
-    public int getMaxEnergyStored(){
+    public int getMaxEnergyStored(boolean fromGroup){
+        if(!fromGroup && this.hasGroup())
+            return this.getGroup().getEnergyCapacity();
+
         return this.type.getCapacity();
     }
 

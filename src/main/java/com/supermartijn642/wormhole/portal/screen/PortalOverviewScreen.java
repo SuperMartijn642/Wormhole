@@ -49,8 +49,7 @@ public class PortalOverviewScreen extends PortalGroupScreen {
                 Wormhole.CHANNEL.sendToServer(packet);
         }));
         Supplier<Integer> energy = () -> this.getPortalGroup().getStoredEnergy(), capacity = () -> this.getPortalGroup().getEnergyCapacity();
-        this.addWidget(new EnergyBarWidget(8, 49, 30, 82, energy, capacity, () -> {
-        }));
+        this.addWidget(new EnergyBarWidget(8, 49, 30, 82, energy, capacity));
         // active target
         Supplier<Integer> activeTarget = () -> this.getFromPortalGroup(PortalGroup::getActiveTargetIndex, 0);
         this.addWidget(new PortalTargetNameField(this, activeTarget, 20, 171));
@@ -81,13 +80,11 @@ public class PortalOverviewScreen extends PortalGroupScreen {
         this.font.func_243248_b(matrixStack, new TranslationTextComponent("wormhole.portal.gui.idle_cost"), 190, 61, 4210752);
         this.drawStringRightAligned(matrixStack, new StringTextComponent(EnergyFormat.formatEnergyPerTick(this.getFromPortalGroup(PortalGroup::getIdleEnergyCost, 0))), 312, 61);
         this.font.func_243248_b(matrixStack, new TranslationTextComponent("wormhole.portal.gui.teleport_cost"), 190, 73, 4210752);
-        this.drawStringRightAligned(matrixStack, new StringTextComponent(EnergyFormat.formatEnergy(this.getFromPortalGroup(PortalGroup::getTeleportEnergyCost, 0))), 312, 73);
+        this.drawStringRightAligned(matrixStack, new StringTextComponent(this.getFromPortalGroup(PortalGroup::getActiveTarget, null) == null ? "--" : EnergyFormat.formatEnergy(this.getFromPortalGroup(PortalGroup::getTeleportEnergyCost, 0))), 312, 73);
         // target number
         int activeTarget = this.getFromPortalGroup(PortalGroup::getActiveTargetIndex, 0);
         this.font.drawString(matrixStack, (activeTarget + 1) + ".", 8, 173, 4210752);
 
-        // TODO
-//        this.fillGradient(matrixStack, 44, 20, 44 + 140, 20 + 140, Integer.MAX_VALUE, Integer.MAX_VALUE);
         PortalGroup group = this.getPortalGroup();
         if(group != null)
             PortalRendererHelper.drawPortal(group.shape, this.left() + 44, this.top() + 20, 140, 140);
@@ -104,7 +101,11 @@ public class PortalOverviewScreen extends PortalGroupScreen {
     }
 
     private enum PortalStatus {
-        OK("OK", TextFormatting.GREEN), LOW_ENERGY("LOW ENERGY", TextFormatting.GOLD), NO_ENERGY("NO ENERGY", TextFormatting.RED), NO_TARGET("NO TARGET", TextFormatting.GOLD);
+        OK("OK", TextFormatting.GREEN), // TODO translate
+        LOW_ENERGY("LOW ENERGY", TextFormatting.GOLD),
+        NO_ENERGY("NO ENERGY", TextFormatting.RED),
+        NO_TARGET("NO TARGET", TextFormatting.GOLD),
+        NO_DIMENSIONAL_CORE("NO DIMENSIONAL CORE", TextFormatting.RED);
 
         private String status;
         private TextFormatting color;

@@ -19,8 +19,8 @@ public class EnergyBarWidget extends WormholeAbstractButton implements IHoverTex
 
     private final Supplier<Integer> energy, capacity;
 
-    public EnergyBarWidget(int x, int y, int width, int height, Supplier<Integer> energy, Supplier<Integer> capacity, Runnable onPress){
-        super(x, y, width, height, "energy bar", onPress);
+    public EnergyBarWidget(int x, int y, int width, int height, Supplier<Integer> energy, Supplier<Integer> capacity){
+        super(x, y, width, height, "energy bar", null);
         this.energy = energy;
         this.capacity = capacity;
     }
@@ -31,7 +31,7 @@ public class EnergyBarWidget extends WormholeAbstractButton implements IHoverTex
         drawTexture(matrixStack, this.x, this.y, this.width, this.height, this.isHovered() ? 1 / 11f : 0, 0, 1 / 11f, 1);
         int energy = this.energy.get();
         int capacity = this.capacity.get();
-        float percentage = capacity == 0 ? 1 : energy / (float)capacity;
+        float percentage = capacity == 0 ? 1 : Math.max(Math.min(energy / (float)capacity, 1), 0);
         if(percentage != 0)
             drawTexture(matrixStack, this.x, this.y + this.height * (1 - percentage), this.width, this.height * percentage, 3 / 11f, 1 - percentage, 1 / 11f, percentage);
     }

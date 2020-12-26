@@ -26,8 +26,6 @@ import java.util.Collections;
  */
 public class PortalTile extends PortalGroupTile {
 
-    private static final int TELEPORT_COOLDOWN = 2 * 20; // 2 seconds
-
     public PortalTile(){
         super(Wormhole.portal_tile);
     }
@@ -35,64 +33,6 @@ public class PortalTile extends PortalGroupTile {
     public void teleport(Entity entity){
         if(this.hasGroup())
             this.getGroup().teleport(entity);
-    }
-
-    public static void teleport(Entity entity, PortalTarget target){
-        World world = entity.world;
-
-        if(entity.world.isRemote)
-            return;
-
-        world.getServer().enqueue(new TickDelayedTask(0, () -> {
-            target.getWorld(world.getServer()).filter(w -> w instanceof ServerWorld).map(ServerWorld.class::cast).ifPresent(w -> {
-                if(entity instanceof ServerPlayerEntity){
-                    ServerPlayerEntity player = (ServerPlayerEntity)entity;
-
-                    CompoundNBT tag = player.getPersistentData();
-                    if(!tag.contains("wormhole:teleported") || player.ticksExisted - tag.getLong("wormhole:teleported") < 0 || player.ticksExisted - tag.getLong("wormhole:teleported") > TELEPORT_COOLDOWN){
-                        entity.stopRiding();
-
-                        if(player.isSleeping())
-                            player.stopSleepInBed(true, true);
-
-                        if(w == entity.world)
-                            player.connection.setPlayerLocation(target.x + .5, target.y, target.z + .5, target.yaw, 0, Collections.emptySet());
-                        else
-                            player.teleport(w, target.x + .5, target.y, target.z + .5, target.yaw, 0);
-
-                        entity.setRotationYawHead(target.yaw);
-
-                        tag.putLong("wormhole:teleported", player.ticksExisted);
-                    }
-                }else{
-                    if(w == entity.world){
-                        entity.setLocationAndAngles(target.x + .5, target.y, target.z + .5, target.yaw, 0);
-                        entity.setRotationYawHead(target.yaw);
-                    }else{
-                        entity.detach();
-
-                        Entity newEntity = entity.getType().create(w);
-                        if(newEntity == null)
-                            return;
-
-                        newEntity.copyDataFromOld(entity);
-                        newEntity.setLocationAndAngles(target.x + .5, target.y, target.z + .5, target.yaw, 0);
-                        newEntity.setRotationYawHead(target.yaw);
-                        w.addFromAnotherDimension(newEntity);
-
-                        entity.remove();
-                    }
-                }
-
-                if(!(entity instanceof LivingEntity) || !((LivingEntity)entity).isElytraFlying()){
-                    entity.setMotion(Vector3d.ZERO);
-                    entity.setOnGround(true);
-                }
-
-                if(entity instanceof CreatureEntity)
-                    ((CreatureEntity)entity).getNavigator().clearPath();
-            });
-        }));
     }
 
     public boolean activate(PlayerEntity player, Hand hand){

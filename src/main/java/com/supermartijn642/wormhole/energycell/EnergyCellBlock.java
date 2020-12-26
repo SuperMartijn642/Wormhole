@@ -10,6 +10,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 
 import java.util.List;
@@ -28,6 +29,8 @@ public class EnergyCellBlock extends PortalGroupBlock {
 
     @Override
     public void addInformation(ItemStack stack, IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
+        tooltip.add(new TranslationTextComponent("wormhole.energy_cell.info").mergeStyle(TextFormatting.AQUA));
+
         CompoundNBT tag = stack.getOrCreateTag().contains("tileData") ? stack.getOrCreateTag().getCompound("tileData") : null;
 
         int energy = this.type == EnergyCellType.CREATIVE ? this.type.getCapacity() :

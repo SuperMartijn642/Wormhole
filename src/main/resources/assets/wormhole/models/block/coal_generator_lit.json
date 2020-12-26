@@ -1,0 +1,6 @@
+{
+	"parent": "wormhole:block/coal_generator",
+	"textures": {
+		"0": "wormhole:generators/coal_generator_lit"
+	}
+}

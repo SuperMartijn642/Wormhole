@@ -6,16 +6,26 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import com.supermartijn642.wormhole.ClientProxy;
 import com.supermartijn642.wormhole.PortalBlock;
+import com.supermartijn642.wormhole.energycell.EnergyCellBlock;
+import com.supermartijn642.wormhole.energycell.EnergyCellTile;
+import com.supermartijn642.wormhole.energycell.EnergyCellTileRenderer;
+import com.supermartijn642.wormhole.energycell.EnergyCellType;
 import com.supermartijn642.wormhole.portal.PortalShape;
+import com.supermartijn642.wormhole.targetcell.TargetCellBlock;
+import com.supermartijn642.wormhole.targetcell.TargetCellTile;
+import com.supermartijn642.wormhole.targetcell.TargetCellTileRenderer;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -61,9 +71,12 @@ public class PortalRendererHelper {
 
         for(BlockPos pos : shape.frame)
             renderBlock(world, pos, matrixstack, renderTypeBuffer, true);
-        for(BlockPos pos : shape.area)
-            if(!world.isAirBlock(pos))
+        for(BlockPos pos : shape.area){
+            if(!world.isAirBlock(pos)){
                 renderBlock(world, pos, matrixstack, renderTypeBuffer, world.getBlockState(pos).getBlock() instanceof PortalBlock);
+                renderTileEntity(world, pos, matrixstack, renderTypeBuffer);
+            }
+        }
 
         renderTypeBuffer.finish();
         RenderSystem.enableDepthTest();
@@ -75,9 +88,16 @@ public class PortalRendererHelper {
 
     private static void renderBlock(World world, BlockPos pos, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, boolean valid){
         BlockState state = world.getBlockState(pos);
+
+        if(!(state.getBlock() instanceof EnergyCellBlock) && !(state.getBlock() instanceof TargetCellBlock) && state.getRenderType() != BlockRenderType.MODEL)
+            return;
+
         TileEntity tile = world.getTileEntity(pos);
 
-        IBakedModel model = Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(state);
+        IBakedModel model =
+            tile instanceof TargetCellTile ? TargetCellTileRenderer.getModelForTile((TargetCellTile)tile) :
+            tile instanceof EnergyCellTile ? EnergyCellTileRenderer.getModelForTile((EnergyCellTile)tile) :
+            Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(state);
         IModelData modelData = tile == null ? EmptyModelData.INSTANCE : tile.getModelData();
         modelData = model.getModelData(world, pos, state, modelData);
 
@@ -116,5 +136,22 @@ public class PortalRendererHelper {
 
         for(BakedQuad bakedquad : quadsIn)
             bufferIn.addVertexData(matrix, bakedquad, 1, valid ? 1 : 0.5f, valid ? 1 : 0.5f, valid ? 1 : 0.8f, combinedLightIn, combinedOverlayIn, false);
+    }
+
+    private static void renderTileEntity(World world, BlockPos pos, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer){
+        TileEntity tile = world.getTileEntity(pos);
+
+        if(tile != null){
+            TileEntityRenderer<TileEntity> tileRenderer = TileEntityRendererDispatcher.instance.getRenderer(tile);
+
+            if(tileRenderer != null){
+                matrixStack.push();
+                matrixStack.translate(pos.getX() - 0.5, pos.getY() - 0.5, pos.getZ() - 0.5);
+
+                tileRenderer.render(tile, Minecraft.getInstance().getRenderPartialTicks(), matrixStack, renderTypeBuffer, 15728880, OverlayTexture.NO_OVERLAY);
+
+                matrixStack.pop();
+            }
+        }
     }
 }

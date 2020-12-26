@@ -2,6 +2,7 @@ package com.supermartijn642.wormhole.portal;
 
 import com.supermartijn642.wormhole.PortalGroupCapability;
 import com.supermartijn642.wormhole.PortalTile;
+import com.supermartijn642.wormhole.TeleportHelper;
 import com.supermartijn642.wormhole.WormholeConfig;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;
@@ -188,7 +189,7 @@ public class PortalGroup {
         for(BlockPos pos : this.shape.energyCells){
             TileEntity tile = this.world.getTileEntity(pos);
             if(tile instanceof IEnergyStorage)
-                total += ((IEnergyStorage)tile).getMaxEnergyStored();
+                total += ((IEnergyCellTile)tile).getMaxEnergyStored(true);
         }
         return total;
     }
@@ -198,7 +199,7 @@ public class PortalGroup {
         for(BlockPos pos : this.shape.energyCells){
             TileEntity tile = this.world.getTileEntity(pos);
             if(tile instanceof IEnergyStorage)
-                total += ((IEnergyStorage)tile).getEnergyStored();
+                total += ((IEnergyCellTile)tile).getEnergyStored(true);
         }
         return total;
     }
@@ -207,8 +208,21 @@ public class PortalGroup {
         for(BlockPos pos : this.shape.energyCells){
             TileEntity tile = this.world.getTileEntity(pos);
             if(tile instanceof IEnergyStorage)
-                energy -= ((IEnergyStorage)tile).extractEnergy(energy, false);
+                energy -= ((IEnergyCellTile)tile).extractEnergy(energy, false, true);
         }
+    }
+
+    public int receiveEnergy(int energy, boolean simulate){
+        int received = 0;
+        for(BlockPos pos : this.shape.energyCells){
+            TileEntity tile = this.world.getTileEntity(pos);
+            if(tile instanceof IEnergyStorage){
+                received += ((IEnergyCellTile)tile).receiveEnergy(energy - received, simulate, true);
+                if(received >= energy)
+                    break;
+            }
+        }
+        return received;
     }
 
     public void activate(){
@@ -247,7 +261,7 @@ public class PortalGroup {
             this.drainEnergy(cost);
         }
 
-        PortalTile.teleport(entity, target);
+        TeleportHelper.teleport(entity, target);
     }
 
     public int getTeleportEnergyCost(){

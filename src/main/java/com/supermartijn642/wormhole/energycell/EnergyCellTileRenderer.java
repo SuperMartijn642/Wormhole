@@ -30,10 +30,15 @@ public class EnergyCellTileRenderer extends TileEntityRenderer<EnergyCellTile> {
 
     @Override
     public void render(EnergyCellTile tile, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay){
-        int texture = tile.getMaxEnergyStored() > 0 ? (int)Math.ceil((double)tile.getEnergyStored() / tile.getMaxEnergyStored() * 15) : 0;
+        int texture = tile.getMaxEnergyStored(true) > 0 ? (int)Math.ceil((double)tile.getEnergyStored(true) / tile.getMaxEnergyStored(true) * 15) : 0;
         IBakedModel model = Minecraft.getInstance().getModelManager().getModel(ENERGY_CELL_MODELS[texture]);
         Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelRenderer().renderModel(
             tile.getWorld(), model, tile.getBlockState(), tile.getPos(), matrixStack, buffer.getBuffer(RenderType.getSolid()), true, new Random(), 42L, combinedOverlay, EmptyModelData.INSTANCE
         );
+    }
+
+    public static IBakedModel getModelForTile(EnergyCellTile tile){
+        int texture = tile.getMaxEnergyStored(true) > 0 ? (int)Math.ceil((double)tile.getEnergyStored(true) / tile.getMaxEnergyStored(true) * 15) : 0;
+        return Minecraft.getInstance().getModelManager().getModel(ENERGY_CELL_MODELS[texture]);
     }
 }

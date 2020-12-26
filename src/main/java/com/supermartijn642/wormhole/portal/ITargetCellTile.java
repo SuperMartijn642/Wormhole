@@ -15,4 +15,6 @@ public interface ITargetCellTile {
 
     List<PortalTarget> getTargets();
 
+    int getNonNullTargetCount();
+
 }

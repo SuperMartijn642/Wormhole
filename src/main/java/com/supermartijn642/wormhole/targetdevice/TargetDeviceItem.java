@@ -45,11 +45,14 @@ public class TargetDeviceItem extends Item {
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
-        CompoundNBT tag = stack.getOrCreateTag();
-        PortalTarget target = tag.contains("target") ? PortalTarget.read(tag.getCompound("target")) : null;
-        IFormattableTextComponent info = target == null ? new TranslationTextComponent("wormhole.target_device.info.unset") :
-            new TranslationTextComponent("wormhole.target_device.info.set", target.x, target.y, target.z);
-        tooltip.add(info.mergeStyle(TextFormatting.YELLOW));
+        tooltip.add(new TranslationTextComponent("wormhole.target_device.info").mergeStyle(TextFormatting.AQUA));
+
+        List<PortalTarget> targets = getTargets(stack);
+        int capacity = getMaxTargetCount(stack);
+        tooltip.add(
+            new TranslationTextComponent("wormhole.target_device.info.targets", targets.size(), capacity)
+                .mergeStyle(TextFormatting.YELLOW)
+        );
     }
 
     public static List<PortalTarget> getTargets(ItemStack stack){

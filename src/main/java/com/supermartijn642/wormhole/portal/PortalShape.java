@@ -15,7 +15,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.energy.IEnergyStorage;
 
 import java.util.*;
 
@@ -90,7 +89,7 @@ public class PortalShape {
                             frame.add(offPos);
                             if(tile instanceof StabilizerTile)
                                 stabilizers.add(offPos);
-                            if(tile instanceof IEnergyStorage)
+                            if(tile instanceof IEnergyCellTile)
                                 energyCells.add(offPos);
                             if(tile instanceof ITargetCellTile)
                                 targetCells.add(offPos);
@@ -113,8 +112,7 @@ public class PortalShape {
         if(WormholeConfig.INSTANCE.requireCorners.get()){
             if(!validateCorners(world, done, frame, corners, stabilizers, axis))
                 return null;
-        }
-        else
+        }else
             collectCorners(world, done, frame, corners, stabilizers, axis);
 
         if(stabilizers.size() == 0)

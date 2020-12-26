@@ -3,23 +3,33 @@ package com.supermartijn642.wormhole;
 import com.supermartijn642.wormhole.energycell.EnergyCellBlock;
 import com.supermartijn642.wormhole.energycell.EnergyCellTile;
 import com.supermartijn642.wormhole.energycell.EnergyCellType;
+import com.supermartijn642.wormhole.generator.CoalGeneratorBlock;
+import com.supermartijn642.wormhole.generator.CoalGeneratorContainer;
+import com.supermartijn642.wormhole.generator.CoalGeneratorTile;
 import com.supermartijn642.wormhole.packet.UpdateGroupPacket;
 import com.supermartijn642.wormhole.packet.UpdateGroupsPacket;
 import com.supermartijn642.wormhole.portal.PortalGroupBlock;
 import com.supermartijn642.wormhole.portal.PortalGroupTile;
 import com.supermartijn642.wormhole.portal.packets.*;
+import com.supermartijn642.wormhole.targetcell.TargetCellBlock;
+import com.supermartijn642.wormhole.targetcell.TargetCellTile;
+import com.supermartijn642.wormhole.targetcell.TargetCellType;
 import com.supermartijn642.wormhole.targetdevice.TargetDeviceItem;
 import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceAddPacket;
 import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceMovePacket;
 import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceNamePacket;
 import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceRemovePacket;
 import net.minecraft.block.Block;
+import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -42,13 +52,16 @@ public class Wormhole {
     TODO
     - item tooltips
     - dimensional core
-    - energy cell texture should change based on the energy stored
-    - target cells
+    - generators
+    - screen
+    - redstone
 
     - improved textures
      */
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(new ResourceLocation("wormhole", "main"), () -> "1", "1"::equals, "1"::equals);
+
+    public static final IRecipeSerializer<NBTRecipe> NBT_RECIPE_SERIALIZER = new NBTRecipe.Serializer();
 
     @ObjectHolder("wormhole:portal_frame")
     public static Block portal_frame;
@@ -64,6 +77,14 @@ public class Wormhole {
     public static EnergyCellBlock creative_energy_cell;
     @ObjectHolder("wormhole:target_device")
     public static Item target_device;
+    @ObjectHolder("wormhole:advanced_target_device")
+    public static Item advanced_target_device;
+    @ObjectHolder("wormhole:basic_target_cell")
+    public static TargetCellBlock basic_target_cell;
+    @ObjectHolder("wormhole:advanced_target_cell")
+    public static TargetCellBlock advanced_target_cell;
+    @ObjectHolder("wormhole:coal_generator")
+    public static CoalGeneratorBlock coal_generator;
 
     @ObjectHolder("wormhole:portal_frame_tile")
     public static TileEntityType<?> portal_frame_tile;
@@ -77,6 +98,15 @@ public class Wormhole {
     public static TileEntityType<EnergyCellTile> advanced_energy_cell_tile;
     @ObjectHolder("wormhole:creative_energy_cell_tile")
     public static TileEntityType<EnergyCellTile> creative_energy_cell_tile;
+    @ObjectHolder("wormhole:basic_target_cell_tile")
+    public static TileEntityType<TargetCellTile> basic_target_cell_tile;
+    @ObjectHolder("wormhole:advanced_target_cell_tile")
+    public static TileEntityType<TargetCellTile> advanced_target_cell_tile;
+    @ObjectHolder("wormhole:coal_generator_tile")
+    public static TileEntityType<CoalGeneratorTile> coal_generator_tile;
+
+    @ObjectHolder("wormhole:coal_generator_container")
+    public static ContainerType<CoalGeneratorContainer> coal_generator_container;
 
     public Wormhole(){
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, WormholeConfig.CONFIG_SPEC);
@@ -111,6 +141,9 @@ public class Wormhole {
             e.getRegistry().register(new StabilizerBlock());
             for(EnergyCellType type : EnergyCellType.values())
                 e.getRegistry().register(new EnergyCellBlock(type));
+            for(TargetCellType type : TargetCellType.values())
+                e.getRegistry().register(new TargetCellBlock(type));
+            e.getRegistry().register(new CoalGeneratorBlock());
         }
 
         @SubscribeEvent
@@ -120,6 +153,9 @@ public class Wormhole {
             e.getRegistry().register(TileEntityType.Builder.create(StabilizerTile::new, portal_stabilizer).build(null).setRegistryName("stabilizer_tile"));
             for(EnergyCellType type : EnergyCellType.values())
                 e.getRegistry().register(TileEntityType.Builder.create(type::createTile, type.getBlock()).build(null).setRegistryName(type.getRegistryName() + "_tile"));
+            for(TargetCellType type : TargetCellType.values())
+                e.getRegistry().register(TileEntityType.Builder.create(type::createTile, type.getBlock()).build(null).setRegistryName(type.getRegistryName() + "_tile"));
+            e.getRegistry().register(TileEntityType.Builder.create(CoalGeneratorTile::new, coal_generator).build(null).setRegistryName("coal_generator_tile"));
         }
 
         @SubscribeEvent
@@ -130,9 +166,22 @@ public class Wormhole {
             e.getRegistry().register(new BlockItem(basic_energy_cell, new Item.Properties().group(ItemGroup.SEARCH)).setRegistryName(basic_energy_cell.getRegistryName()));
             e.getRegistry().register(new BlockItem(advanced_energy_cell, new Item.Properties().group(ItemGroup.SEARCH)).setRegistryName(advanced_energy_cell.getRegistryName()));
             e.getRegistry().register(new BlockItem(creative_energy_cell, new Item.Properties().group(ItemGroup.SEARCH)).setRegistryName(creative_energy_cell.getRegistryName()));
+            e.getRegistry().register(new BlockItem(basic_target_cell, new Item.Properties().group(ItemGroup.SEARCH)).setRegistryName(basic_target_cell.getRegistryName()));
+            e.getRegistry().register(new BlockItem(advanced_target_cell, new Item.Properties().group(ItemGroup.SEARCH)).setRegistryName(advanced_target_cell.getRegistryName()));
+            e.getRegistry().register(new BlockItem(coal_generator, new Item.Properties().group(ItemGroup.SEARCH)).setRegistryName(coal_generator.getRegistryName()));
 
             e.getRegistry().register(new TargetDeviceItem("target_device", WormholeConfig.INSTANCE.basicDeviceTargetCount::get));
             e.getRegistry().register(new TargetDeviceItem("advanced_target_device", WormholeConfig.INSTANCE.advancedDeviceTargetCount::get));
+        }
+
+        @SubscribeEvent
+        public static void onContainerRegistry(final RegistryEvent.Register<ContainerType<?>> e){
+            e.getRegistry().register(IForgeContainerType.create((windowId, inv, data) -> new CoalGeneratorContainer(windowId, inv.player, data.readBlockPos())).setRegistryName("coal_generator_container"));
+        }
+
+        @SubscribeEvent
+        public static void onRecipeRegistry(final RegistryEvent.Register<IRecipeSerializer<?>> e){
+            e.getRegistry().register(NBT_RECIPE_SERIALIZER.setRegistryName(new ResourceLocation("wormhole", "nbtrecipe")));
         }
     }
 

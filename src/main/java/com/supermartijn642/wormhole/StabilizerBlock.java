@@ -17,6 +17,7 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
@@ -49,18 +50,20 @@ public class StabilizerBlock extends PortalGroupBlock {
 
     @Override
     public void addInformation(ItemStack stack, IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
+        tooltip.add(new TranslationTextComponent("wormhole.portal_stabilizer.info").mergeStyle(TextFormatting.AQUA));
+
         CompoundNBT tag = stack.getOrCreateTag().contains("tileData") ? stack.getOrCreateTag().getCompound("tileData") : null;
 
         int targets = tag == null || tag.isEmpty() || !tag.contains("targetCount") ? 0 : tag.getInt("targetCount");
         int targetCapacity = WormholeConfig.INSTANCE.stabilizerTargetCapacity.get();
 
         if(targetCapacity > 0)
-            tooltip.add(new StringTextComponent(targets + " / " + targetCapacity + " Targets saved").mergeStyle(TextFormatting.AQUA));
+            tooltip.add(new TranslationTextComponent("wormhole.portal_stabilizer.info.targets", targets, targetCapacity).mergeStyle(TextFormatting.YELLOW));
 
         int energy = tag == null || tag.isEmpty() || !tag.contains("energy") ? 0 : tag.getInt("energy");
-        int capacity = WormholeConfig.INSTANCE.stabilizerEnergyCapacity.get();
+        int energyCapacity = WormholeConfig.INSTANCE.stabilizerEnergyCapacity.get();
 
-        if(capacity > 0)
-            tooltip.add(new StringTextComponent(EnergyFormat.formatCapacity(energy, capacity)).mergeStyle(TextFormatting.YELLOW));
+        if(energyCapacity > 0)
+            tooltip.add(new StringTextComponent(EnergyFormat.formatCapacity(energy, energyCapacity)).mergeStyle(TextFormatting.YELLOW));
     }
 }
