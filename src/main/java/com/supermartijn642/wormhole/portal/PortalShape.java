@@ -110,10 +110,10 @@ public class PortalShape {
         }
 
         if(WormholeConfig.INSTANCE.requireCorners.get()){
-            if(!validateCorners(world, done, frame, corners, stabilizers, axis))
+            if(!validateCorners(world, done, frame, corners, stabilizers, energyCells, targetCells, axis))
                 return null;
         }else
-            collectCorners(world, done, frame, corners, stabilizers, axis);
+            collectCorners(world, done, frame, corners, stabilizers, energyCells, targetCells, axis);
 
         if(stabilizers.size() == 0)
             return null;
@@ -121,48 +121,51 @@ public class PortalShape {
         return new PortalShape(axis, done, frame, stabilizers, energyCells, targetCells);
     }
 
-    private static void collectCorners(IBlockReader world, List<BlockPos> area, List<BlockPos> frame, List<BlockPos> corners, List<BlockPos> stabilizers, Direction.Axis axis){
+    private static void collectCorners(IBlockReader world, List<BlockPos> area, List<BlockPos> frame, List<BlockPos> corners, List<BlockPos> stabilizers, List<BlockPos> energyCells, List<BlockPos> targetCells, Direction.Axis axis){
         BlockPos dir1pos = axis == Direction.Axis.Y ? BlockPos.ZERO.east() : BlockPos.ZERO.up();
         BlockPos dir1neg = axis == Direction.Axis.Y ? BlockPos.ZERO.west() : BlockPos.ZERO.down();
         BlockPos dir2pos = axis == Direction.Axis.Z ? BlockPos.ZERO.east() : BlockPos.ZERO.north();
         BlockPos dir2neg = axis == Direction.Axis.Z ? BlockPos.ZERO.west() : BlockPos.ZERO.south();
         for(BlockPos corner : corners){
-            collectCorner(world, area, frame, stabilizers, corner, dir1pos, dir2pos);
-            collectCorner(world, area, frame, stabilizers, corner, dir1pos, dir2neg);
-            collectCorner(world, area, frame, stabilizers, corner, dir1neg, dir2pos);
-            collectCorner(world, area, frame, stabilizers, corner, dir1neg, dir2neg);
+            collectCorner(world, area, frame, stabilizers, energyCells, targetCells, corner, dir1pos, dir2pos);
+            collectCorner(world, area, frame, stabilizers, energyCells, targetCells, corner, dir1pos, dir2neg);
+            collectCorner(world, area, frame, stabilizers, energyCells, targetCells, corner, dir1neg, dir2pos);
+            collectCorner(world, area, frame, stabilizers, energyCells, targetCells, corner, dir1neg, dir2neg);
         }
     }
 
-    private static boolean validateCorners(IBlockReader world, List<BlockPos> area, List<BlockPos> frame, List<BlockPos> corners, List<BlockPos> stabilizers, Direction.Axis axis){
+    private static boolean validateCorners(IBlockReader world, List<BlockPos> area, List<BlockPos> frame, List<BlockPos> corners, List<BlockPos> stabilizers, List<BlockPos> energyCells, List<BlockPos> targetCells, Direction.Axis axis){
         BlockPos dir1pos = axis == Direction.Axis.Y ? BlockPos.ZERO.east() : BlockPos.ZERO.up();
         BlockPos dir1neg = axis == Direction.Axis.Y ? BlockPos.ZERO.west() : BlockPos.ZERO.down();
         BlockPos dir2pos = axis == Direction.Axis.Z ? BlockPos.ZERO.east() : BlockPos.ZERO.north();
         BlockPos dir2neg = axis == Direction.Axis.Z ? BlockPos.ZERO.west() : BlockPos.ZERO.south();
         for(BlockPos corner : corners){
-            if(!collectCorner(world, area, frame, stabilizers, corner, dir1pos, dir2pos))
+            if(!collectCorner(world, area, frame, stabilizers, energyCells, targetCells, corner, dir1pos, dir2pos))
                 return false;
-            if(!collectCorner(world, area, frame, stabilizers, corner, dir1pos, dir2neg))
+            if(!collectCorner(world, area, frame, stabilizers, energyCells, targetCells, corner, dir1pos, dir2neg))
                 return false;
-            if(!collectCorner(world, area, frame, stabilizers, corner, dir1neg, dir2pos))
+            if(!collectCorner(world, area, frame, stabilizers, energyCells, targetCells, corner, dir1neg, dir2pos))
                 return false;
-            if(!collectCorner(world, area, frame, stabilizers, corner, dir1neg, dir2neg))
+            if(!collectCorner(world, area, frame, stabilizers, energyCells, targetCells, corner, dir1neg, dir2neg))
                 return false;
         }
         return true;
     }
 
-    private static boolean collectCorner(IBlockReader world, List<BlockPos> area, List<BlockPos> frame, List<BlockPos> stabilizers, BlockPos corner, BlockPos dir1, BlockPos dir2){
+    private static boolean collectCorner(IBlockReader world, List<BlockPos> area, List<BlockPos> frame, List<BlockPos> stabilizers, List<BlockPos> energyCells, List<BlockPos> targetCells, BlockPos corner, BlockPos dir1, BlockPos dir2){
         if(frame.contains(corner.add(dir1)) && frame.contains(corner.add(dir2))){
             BlockPos pos = corner.add(dir1).add(dir2);
             TileEntity tile = world.getTileEntity(pos);
             if(tile instanceof IPortalGroupTile ? ((IPortalGroupTile)tile).hasGroup() : !area.contains(pos))
                 return false;
-            else{
-                if(tile instanceof StabilizerTile && !stabilizers.contains(pos))
+            else if(!frame.contains(pos)){
+                frame.add(pos);
+                if(tile instanceof StabilizerTile)
                     stabilizers.add(pos);
-                if(!frame.contains(pos))
-                    frame.add(pos);
+                if(tile instanceof IEnergyCellTile)
+                    energyCells.add(pos);
+                if(tile instanceof ITargetCellTile)
+                    targetCells.add(pos);
             }
         }
         return true;
