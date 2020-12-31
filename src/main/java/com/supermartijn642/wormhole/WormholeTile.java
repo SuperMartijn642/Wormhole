@@ -36,7 +36,7 @@ public abstract class WormholeTile extends TileEntity {
     public CompoundNBT write(CompoundNBT compound){
         super.write(compound);
         CompoundNBT data = this.writeData();
-        if(data != null)
+        if(data != null && !data.isEmpty())
             compound.put("data", this.writeData());
         return compound;
     }
