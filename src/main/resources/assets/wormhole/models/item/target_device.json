@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "wormhole:target_definition_device"
+    "layer0": "wormhole:target_device"
   }
 }
