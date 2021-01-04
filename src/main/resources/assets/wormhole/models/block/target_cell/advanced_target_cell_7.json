@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "wormhole:target_cells/advanced_target_cell_7"
+  }
+}
