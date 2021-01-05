@@ -1,0 +1,31 @@
+package com.supermartijn642.wormhole.portal.screen;
+
+import com.supermartijn642.wormhole.portal.PortalTarget;
+import com.supermartijn642.wormhole.screen.IHoverTextWidget;
+import com.supermartijn642.wormhole.screen.WormholeLabel;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
+
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+/**
+ * Created 11/5/2020 by SuperMartijn642
+ */
+public class PortalTargetLabel extends WormholeLabel implements IHoverTextWidget {
+
+    private final String hoverText;
+
+    public PortalTargetLabel(PortalGroupScreen screen, Supplier<Integer> targetIndex, int x, int y, int width, int height, String hoverText, Function<PortalTarget,String> text, boolean translate){
+        super(x, y, width, height, "wormhole.gui.label", () -> {
+            PortalTarget target = screen.getPortalGroup().getTarget(targetIndex.get());
+            return target == null ? "" : text.apply(target);
+        }, translate);
+        this.hoverText = hoverText;
+    }
+
+    @Override
+    public ITextComponent getHoverText(){
+        return new TranslationTextComponent(this.hoverText);
+    }
+}

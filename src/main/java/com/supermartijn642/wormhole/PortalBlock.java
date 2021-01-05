@@ -1,12 +1,15 @@
 package com.supermartijn642.wormhole;
 
+import com.supermartijn642.wormhole.portal.PortalGroupBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeColor;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
@@ -15,10 +18,12 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 
 /**
@@ -63,6 +68,18 @@ public class PortalBlock extends PortalGroupBlock {
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context){
         Direction.Axis axis = state.get(AXIS_PROPERTY);
         return axis == Direction.Axis.X ? SHAPE_X : axis == Direction.Axis.Y ? SHAPE_Y : axis == Direction.Axis.Z ? SHAPE_Z : VoxelShapes.empty();
+    }
+
+    @Override
+    public void onNeighborChange(BlockState state, IWorldReader world, BlockPos pos, BlockPos neighbor){
+        TileEntity tile = world.getTileEntity(pos);
+        if(tile instanceof PortalTile && !((PortalTile)tile).hasGroup())
+            tile.getWorld().setBlockState(pos, Blocks.AIR.getDefaultState());
+    }
+
+    @Override
+    public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player){
+        return ItemStack.EMPTY;
     }
 
     @Override
