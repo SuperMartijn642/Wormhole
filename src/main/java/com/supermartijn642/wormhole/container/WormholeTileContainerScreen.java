@@ -140,7 +140,8 @@ public abstract class WormholeTileContainerScreen<T extends TileEntity, S extend
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y){}
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y){
+    }
 
     protected void renderForeground(MatrixStack matrixStack, T tile, int mouseX, int mouseY){
     }

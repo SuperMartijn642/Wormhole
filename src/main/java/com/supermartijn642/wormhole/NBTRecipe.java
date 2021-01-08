@@ -1,8 +1,6 @@
 package com.supermartijn642.wormhole;
 
 import com.google.gson.JsonObject;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -18,7 +16,6 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created 2/8/2020 by SuperMartijn642
@@ -26,6 +23,7 @@ import java.util.Map;
 public class NBTRecipe extends ShapedRecipe {
 
     public static final List<Item> VALID_ITEMS = new LinkedList<>();
+
     static{
         VALID_ITEMS.add(Wormhole.target_device);
         VALID_ITEMS.add(Wormhole.advanced_target_device);
@@ -45,7 +43,8 @@ public class NBTRecipe extends ShapedRecipe {
     @Override
     public ItemStack getCraftingResult(CraftingInventory inv){
         CompoundNBT compound = null;
-        loop: for(int i = 0; i < inv.getHeight(); i++){
+        loop:
+        for(int i = 0; i < inv.getHeight(); i++){
             for(int j = 0; j < inv.getWidth(); j++){
                 ItemStack stack = inv.getStackInSlot(i * inv.getWidth() + j);
                 if(stack.hasTag() && VALID_ITEMS.contains(stack.getItem())){

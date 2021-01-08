@@ -9,12 +9,10 @@ import com.supermartijn642.wormhole.PortalBlock;
 import com.supermartijn642.wormhole.energycell.EnergyCellBlock;
 import com.supermartijn642.wormhole.energycell.EnergyCellTile;
 import com.supermartijn642.wormhole.energycell.EnergyCellTileRenderer;
-import com.supermartijn642.wormhole.energycell.EnergyCellType;
 import com.supermartijn642.wormhole.portal.PortalShape;
 import com.supermartijn642.wormhole.targetcell.TargetCellBlock;
 import com.supermartijn642.wormhole.targetcell.TargetCellTile;
 import com.supermartijn642.wormhole.targetcell.TargetCellTileRenderer;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
@@ -35,7 +33,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 
-import java.util.*;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Created 11/24/2020 by SuperMartijn642
@@ -96,8 +95,8 @@ public class PortalRendererHelper {
 
         IBakedModel model =
             tile instanceof TargetCellTile ? TargetCellTileRenderer.getModelForTile((TargetCellTile)tile) :
-            tile instanceof EnergyCellTile ? EnergyCellTileRenderer.getModelForTile((EnergyCellTile)tile) :
-            Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(state);
+                tile instanceof EnergyCellTile ? EnergyCellTileRenderer.getModelForTile((EnergyCellTile)tile) :
+                    Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(state);
         IModelData modelData = tile == null ? EmptyModelData.INSTANCE : tile.getModelData();
         modelData = model.getModelData(world, pos, state, modelData);
 
