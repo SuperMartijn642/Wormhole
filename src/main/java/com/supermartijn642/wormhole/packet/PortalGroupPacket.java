@@ -1,17 +1,13 @@
 package com.supermartijn642.wormhole.packet;
 
 import com.supermartijn642.wormhole.PortalGroupCapability;
-import com.supermartijn642.wormhole.portal.IPortalGroupTile;
 import com.supermartijn642.wormhole.portal.PortalGroup;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.network.NetworkEvent;
 
-import java.util.Optional;
 import java.util.function.Supplier;
 
 /**

@@ -6,7 +6,6 @@ import com.supermartijn642.wormhole.energycell.EnergyCellTileRenderer;
 import com.supermartijn642.wormhole.generator.CoalGeneratorContainer;
 import com.supermartijn642.wormhole.generator.CoalGeneratorScreen;
 import com.supermartijn642.wormhole.generator.GeneratorTile;
-import com.supermartijn642.wormhole.generator.GeneratorTileRenderer;
 import com.supermartijn642.wormhole.portal.screen.PortalOverviewScreen;
 import com.supermartijn642.wormhole.portal.screen.PortalTargetColorScreen;
 import com.supermartijn642.wormhole.portal.screen.PortalTargetScreen;
@@ -16,14 +15,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
@@ -35,9 +32,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-
-import java.awt.*;
 
 /**
  * Created 7/23/2020 by SuperMartijn642
@@ -125,7 +119,7 @@ public class ClientProxy {
             }
         }
 
-        private static void drawShape(MatrixStack matrixStackIn, IVertexBuilder bufferIn, VoxelShape shapeIn, double xIn, double yIn, double zIn, float red, float green, float blue, float alpha) {
+        private static void drawShape(MatrixStack matrixStackIn, IVertexBuilder bufferIn, VoxelShape shapeIn, double xIn, double yIn, double zIn, float red, float green, float blue, float alpha){
             Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
             shapeIn.forEachEdge((p_230013_12_, p_230013_14_, p_230013_16_, p_230013_18_, p_230013_20_, p_230013_22_) -> {
                 bufferIn.pos(matrix4f, (float)(p_230013_12_ + xIn), (float)(p_230013_14_ + yIn), (float)(p_230013_16_ + zIn)).color(red, green, blue, alpha).endVertex();

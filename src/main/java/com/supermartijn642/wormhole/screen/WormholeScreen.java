@@ -55,13 +55,15 @@ public abstract class WormholeScreen extends Screen {
 
     protected <T extends Widget> T addWidget(T widget){
         this.widgets.add(widget);
-        if(widget instanceof ITickableWidget) this.tickableWidgets.add((ITickableWidget)widget);
+        if(widget instanceof ITickableWidget)
+            this.tickableWidgets.add((ITickableWidget)widget);
         return widget instanceof AbstractButton ? this.addButton(widget) : this.addListener(widget);
     }
 
     protected <T extends Widget> T removeWidget(T widget){
         this.widgets.remove(widget);
-        if(widget instanceof ITickableWidget) this.tickableWidgets.remove(widget);
+        if(widget instanceof ITickableWidget)
+            this.tickableWidgets.remove(widget);
         if(widget instanceof AbstractButton) this.buttons.remove(widget);
         this.children.remove(widget);
         return widget;

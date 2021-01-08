@@ -54,8 +54,8 @@ public class WormholeConfig {
         this.requireDimensionalCore = builder.worldRestart().comment("Does a portal require a dimensional core for interdimensional travel? (WIP)").define("requireDimensionalCore", true); // TODO remove WIP
         builder.pop();
         builder.push("Target Devices");
-        this.basicDeviceTargetCount = builder.worldRestart().comment("The maximum number of targets that can be stored in the basic target definition device.").defineInRange("basicDeviceTargetCount",1,1,10);
-        this.advancedDeviceTargetCount = builder.worldRestart().comment("The maximum number of targets that can be stored in the advanced target definition device.").defineInRange("advancedDeviceTargetCount",5,1,10);
+        this.basicDeviceTargetCount = builder.worldRestart().comment("The maximum number of targets that can be stored in the basic target definition device.").defineInRange("basicDeviceTargetCount", 1, 1, 10);
+        this.advancedDeviceTargetCount = builder.worldRestart().comment("The maximum number of targets that can be stored in the advanced target definition device.").defineInRange("advancedDeviceTargetCount", 5, 1, 10);
         builder.pop();
         builder.push("Power Consumption");
         builder.comment("Power consumption will be calculated as follows:",
@@ -67,7 +67,7 @@ public class WormholeConfig {
         this.requirePower = builder.worldRestart().define("requirePower", true);
         this.idlePowerDrain = builder.worldRestart().comment("How much power will a portal drain per tick when idle?").defineInRange("idlePowerDrain", 10, 0, 1000000);
         this.sizePowerDrain = builder.worldRestart().comment("How much idle power does the portal drain per block of its size?").defineInRange("sizePowerDrain", 0.1, 0, 1000000d);
-        this.travelPowerDrain = builder.worldRestart().comment("How much power will be drained when an entity is teleported?").defineInRange("travelPowerDrain", 100,0,1000000);
+        this.travelPowerDrain = builder.worldRestart().comment("How much power will be drained when an entity is teleported?").defineInRange("travelPowerDrain", 100, 0, 1000000);
         this.distancePowerDrain = builder.worldRestart().comment("How much energy is drained when an entity is teleported multiplied by the distance?").defineInRange("distancePowerDrain", 0.5, 0, 1000000d);
         this.dimensionPowerDrain = builder.worldRestart().comment("How much energy is drained when an entity is teleported to another dimension?").defineInRange("dimensionPowerDrain", 400, 0, 1000000);
         builder.pop();

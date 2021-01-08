@@ -1,10 +1,8 @@
 package com.supermartijn642.wormhole.generator;
 
 import com.supermartijn642.wormhole.EnergyFormat;
-import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.WormholeBlock;
 import com.supermartijn642.wormhole.WormholeConfig;
-import com.supermartijn642.wormhole.energycell.EnergyCellType;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalBlock;

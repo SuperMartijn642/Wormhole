@@ -1,7 +1,6 @@
 package com.supermartijn642.wormhole.screen;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.Widget;
@@ -26,7 +25,7 @@ public class WormholeLabel extends Widget {
     }
 
     public WormholeLabel(int x, int y, int width, int height, String title, String text, boolean translate){
-        this(x,y,width,height,title,() -> text,translate);
+        this(x, y, width, height, title, () -> text, translate);
     }
 
     @Override

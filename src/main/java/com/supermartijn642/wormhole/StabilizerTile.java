@@ -2,7 +2,6 @@ package com.supermartijn642.wormhole;
 
 import com.supermartijn642.wormhole.portal.*;
 import com.supermartijn642.wormhole.targetdevice.TargetDeviceItem;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -13,7 +12,6 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
 
 import java.util.ArrayList;
 import java.util.List;

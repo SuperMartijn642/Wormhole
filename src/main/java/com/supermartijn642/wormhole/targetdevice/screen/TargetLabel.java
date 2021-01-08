@@ -4,7 +4,6 @@ import com.supermartijn642.wormhole.portal.PortalTarget;
 import com.supermartijn642.wormhole.screen.IHoverTextWidget;
 import com.supermartijn642.wormhole.screen.WormholeLabel;
 import com.supermartijn642.wormhole.targetdevice.ITargetProvider;
-import com.supermartijn642.wormhole.targetdevice.TargetDeviceScreen;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 

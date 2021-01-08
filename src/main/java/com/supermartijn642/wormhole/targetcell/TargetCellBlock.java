@@ -1,6 +1,5 @@
 package com.supermartijn642.wormhole.targetcell;
 
-import com.supermartijn642.wormhole.WormholeConfig;
 import com.supermartijn642.wormhole.portal.PortalGroupBlock;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
