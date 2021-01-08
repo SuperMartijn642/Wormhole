@@ -1,5 +1,8 @@
 ![Wormhole Logo](https://imgur.com/IahF6MC.png)
 **Wormhole** allows you to construct **portals** with the use of **wormhole stabilizer technology!** Constructed portals can **teleport** you to **any defined location!** Portals can be of **any shape and size!** Portals can also be **colored using dyes!**
+
+### CurseForge
+For more info and downloads, check out the project on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/wormhole-portals)
   
 ### Content:
 
