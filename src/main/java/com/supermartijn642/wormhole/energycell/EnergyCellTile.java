@@ -69,7 +69,7 @@ public class EnergyCellTile extends PortalGroupTile implements IEnergyCellTile {
 
         public void pushEnergy(IEnergyStorage energyStorage){
             if(energyStorage.canReceive())
-                energyStorage.receiveEnergy(1, false);
+                energyStorage.receiveEnergy(this.getMaxEnergyStored(true), false);
         }
     }
 

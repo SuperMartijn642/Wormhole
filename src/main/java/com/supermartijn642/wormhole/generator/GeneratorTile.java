@@ -53,6 +53,9 @@ public class GeneratorTile extends WormholeTile implements ITickableTileEntity, 
                 }else if(tile != null && tile.getCapability(CapabilityEnergy.ENERGY).isPresent()){
                     this.portalBlocks.remove(pos);
                     this.energyBlocks.add(pos);
+                }else{
+                    this.portalBlocks.remove(pos);
+                    this.energyBlocks.remove(pos);
                 }
             }
 

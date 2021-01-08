@@ -5,9 +5,6 @@ import com.supermartijn642.wormhole.WormholeTile;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraftforge.common.util.LazyOptional;
-
-import java.util.Optional;
 
 /**
  * Created 7/24/2020 by SuperMartijn642
