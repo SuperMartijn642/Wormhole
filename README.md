@@ -3,36 +3,46 @@
 
 ### CurseForge
 For more info and downloads, check out the project on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/wormhole-portals)
-  
+
 ### Content:
 
 #### Portal Stabilizer
 - The Portal Stabilizer creates a wormhole to your target!
-- Right-click a with a Target Definition Device to set the target
+- Right-click a with a Target Definition Device to open a portal's gui
 - Every portal needs at least one Portal Stabilizer
-<details>
-  <summary>Recipe</summary>
-  
-  <img alt="Recipe for the Portal Stabilizer" src="https://imgur.com/290FaTz.png" width="308" />
-</details>
+- Can store 1 target
 
 #### Portal Frame
-- The Portal Frame is used create the frame of portals
-<details>
-  <summary>Recipe</summary>
-  
-  <img alt="Recipe for the Portal Frame" src="https://imgur.com/aVdEWN7.png" width="308" />
-</details>
+- The Portal Frame is used to create the frame of a portal
+
+#### Basic Energy Cell
+- Stores energy for use by the portal
+- Can be added as part of the portal frame
+
+#### Advanced Energy Cell
+- Stores energy for use by the portal
+- Can be added as part of the portal frame
+
+#### Basic Target Cell
+- Stores targets which can be selected in the portal's gui
+- Can be added as part of the portal frame
+
+#### Advanced Target Cell
+- Stores targets which can be selected in the portal's gui
+- Can be added as part of the portal frame
+
+#### Coal Generator
+- The Coal Generator generates energy by burning items
+- Energy is given to blocks in a 5x5x5 area
 
 #### Target Definition Device
 - The Target Definition Device can define a target!
 - Right-click the Portal Stabilizer to set its target
-<details>
-  <summary>Recipe</summary>
-  
-  <img alt="Recipe for the Target Definition Device" src="https://imgur.com/AeFYKVs.png" width="308" />
-</details>
 
+#### Advanced Target Definition Device
+- The Advanced Target Definition Device can define targets!
+- Right-click the Portal Stabilizer to set its target
+- Can hold up to 5 targets
 
 ### Step-by-step Guide:
 
@@ -54,7 +64,6 @@ For more info and downloads, check out the project on [CurseForge](https://www.c
 1. Set a target for the portal
 2. Grab the dye corresponding to the desired color
 3. Right-Click a portal with the dye
-
 
 ### FAQ
 Is there a maximum portal size?  
