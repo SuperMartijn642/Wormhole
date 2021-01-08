@@ -17,7 +17,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
  */
 public class CoalGeneratorTile extends GeneratorTile implements IItemHandlerModifiable {
 
-    private int burnTime = 0, totalBurnTime = 0; // TODO save totalBurnTime
+    private int burnTime = 0, totalBurnTime = 0;
     private ItemStack stack = ItemStack.EMPTY;
 
     public CoalGeneratorTile(){
@@ -72,6 +72,7 @@ public class CoalGeneratorTile extends GeneratorTile implements IItemHandlerModi
     protected CompoundNBT writeData(){
         CompoundNBT data = super.writeData();
         data.putInt("burnTime", this.burnTime);
+        data.putInt("totalBurnTime", this.totalBurnTime);
         data.put("stack", this.stack.write(new CompoundNBT()));
         return data;
     }
@@ -80,6 +81,7 @@ public class CoalGeneratorTile extends GeneratorTile implements IItemHandlerModi
     protected void readData(CompoundNBT tag){
         super.readData(tag);
         this.burnTime = tag.contains("burnTime") ? tag.getInt("burnTime") : 0;
+        this.totalBurnTime = tag.contains("totalBurnTime") ? tag.getInt("totalBurnTime") : 0;
         this.stack = ItemStack.read(tag.getCompound("stack"));
     }
 
