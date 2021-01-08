@@ -2,11 +2,8 @@ package com.supermartijn642.wormhole.packet;
 
 import com.supermartijn642.wormhole.ClientProxy;
 import com.supermartijn642.wormhole.PortalGroupCapability;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;

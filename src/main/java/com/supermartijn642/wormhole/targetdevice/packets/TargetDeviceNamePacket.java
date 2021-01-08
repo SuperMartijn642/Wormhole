@@ -1,7 +1,7 @@
 package com.supermartijn642.wormhole.targetdevice.packets;
 
-import com.supermartijn642.wormhole.portal.PortalTarget;
 import com.supermartijn642.wormhole.packet.TargetDevicePacket;
+import com.supermartijn642.wormhole.portal.PortalTarget;
 import com.supermartijn642.wormhole.targetdevice.TargetDeviceItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;

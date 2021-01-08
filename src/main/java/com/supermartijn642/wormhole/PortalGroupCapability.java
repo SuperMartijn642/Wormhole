@@ -191,5 +191,5 @@ public class PortalGroupCapability {
             group.shape.area.forEach(pos -> this.groupsByPosition.put(pos, group));
         }
     }
-    
+
 }

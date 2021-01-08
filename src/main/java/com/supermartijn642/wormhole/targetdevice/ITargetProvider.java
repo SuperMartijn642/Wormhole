@@ -10,5 +10,5 @@ import java.util.function.Function;
  */
 public interface ITargetProvider {
 
-    <T> T getFromTargets(Function<List<PortalTarget>, T> function, T defaultValue);
+    <T> T getFromTargets(Function<List<PortalTarget>,T> function, T defaultValue);
 }
