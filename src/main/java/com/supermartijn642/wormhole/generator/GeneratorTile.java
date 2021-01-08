@@ -12,7 +12,10 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Created 12/18/2020 by SuperMartijn642
@@ -53,6 +56,9 @@ public class GeneratorTile extends WormholeTile implements ITickableTileEntity, 
                 }else if(tile != null && tile.getCapability(CapabilityEnergy.ENERGY).isPresent()){
                     this.portalBlocks.remove(pos);
                     this.energyBlocks.add(pos);
+                }else{
+                    this.portalBlocks.remove(pos);
+                    this.energyBlocks.remove(pos);
                 }
             }
 

@@ -2,18 +2,16 @@ package com.supermartijn642.wormhole;
 
 import com.supermartijn642.wormhole.portal.PortalTarget;
 import net.minecraft.block.PortalInfo;
-import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.concurrent.TickDelayedTask;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.server.TicketType;
 import net.minecraftforge.common.util.ITeleporter;
 
-import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -32,7 +30,7 @@ public class TeleportHelper {
     }
 
     public static void teleport(Entity entity, PortalTarget target){
-        if(!(entity.world instanceof ServerWorld) || !target.getWorld(entity.getServer()).isPresent())
+        if(entity.world.isRemote || !target.getWorld(entity.getServer()).isPresent())
             return;
 
         CompoundNBT tag = entity.getPersistentData();
@@ -45,12 +43,12 @@ public class TeleportHelper {
 
 
         if(targetWorld.get() == entity.world){
+            targetWorld.get().getChunkProvider().registerTicket(TicketType.POST_TELEPORT, new ChunkPos(target.getPos()), 1, entity.getEntityId());
             if(entity instanceof ServerPlayerEntity)
                 ((ServerPlayerEntity)entity).connection.setPlayerLocation(target.x + .5, target.y, target.z + .5, target.yaw, 0);
-            else{
+            else
                 entity.setLocationAndAngles(target.x + .5, target.y, target.z + .5, target.yaw, 0);
-                entity.setRotationYawHead(target.yaw);
-            }
+            entity.setRotationYawHead(target.yaw);
             entity.setMotion(Vector3d.ZERO);
             entity.fallDistance = 0;
             entity.setOnGround(true);
