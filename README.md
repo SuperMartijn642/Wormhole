@@ -65,4 +65,8 @@ No, their are no restrictions on the shape of the portal
 Can portals be placed horizontally?  
 Yes, portals can also be placed horizontally  
 Can I use your mod in my modpack?  
-Yes, feel free to use my mod in your modpack  
+Yes, feel free to use my mod in your modpack
+
+### Discord
+For future content, upcoming mods, and discussion, feel free to join the SuperMartijn642 discord server!  
+[<img width='200' src='https://snrclan.com/wp-content/uploads/2020/02/join-discord-png-13.png'>](https://discord.gg/QEbGyUYB2e)
