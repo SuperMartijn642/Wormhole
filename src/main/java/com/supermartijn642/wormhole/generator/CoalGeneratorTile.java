@@ -74,6 +74,7 @@ public class CoalGeneratorTile extends GeneratorTile implements IItemHandlerModi
     protected NBTTagCompound writeData(){
         NBTTagCompound data = super.writeData();
         data.setInteger("burnTime", this.burnTime);
+        data.setInteger("totalBurnTime", this.totalBurnTime);
         data.setTag("stack", this.stack.writeToNBT(new NBTTagCompound()));
         return data;
     }
@@ -82,6 +83,7 @@ public class CoalGeneratorTile extends GeneratorTile implements IItemHandlerModi
     protected void readData(NBTTagCompound tag){
         super.readData(tag);
         this.burnTime = tag.hasKey("burnTime") ? tag.getInteger("burnTime") : 0;
+        this.totalBurnTime = tag.hasKey("totalBurnTime") ? tag.getInteger("totalBurnTime") : 0;
         this.stack = new ItemStack(tag.getCompoundTag("stack"));
     }
 
