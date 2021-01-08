@@ -15,7 +15,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
  */
 public class CoalGeneratorTile extends GeneratorTile implements IItemHandlerModifiable {
 
-    private int burnTime = 0, totalBurnTime = 0; // TODO save totalBurnTime
+    private int burnTime = 0, totalBurnTime = 0;
     private ItemStack stack = ItemStack.EMPTY;
 
     public CoalGeneratorTile(){
