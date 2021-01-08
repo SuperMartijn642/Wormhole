@@ -1,8 +1,7 @@
 ![Wormhole Logo](https://imgur.com/IahF6MC.png)
 **Wormhole** allows you to construct **portals** with the use of **wormhole stabilizer technology!** Constructed portals can **teleport** you to **any defined location!** Portals can be of **any shape and size!** Portals can also be **colored using dyes!**
- 
-
-#### Content:
+  
+### Content:
 
 #### Portal Stabilizer
 - The Portal Stabilizer creates a wormhole to your target!
@@ -32,15 +31,13 @@
 </details>
 
 
-#### Step-by-step Guide:
+### Step-by-step Guide:
 
 #### Constructing a portal
 1. Craft Portal Frames and at least one Portal Stabilizer
 2. Place the Portal Frames in the desired shape
 3. Make sure all the corners are also filled in
 4. Replace one of the Portal Frames with a Portal Stabilizer
-
-<img alt="Construction of a portal" src="https://imgur.com/lZbZrfX.gif" />
 
 #### Setting a target
 1. Right-Click with the Target Definition Device at the desired location
@@ -56,20 +53,16 @@
 3. Right-Click a portal with the dye
 
 
-#### FAQ
-Is there a maximum portal size?
-Yes, the inner area of the portal can be 400 blocks at most
-Is there a distance limit?
-No, their is no limit on the distance between a portal and its target
-Does it work interdimensionally?
-Yes, it does work interdimensionally
-Are their any restrictions on the portal's shape?
-No, their are no restrictions on the shape of the portal
-Can portals be placed horizontally?
-Yes, portals can also be placed horizontally
-Can I use your mod in my modpack?
-Yes, feel free to use my mod in your modpack
-
-
-#### Legal Stuff
-Wormhole is the property of SuperMartijn642 and is protected under copyright law and may not be altered or reuploaded without direct permission from SuperMartijn642.
+### FAQ
+Is there a maximum portal size?  
+Yes, the inner area of the portal can be 400 blocks at most  
+Is there a distance limit?  
+No, their is no limit on the distance between a portal and its target  
+Does it work interdimensionally?  
+Yes, it does work interdimensionally  
+Are their any restrictions on the portal's shape?  
+No, their are no restrictions on the shape of the portal  
+Can portals be placed horizontally?  
+Yes, portals can also be placed horizontally  
+Can I use your mod in my modpack?  
+Yes, feel free to use my mod in your modpack  
