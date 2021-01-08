@@ -257,7 +257,7 @@ public class PortalGroup {
             this.drainEnergy(cost);
         }
 
-        TeleportHelper.teleport(entity, target);
+        TeleportHelper.queTeleport(entity, target);
     }
 
     public int getTeleportEnergyCost(){
