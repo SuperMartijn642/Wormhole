@@ -27,7 +27,7 @@ public class TeleportHelper {
     }
 
     public static void teleport(Entity entity, PortalTarget target){
-        if(!(entity.world instanceof ServerWorld) || !target.getWorld(entity.getServer()).isPresent())
+        if(entity.world.isRemote || !target.getWorld(entity.getServer()).isPresent())
             return;
 
         CompoundNBT tag = entity.getPersistentData();
@@ -43,10 +43,9 @@ public class TeleportHelper {
         if(targetWorld == entity.world){
             if(entity instanceof ServerPlayerEntity)
                 ((ServerPlayerEntity)entity).connection.setPlayerLocation(target.x + .5, target.y, target.z + .5, target.yaw, 0);
-            else{
+            else
                 entity.setLocationAndAngles(target.x + .5, target.y, target.z + .5, target.yaw, 0);
-                entity.setRotationYawHead(target.yaw);
-            }
+            entity.setRotationYawHead(target.yaw);
             entity.setMotion(Vector3d.ZERO);
             entity.fallDistance = 0;
             entity.setOnGround(true);

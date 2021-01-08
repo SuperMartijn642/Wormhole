@@ -1,7 +1,6 @@
 package com.supermartijn642.wormhole.portal;
 
 import com.supermartijn642.wormhole.PortalGroupCapability;
-import com.supermartijn642.wormhole.PortalTile;
 import com.supermartijn642.wormhole.TeleportHelper;
 import com.supermartijn642.wormhole.WormholeConfig;
 import net.minecraft.entity.Entity;
@@ -10,9 +9,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.energy.IEnergyStorage;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Created 7/24/2020 by SuperMartijn642
@@ -261,7 +257,7 @@ public class PortalGroup {
             this.drainEnergy(cost);
         }
 
-        TeleportHelper.teleport(entity, target);
+        TeleportHelper.queTeleport(entity, target);
     }
 
     public int getTeleportEnergyCost(){
