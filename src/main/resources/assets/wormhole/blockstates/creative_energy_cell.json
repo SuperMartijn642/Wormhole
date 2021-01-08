@@ -1,0 +1,21 @@
+{
+  "variants": {
+    "model=0": { "model": "wormhole:creative_energy_cell" },
+    "model=1": { "model": "minecraft:cobblestone" },
+    "model=2": { "model": "minecraft:cobblestone" },
+    "model=3": { "model": "minecraft:cobblestone" },
+    "model=4": { "model": "minecraft:cobblestone" },
+    "model=5": { "model": "minecraft:cobblestone" },
+    "model=6": { "model": "minecraft:cobblestone" },
+    "model=7": { "model": "minecraft:cobblestone" },
+    "model=8": { "model": "minecraft:cobblestone" },
+    "model=9": { "model": "minecraft:cobblestone" },
+    "model=10": { "model": "minecraft:cobblestone" },
+    "model=11": { "model": "minecraft:cobblestone" },
+    "model=12": { "model": "minecraft:cobblestone" },
+    "model=13": { "model": "minecraft:cobblestone" },
+    "model=14": { "model": "minecraft:cobblestone" },
+    "model=15": { "model": "minecraft:cobblestone" },
+    "model=16": { "model": "minecraft:cobblestone" }
+  }
+}

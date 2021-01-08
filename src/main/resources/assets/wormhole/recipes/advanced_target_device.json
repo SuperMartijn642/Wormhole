@@ -1,0 +1,28 @@
+{
+  "type": "wormhole:nbtrecipe",
+  "pattern": [
+    "  L",
+    "ITG",
+    "III"
+  ],
+  "key": {
+    "L": {
+      "type": "forge:ore_dict",
+      "ore": "dustGlowstone"
+    },
+    "I": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    },
+    "T": {
+      "item": "wormhole:target_device"
+    },
+    "G": {
+      "type": "forge:ore_dict",
+      "ore": "ingotGold"
+    }
+  },
+  "result": {
+    "item": "wormhole:advanced_target_device"
+  }
+}

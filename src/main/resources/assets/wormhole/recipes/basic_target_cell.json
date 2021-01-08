@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ILI",
+    "LCL",
+    "ILI"
+  ],
+  "key": {
+    "I": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    },
+    "C": {
+      "item": "minecraft:compass"
+    },
+    "L": {
+      "type": "forge:ore_dict",
+      "ore": "gemLapis"
+    }
+  },
+  "result": {
+    "item": "wormhole:basic_target_cell"
+  }
+}

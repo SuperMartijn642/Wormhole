@@ -1,0 +1,21 @@
+{
+  "variants": {
+    "model=0": { "model": "wormhole:advanced_energy_cell" },
+    "model=1": { "model": "wormhole:energy_cell/basic/basic_energy_cell_0" },
+    "model=2": { "model": "wormhole:energy_cell/basic/basic_energy_cell_1" },
+    "model=3": { "model": "wormhole:energy_cell/basic/basic_energy_cell_2" },
+    "model=4": { "model": "wormhole:energy_cell/basic/basic_energy_cell_3" },
+    "model=5": { "model": "wormhole:energy_cell/basic/basic_energy_cell_4" },
+    "model=6": { "model": "wormhole:energy_cell/basic/basic_energy_cell_5" },
+    "model=7": { "model": "wormhole:energy_cell/basic/basic_energy_cell_6" },
+    "model=8": { "model": "wormhole:energy_cell/basic/basic_energy_cell_7" },
+    "model=9": { "model": "wormhole:energy_cell/basic/basic_energy_cell_8" },
+    "model=10": { "model": "wormhole:energy_cell/basic/basic_energy_cell_9" },
+    "model=11": { "model": "wormhole:energy_cell/basic/basic_energy_cell_10" },
+    "model=12": { "model": "wormhole:energy_cell/basic/basic_energy_cell_11" },
+    "model=13": { "model": "wormhole:energy_cell/basic/basic_energy_cell_12" },
+    "model=14": { "model": "wormhole:energy_cell/basic/basic_energy_cell_13" },
+    "model=15": { "model": "wormhole:energy_cell/basic/basic_energy_cell_14" },
+    "model=16": { "model": "wormhole:energy_cell/basic/basic_energy_cell_15" }
+  }
+}

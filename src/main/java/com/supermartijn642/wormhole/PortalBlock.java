@@ -1,5 +1,7 @@
 package com.supermartijn642.wormhole;
 
+import com.supermartijn642.wormhole.portal.PortalGroupBlock;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockFaceShape;
@@ -7,13 +9,16 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.EnumDyeColor;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -21,6 +26,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
+import java.util.Random;
 
 /**
  * Created 7/21/2020 by SuperMartijn642
@@ -37,7 +43,7 @@ public class PortalBlock extends PortalGroupBlock {
     public final EnumFacing.Axis axis;
 
     public PortalBlock(EnumFacing.Axis axis){
-        super(Material.PORTAL, Material.PORTAL.getMaterialMapColor(), "portal_" + axis.name().toLowerCase(Locale.ROOT), PortalTile::new);
+        super("portal_" + axis.name().toLowerCase(Locale.ROOT), PortalTile::new, Material.PORTAL, Material.PORTAL.getMaterialMapColor(), SoundType.GLASS, 0, 0);
         this.axis = axis;
         this.setDefaultState(this.blockState.getBaseState().withProperty(COLOR_PROPERTY, EnumDyeColor.WHITE));
     }
@@ -47,7 +53,7 @@ public class PortalBlock extends PortalGroupBlock {
         TileEntity tile = worldIn.getTileEntity(pos);
         if(tile instanceof PortalTile)
             return ((PortalTile)tile).activate(player, hand);
-        return false;
+        return super.onBlockActivated(worldIn, pos, state, player, hand, facing, hitX, hitY, hitZ);
     }
 
     @Override
@@ -76,6 +82,18 @@ public class PortalBlock extends PortalGroupBlock {
         return false;
     }
 
+    @Override
+    public void onNeighborChange(IBlockAccess world, BlockPos pos, BlockPos neighbor){
+        TileEntity tile = world.getTileEntity(pos);
+        if(tile instanceof PortalTile && !((PortalTile)tile).hasGroup())
+            tile.getWorld().setBlockState(pos, Blocks.AIR.getDefaultState());
+    }
+
+    @Override
+    public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player){
+        return ItemStack.EMPTY;
+    }
+
     @SideOnly(Side.CLIENT)
     public BlockRenderLayer getBlockLayer(){
         return BlockRenderLayer.TRANSLUCENT;
@@ -98,5 +116,10 @@ public class PortalBlock extends PortalGroupBlock {
     @Override
     public boolean isOpaqueCube(IBlockState state){
         return false;
+    }
+
+    @Override
+    public int quantityDropped(IBlockState state, int fortune, Random random){
+        return 0;
     }
 }

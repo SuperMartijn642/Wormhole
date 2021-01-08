@@ -1,0 +1,27 @@
+{
+  "type": "wormhole:nbtrecipe",
+  "pattern": [
+    "IQI",
+    "RBR",
+    "IQI"
+  ],
+  "key": {
+    "I": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    },
+    "Q": {
+      "type": "forge:ore_dict",
+      "ore": "gemQuartz"
+    },
+    "R": {
+      "item": "minecraft:repeater"
+    },
+    "B": {
+      "item": "wormhole:basic_energy_cell"
+    }
+  },
+  "result": {
+    "item": "wormhole:advanced_energy_cell"
+  }
+}
