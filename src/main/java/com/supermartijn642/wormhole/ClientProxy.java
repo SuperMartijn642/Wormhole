@@ -100,32 +100,36 @@ public class ClientProxy {
         @SubscribeEvent
         public static void onBlockHighlight(DrawBlockHighlightEvent e){
             World world = getWorld();
-            TileEntity tile = world.getTileEntity(e.getTarget().getBlockPos());
-            if(tile instanceof GeneratorTile){
-                GlStateManager.pushMatrix();
-                GlStateManager.enableBlend();
-                GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-                GlStateManager.glLineWidth(2.0F);
-                GlStateManager.disableTexture2D();
-                GlStateManager.depthMask(false);
-                EntityPlayer player = e.getPlayer();
-                float partialTicks = e.getPartialTicks();
-                double d3 = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double)partialTicks;
-                double d4 = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double)partialTicks;
-                double d5 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double)partialTicks;
-                GlStateManager.translate(-d3, -d4, -d5);
-                for(BlockPos pos : ((GeneratorTile)tile).getChargingPortalBlocks()){
-                    AxisAlignedBB shape = world.getBlockState(pos).getSelectedBoundingBox(world, pos);
-                    drawShape(shape, pos.getX(), pos.getY(), pos.getZ(), 66 / 255f, 108 / 255f, 245 / 255f, 1);
+            BlockPos generatorPos = e.getTarget().getBlockPos();
+            // apparent this can be null github #11
+            if(generatorPos != null){
+                TileEntity tile = world.getTileEntity(e.getTarget().getBlockPos());
+                if(tile instanceof GeneratorTile){
+                    GlStateManager.pushMatrix();
+                    GlStateManager.enableBlend();
+                    GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+                    GlStateManager.glLineWidth(2.0F);
+                    GlStateManager.disableTexture2D();
+                    GlStateManager.depthMask(false);
+                    EntityPlayer player = e.getPlayer();
+                    float partialTicks = e.getPartialTicks();
+                    double d3 = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double)partialTicks;
+                    double d4 = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double)partialTicks;
+                    double d5 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double)partialTicks;
+                    GlStateManager.translate(-d3, -d4, -d5);
+                    for(BlockPos pos : ((GeneratorTile)tile).getChargingPortalBlocks()){
+                        AxisAlignedBB shape = world.getBlockState(pos).getSelectedBoundingBox(world, pos);
+                        drawShape(shape, pos.getX(), pos.getY(), pos.getZ(), 66 / 255f, 108 / 255f, 245 / 255f, 1);
+                    }
+                    for(BlockPos pos : ((GeneratorTile)tile).getChargingEnergyBlocks()){
+                        AxisAlignedBB shape = world.getBlockState(pos).getSelectedBoundingBox(world, pos);
+                        drawShape(shape, pos.getX(), pos.getY(), pos.getZ(), 242 / 255f, 34 / 255f, 34 / 255f, 1);
+                    }
+                    GlStateManager.depthMask(true);
+                    GlStateManager.enableTexture2D();
+                    GlStateManager.disableBlend();
+                    GlStateManager.popMatrix();
                 }
-                for(BlockPos pos : ((GeneratorTile)tile).getChargingEnergyBlocks()){
-                    AxisAlignedBB shape = world.getBlockState(pos).getSelectedBoundingBox(world, pos);
-                    drawShape(shape, pos.getX(), pos.getY(), pos.getZ(), 242 / 255f, 34 / 255f, 34 / 255f, 1);
-                }
-                GlStateManager.depthMask(true);
-                GlStateManager.enableTexture2D();
-                GlStateManager.disableBlend();
-                GlStateManager.popMatrix();
             }
         }
 
