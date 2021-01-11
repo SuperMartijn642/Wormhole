@@ -1,9 +1,11 @@
 package com.supermartijn642.wormhole.portal.screen;
 
+import com.supermartijn642.wormhole.ClientProxy;
 import com.supermartijn642.wormhole.portal.PortalGroup;
 import com.supermartijn642.wormhole.portal.PortalGroupTile;
 import com.supermartijn642.wormhole.screen.WormholeScreen;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 
@@ -37,4 +39,16 @@ public abstract class PortalGroupScreen extends WormholeScreen {
         return defaultValue;
     }
 
+    @Override
+    public void updateScreen(){
+        if(!this.canInteractWith(ClientProxy.getPlayer())){
+            ClientProxy.getPlayer().closeScreen();
+            return;
+        }
+        super.updateScreen();
+    }
+
+    private boolean canInteractWith(EntityPlayer playerIn){
+        return this.pos.distanceSq(playerIn.getPosition()) < 64 * 64;
+    }
 }

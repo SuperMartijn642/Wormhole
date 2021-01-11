@@ -43,7 +43,7 @@ public abstract class WormholeTileContainer<T extends TileEntity> extends Contai
 
     @Override
     public boolean canInteractWith(EntityPlayer playerIn){
-        return true;
+        return this.pos.distanceSq(playerIn.getPosition()) < 64 * 64;
     }
 
     public T getTileOrClose(){
