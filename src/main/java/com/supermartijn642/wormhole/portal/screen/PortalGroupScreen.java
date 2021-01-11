@@ -41,11 +41,11 @@ public abstract class PortalGroupScreen extends WormholeScreen {
 
     @Override
     public void tick(){
-        super.tick();
         if(!this.canInteractWith(ClientProxy.getPlayer())){
             this.closeScreen();
             return;
         }
+        super.tick();
     }
 
     private boolean canInteractWith(PlayerEntity playerIn){
