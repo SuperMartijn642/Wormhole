@@ -2,10 +2,8 @@ package com.supermartijn642.wormhole;
 
 import com.supermartijn642.wormhole.portal.PortalTarget;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
 
 import java.util.Optional;
@@ -49,30 +47,15 @@ public class TeleportHelper {
             entity.motionZ = 0;
             entity.fallDistance = 0;
             entity.onGround = true;
-        }else if(net.minecraftforge.common.ForgeHooks.onTravelToDimension(entity, targetWorld.provider.getDimensionType().getId()) && !entity.isDead){
-            MinecraftServer minecraftserver = entity.getServer();
-            WorldServer oldWorld = minecraftserver.getWorld(entity.dimension);
-            entity.dimension = targetWorld.provider.getDimensionType().getId();
-            oldWorld.removeEntity(entity);
-            entity.isDead = false;
-
-            Entity newEntity = EntityList.newEntity(entity.getClass(), targetWorld);
-            if(newEntity != null){
-                copyDataFromOld(entity, newEntity);
-                newEntity.moveToBlockPosAndAngles(target.getPos(), target.yaw, 0);
-                newEntity.motionX = 0;
-                newEntity.motionY = 0;
-                newEntity.motionZ = 0;
-                boolean flag = newEntity.forceSpawn;
-                newEntity.forceSpawn = true;
-                targetWorld.spawnEntity(newEntity);
-                newEntity.forceSpawn = flag;
-                targetWorld.updateEntityWithOptionalForce(newEntity, false);
+        }else{
+            entity = entity.changeDimension(targetWorld.provider.getDimensionType().getId(), (world, entity1, yaw) -> entity1.moveToBlockPosAndAngles(target.getPos(), target.yaw, entity1.rotationPitch));
+            if(entity != null){
+                entity.motionX = 0;
+                entity.motionY = 0;
+                entity.motionZ = 0;
+                entity.fallDistance = 0;
+                entity.onGround = true;
             }
-
-            entity.isDead = true;
-            oldWorld.resetUpdateEntityTick();
-            targetWorld.resetUpdateEntityTick();
         }
 
         tag.setLong("wormhole:teleported", entity.ticksExisted);
