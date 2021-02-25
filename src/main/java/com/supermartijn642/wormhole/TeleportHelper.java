@@ -5,21 +5,30 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Created 12/10/2020 by SuperMartijn642
  */
+@Mod.EventBusSubscriber(value = Side.SERVER)
 public class TeleportHelper {
 
     private static final int TELEPORT_COOLDOWN = 2 * 20; // 2 seconds
+
+    private static final List<Runnable> tpQueue = new LinkedList<>();
 
     public static void queTeleport(Entity entity, PortalTarget target){
         if(entity.world.isRemote)
             return;
 
-        entity.world.getMinecraftServer().addScheduledTask(() -> teleport(entity, target));
+        tpQueue.add(() -> teleport(entity, target));
     }
 
     public static void teleport(Entity entity, PortalTarget target){
@@ -70,5 +79,13 @@ public class TeleportHelper {
         to.readFromNBT(nbttagcompound);
         to.timeUntilPortal = from.timeUntilPortal;
         // copying the other 3 portal related variables shouldn't be necessary
+    }
+
+    @SubscribeEvent
+    public static void onPlayerTick(TickEvent.PlayerTickEvent e){
+        if(e.phase == TickEvent.Phase.START){
+            tpQueue.forEach(Runnable::run);
+            tpQueue.clear();
+        }
     }
 }
