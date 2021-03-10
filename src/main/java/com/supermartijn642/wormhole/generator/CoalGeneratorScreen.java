@@ -1,30 +1,31 @@
 package com.supermartijn642.wormhole.generator;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.supermartijn642.core.gui.TileEntityBaseContainerScreen;
 import com.supermartijn642.wormhole.Wormhole;
-import com.supermartijn642.wormhole.container.WormholeTileContainerScreen;
 import com.supermartijn642.wormhole.screen.EnergyBarWidget;
 import com.supermartijn642.wormhole.screen.FlameProgressWidget;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.util.text.TranslationTextComponent;
 
 /**
  * Created 12/21/2020 by SuperMartijn642
  */
-public class CoalGeneratorScreen extends WormholeTileContainerScreen<CoalGeneratorTile,CoalGeneratorContainer> {
+public class CoalGeneratorScreen extends TileEntityBaseContainerScreen<CoalGeneratorTile,CoalGeneratorContainer> {
 
     private final int WIDTH = 176, HEIGHT = 166;
 
     public CoalGeneratorScreen(CoalGeneratorContainer screenContainer, PlayerInventory inv){
-        super(screenContainer, inv, Wormhole.coal_generator.getTranslationKey());
+        super(screenContainer, new TranslationTextComponent(Wormhole.coal_generator.getTranslationKey()));
     }
 
     @Override
-    protected int sizeX(){
+    protected int sizeX(CoalGeneratorTile tile){
         return WIDTH;
     }
 
     @Override
-    protected int sizeY(){
+    protected int sizeY(CoalGeneratorTile tile){
         return HEIGHT;
     }
 
@@ -35,7 +36,6 @@ public class CoalGeneratorScreen extends WormholeTileContainerScreen<CoalGenerat
     }
 
     @Override
-    protected void renderTooltips(MatrixStack matrixStack, CoalGeneratorTile tile, int mouseX, int mouseY){
-
+    protected void renderTooltips(MatrixStack matrixStack, int i, int i1, CoalGeneratorTile coalGeneratorTile){
     }
 }
