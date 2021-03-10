@@ -34,7 +34,7 @@ import net.minecraftforge.fml.relauncher.Side;
 /**
  * Created 7/7/2020 by SuperMartijn642
  */
-@Mod(modid = Wormhole.MODID, name = Wormhole.NAME, version = Wormhole.VERSION)
+@Mod(modid = Wormhole.MODID, name = Wormhole.NAME, version = Wormhole.VERSION, dependencies = Wormhole.DEPENDENCIES)
 public class Wormhole {
 
     /*
@@ -51,6 +51,7 @@ public class Wormhole {
     public static final String MODID = "wormhole";
     public static final String NAME = "Wormhole (Portals)";
     public static final String VERSION = "1.1.4b";
+    public static final String DEPENDENCIES = "required-after:supermartijn642corelib@[1.0.0,1.1.0)";
 
     @Mod.Instance
     public static Wormhole instance;

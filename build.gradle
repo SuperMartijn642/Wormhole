@@ -84,6 +84,6 @@ dependencies {
     compile files('libraries/supermartijn642corelib-1.0.0-mc1.12.jar')
 }
 
-sourceSets {
-    main { output.resourcesDir = output.classesDir }
-}
+//sourceSets {
+//    main { output.resourcesDir = output.classesDir }
+//}
