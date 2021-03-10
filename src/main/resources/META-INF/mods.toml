@@ -48,3 +48,10 @@ description='''Wormhole allows you to construct portals with the use of wormhole
     versionRange="[1.15,)"
     ordering="NONE"
     side="BOTH"
+# Here's another dependency
+[[dependencies.wormhole]]
+    modId="supermartijn642corelib"
+    mandatory=true
+    versionRange="[1.0.0,1.1.0)"
+    ordering="NONE"
+    side="BOTH"
