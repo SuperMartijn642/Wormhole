@@ -27,7 +27,7 @@ public class EnergyFormat {
     }
 
     private enum EnergyType {
-        RF("RF"), MJ("MJ"), FE("FE");
+        RF("RF")/*, MJ("MJ")*/, FE("FE");
 
         private final String unit;
 

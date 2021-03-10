@@ -16,6 +16,7 @@ out
 # gradle
 build
 .gradle
+logs
 
 # other
 eclipse
@@ -25,4 +26,6 @@ run
 forge*changelog.txt
 
 images
-lib
+libraries
+logs
+desktop.ini

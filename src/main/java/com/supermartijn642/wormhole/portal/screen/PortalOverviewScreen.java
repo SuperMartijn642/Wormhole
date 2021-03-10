@@ -1,5 +1,6 @@
 package com.supermartijn642.wormhole.portal.screen;
 
+import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.wormhole.ClientProxy;
 import com.supermartijn642.wormhole.EnergyFormat;
 import com.supermartijn642.wormhole.Wormhole;
@@ -50,37 +51,37 @@ public class PortalOverviewScreen extends PortalGroupScreen {
         // active target
         Supplier<Integer> activeTarget = () -> this.getFromPortalGroup(PortalGroup::getActiveTargetIndex, 0);
         this.addWidget(new PortalTargetNameField(this, activeTarget, 20, 171));
-        this.addWidget(new PortalTargetLabel(this, activeTarget, 85, 171, 100, 10, "wormhole.target_device.gui.coords", target -> "(" + target.x + "," + target.y + "," + target.z + ")", false));
-        this.addWidget(new PortalTargetEditColorButton(this, this.pos, 190, 171, activeTarget,
+        this.addWidget(new PortalTargetLabel(this, activeTarget, 84, 170, 102, 12, "wormhole.target_device.gui.coords", target -> "(" + target.x + "," + target.y + "," + target.z + ")", false));
+        this.addWidget(new PortalTargetEditColorButton(this, 190, 171, activeTarget,
             () -> this.getFromPortalGroup(group -> {
                 PortalTarget target = group.getTarget(activeTarget.get());
                 return target == null ? null : target.color;
             }, null),
             () -> ClientProxy.openPortalOverviewScreen(this.pos)));
-        this.addWidget(new WormholeButton(54, 185, 100, 10, "wormhole.portal.gui.select_target", () -> ClientProxy.openPortalTargetScreen(this.pos)));
+        this.addWidget(new WormholeButton(54, 185, 100, 10, "wormhole.portal.gui.change_target", () -> ClientProxy.openPortalTargetScreen(this.pos)));
     }
 
     @Override
     protected void render(int mouseX, int mouseY){
         this.activateButton.setTextKey(this.getFromPortalGroup(group -> group.isActive() ? "wormhole.portal.gui.deactivate" : "wormhole.portal.gui.activate", "wormhole.portal.gui.activate"));
 
-        this.drawBackground(0, 0, this.sizeX(), this.sizeY());
-        this.fontRenderer.drawString(this.title.getFormattedText(), 8, 7, 4210752);
+        ScreenUtils.drawScreenBackground(0, 0, this.sizeX(), this.sizeY());
+        this.font.drawString(this.title.getFormattedText(), 8, 7, 4210752);
         // info
         PortalStatus status = this.getFromPortalGroup(group -> {
             int energy = group.getStoredEnergy();
             return group.getActiveTarget() == null ? PortalStatus.NO_TARGET : energy == 0 ? PortalStatus.NO_ENERGY :
                 group.isActive() && energy < group.getIdleEnergyCost() ? PortalStatus.LOW_ENERGY : PortalStatus.OK;
         }, PortalStatus.OK);
-        this.fontRenderer.drawString(new TextComponentTranslation("wormhole.portal.gui.status").getFormattedText(), 190, 49, 4210752);
+        this.font.drawString(new TextComponentTranslation("wormhole.portal.gui.status").getFormattedText(), 190, 49, 4210752);
         this.drawStringRightAligned(status.getStatus(), 312, 49);
-        this.fontRenderer.drawString(new TextComponentTranslation("wormhole.portal.gui.idle_cost").getFormattedText(), 190, 61, 4210752);
+        this.font.drawString(new TextComponentTranslation("wormhole.portal.gui.idle_cost").getFormattedText(), 190, 61, 4210752);
         this.drawStringRightAligned(new TextComponentString(EnergyFormat.formatEnergyPerTick(this.getFromPortalGroup(PortalGroup::getIdleEnergyCost, 0))), 312, 61);
-        this.fontRenderer.drawString(new TextComponentTranslation("wormhole.portal.gui.teleport_cost").getFormattedText(), 190, 73, 4210752);
+        this.font.drawString(new TextComponentTranslation("wormhole.portal.gui.teleport_cost").getFormattedText(), 190, 73, 4210752);
         this.drawStringRightAligned(new TextComponentString(this.getFromPortalGroup(PortalGroup::getActiveTarget, null) == null ? "--" : EnergyFormat.formatEnergy(this.getFromPortalGroup(PortalGroup::getTeleportEnergyCost, 0))), 312, 73);
         // target number
         int activeTarget = this.getFromPortalGroup(PortalGroup::getActiveTargetIndex, 0);
-        this.fontRenderer.drawString((activeTarget + 1) + ".", 8, 173, 4210752);
+        this.font.drawString((activeTarget + 1) + ".", 8, 173, 4210752);
 
         PortalGroup group = this.getPortalGroup();
         if(group != null)
@@ -89,8 +90,8 @@ public class PortalOverviewScreen extends PortalGroupScreen {
 
     private void drawStringRightAligned(ITextComponent textComponent, int x, int y){
         String s = textComponent.getFormattedText();
-        int width = this.fontRenderer.getStringWidth(s);
-        this.fontRenderer.drawString(s, x - width, y, 4210752);
+        int width = this.font.getStringWidth(s);
+        this.font.drawString(s, x - width, y, 4210752);
     }
 
     @Override

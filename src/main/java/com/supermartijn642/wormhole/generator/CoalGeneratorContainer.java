@@ -1,6 +1,6 @@
 package com.supermartijn642.wormhole.generator;
 
-import com.supermartijn642.wormhole.container.WormholeTileContainer;
+import com.supermartijn642.core.gui.TileEntityBaseContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -10,15 +10,16 @@ import net.minecraftforge.items.SlotItemHandler;
 /**
  * Created 12/21/2020 by SuperMartijn642
  */
-public class CoalGeneratorContainer extends WormholeTileContainer<CoalGeneratorTile> {
+public class CoalGeneratorContainer extends TileEntityBaseContainer<CoalGeneratorTile> {
 
-    public CoalGeneratorContainer(int id, EntityPlayer player, BlockPos pos){
+    public CoalGeneratorContainer(EntityPlayer player, BlockPos pos){
         super(player, pos);
+        this.addSlots();
     }
 
     @Override
-    protected void addSlots(CoalGeneratorTile tile, EntityPlayer player){
-        this.addSlotToContainer(new SlotItemHandler(tile, 0, 79, 52) {
+    protected void addSlots(EntityPlayer player, CoalGeneratorTile tile){
+        this.addSlot(new SlotItemHandler(tile, 0, 79, 52) {
             @Override
             public boolean canTakeStack(EntityPlayer playerIn){
                 return true;

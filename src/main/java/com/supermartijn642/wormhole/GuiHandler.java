@@ -17,7 +17,7 @@ public class GuiHandler implements IGuiHandler {
         BlockPos pos = new BlockPos(x, y, z);
         Block block = world.getBlockState(pos).getBlock();
         if(block == Wormhole.coal_generator)
-            return new CoalGeneratorContainer(ID, player, pos);
+            return new CoalGeneratorContainer(player, pos);
         return null;
     }
 
@@ -26,7 +26,7 @@ public class GuiHandler implements IGuiHandler {
         BlockPos pos = new BlockPos(x, y, z);
         Block block = world.getBlockState(pos).getBlock();
         if(block == Wormhole.coal_generator)
-            return new CoalGeneratorScreen(new CoalGeneratorContainer(ID, player, pos), player);
+            return new CoalGeneratorScreen(new CoalGeneratorContainer(player, pos), player);
         return null;
     }
 }

@@ -1,33 +1,30 @@
 package com.supermartijn642.wormhole.generator;
 
+import com.supermartijn642.core.gui.TileEntityBaseContainerScreen;
 import com.supermartijn642.wormhole.Wormhole;
-import com.supermartijn642.wormhole.container.WormholeTileContainerScreen;
 import com.supermartijn642.wormhole.screen.EnergyBarWidget;
 import com.supermartijn642.wormhole.screen.FlameProgressWidget;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.util.text.TextComponentTranslation;
 
 /**
  * Created 12/21/2020 by SuperMartijn642
  */
-public class CoalGeneratorScreen extends WormholeTileContainerScreen<CoalGeneratorTile,CoalGeneratorContainer> {
+public class CoalGeneratorScreen extends TileEntityBaseContainerScreen<CoalGeneratorTile,CoalGeneratorContainer> {
 
     private final int WIDTH = 176, HEIGHT = 166;
 
-    private final InventoryPlayer playerInventory;
-
-    public CoalGeneratorScreen(CoalGeneratorContainer screenContainer, EntityPlayer player){
-        super(screenContainer, Wormhole.coal_generator.getUnlocalizedName() + ".name");
-        this.playerInventory = player.inventory;
+    public CoalGeneratorScreen(CoalGeneratorContainer screenContainer, EntityPlayer inv){
+        super(screenContainer, new TextComponentTranslation(Wormhole.coal_generator.getUnlocalizedName() + ".name"));
     }
 
     @Override
-    protected int sizeX(){
+    protected int sizeX(CoalGeneratorTile tile){
         return WIDTH;
     }
 
     @Override
-    protected int sizeY(){
+    protected int sizeY(CoalGeneratorTile tile){
         return HEIGHT;
     }
 
@@ -38,13 +35,6 @@ public class CoalGeneratorScreen extends WormholeTileContainerScreen<CoalGenerat
     }
 
     @Override
-    protected void renderForeground(CoalGeneratorTile tile, int mouseX, int mouseY){
-        super.renderForeground(tile, mouseX, mouseY);
-        this.fontRenderer.drawString(this.playerInventory.getDisplayName().getFormattedText(), 8, 72, 4210752);
-    }
-
-    @Override
-    protected void renderTooltips(CoalGeneratorTile tile, int mouseX, int mouseY){
-
+    protected void renderTooltips(int i, int i1, CoalGeneratorTile coalGeneratorTile){
     }
 }

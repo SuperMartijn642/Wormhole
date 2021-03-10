@@ -1,9 +1,9 @@
 package com.supermartijn642.wormhole.portal.screen;
 
+import com.supermartijn642.core.gui.widget.TextFieldWidget;
 import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.portal.PortalTarget;
 import com.supermartijn642.wormhole.portal.packets.PortalNameTargetPacket;
-import com.supermartijn642.wormhole.screen.WormholeTextField;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 /**
  * Created 11/5/2020 by SuperMartijn642
  */
-public class PortalTargetNameField extends WormholeTextField {
+public class PortalTargetNameField extends TextFieldWidget {
 
     private final PortalGroupScreen screen;
     private final Supplier<Integer> targetIndex;
@@ -20,7 +20,7 @@ public class PortalTargetNameField extends WormholeTextField {
     private final List<String> pastText = new LinkedList<>();
 
     public PortalTargetNameField(PortalGroupScreen screen, Supplier<Integer> targetIndex, int x, int y){
-        super(x, y, 59, 10, "", PortalTarget.MAX_NAME_LENGTH);
+        super(x - 1, y - 1, 61, 12, "", PortalTarget.MAX_NAME_LENGTH);
         this.screen = screen;
         this.targetIndex = targetIndex;
 
@@ -41,8 +41,8 @@ public class PortalTargetNameField extends WormholeTextField {
                 int index = this.pastText.indexOf(s);
                 if(index < 0){
                     this.setTextSuppressed(s);
-                    this.cursorPosition = this.getText().length();
-                    this.selectionPos = this.cursorPosition;
+                    this.cursorPosition = this.selectionPos = this.getText().length();
+                    this.moveLineOffsetToCursor();
                 }else
                     this.pastText.subList(0, index + 1).clear();
             }
@@ -52,6 +52,7 @@ public class PortalTargetNameField extends WormholeTextField {
 
     @Override
     protected void onTextChanged(String oldText, String newText){
+        this.pastText.add(oldText);
         Wormhole.channel.sendToServer(new PortalNameTargetPacket(this.screen.getPortalGroup(), this.targetIndex.get(), newText));
     }
 }

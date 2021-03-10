@@ -30,7 +30,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;
 
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created 11/24/2020 by SuperMartijn642
@@ -116,18 +115,13 @@ public class PortalRendererHelper {
     }
 
     private static void renderModel(IBakedModel modelIn, IBlockState state, boolean valid){
-        Random random = new Random();
-
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
         bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
-        for(EnumFacing direction : EnumFacing.values()){
-            random.setSeed(42L);
+        for(EnumFacing direction : EnumFacing.values())
             renderQuads(bufferbuilder, modelIn.getQuads(state, direction, 42L), valid);
-        }
 
-        random.setSeed(42L);
         renderQuads(bufferbuilder, modelIn.getQuads(state, null, 42L), valid);
 
         tessellator.draw();

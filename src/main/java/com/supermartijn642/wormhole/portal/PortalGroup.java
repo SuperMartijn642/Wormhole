@@ -150,6 +150,9 @@ public class PortalGroup {
     }
 
     public PortalTarget getTarget(int index){
+        if(index < 0)
+            return null;
+
         int total = 0;
         for(BlockPos pos : this.shape.targetCells){
             TileEntity tile = this.world.getTileEntity(pos);
@@ -264,10 +267,7 @@ public class PortalGroup {
         PortalTarget target = this.getActiveTarget();
         if(target == null)
             return 0;
-        return WormholeConfig.travelPowerDrain +
-            (target.dimension == this.world.provider.getDimensionType().getId() ?
-                (int)Math.round(Math.sqrt(this.shape.area.get(0).distanceSq(target.getPos())) * WormholeConfig.distancePowerDrain) :
-                WormholeConfig.dimensionPowerDrain);
+        return getTeleportCostToTarget(this.world, this.getCenterPos(), target);
     }
 
     public int getIdleEnergyCost(){
@@ -293,6 +293,21 @@ public class PortalGroup {
         PortalGroupCapability groups = this.world.getCapability(PortalGroupCapability.CAPABILITY, null);
         if(groups != null)
             groups.updateGroup(this);
+    }
+
+    public BlockPos getCenterPos(){
+        return new BlockPos(
+            (this.shape.minCorner.getX() + this.shape.maxCorner.getX()) / 2,
+            (this.shape.minCorner.getY() + this.shape.maxCorner.getY()) / 2,
+            (this.shape.minCorner.getZ() + this.shape.maxCorner.getZ()) / 2
+        );
+    }
+
+    public static int getTeleportCostToTarget(World world, BlockPos portalCenter, PortalTarget target){
+        return WormholeConfig.travelPowerDrain +
+            (target.dimension == world.provider.getDimensionType().getId() ?
+                (int)Math.round(Math.pow(portalCenter.distanceSq(target.getPos()), 1 / 4d) * WormholeConfig.distancePowerDrain) :
+                WormholeConfig.dimensionPowerDrain);
     }
 
 }
