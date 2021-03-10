@@ -137,11 +137,11 @@ public class PortalGroupCapability {
 
     public void updateGroup(PortalGroup group){
         if(!this.world.isRemote && group != null)
-            Wormhole.CHANNEL.send(PacketDistributor.DIMENSION.with(this.world::func_234923_W_), new UpdateGroupPacket(this.writeGroup(group)));
+            Wormhole.CHANNEL.send(PacketDistributor.DIMENSION.with(this.world::getDimensionKey), new UpdateGroupPacket(this.writeGroup(group)));
     }
 
     private void update(){
-        Wormhole.CHANNEL.send(PacketDistributor.DIMENSION.with(this.world::func_234923_W_), new UpdateGroupsPacket(this.write()));
+        Wormhole.CHANNEL.send(PacketDistributor.DIMENSION.with(this.world::getDimensionKey), new UpdateGroupsPacket(this.write()));
     }
 
     public PortalGroup getGroup(PortalGroupTile tile){

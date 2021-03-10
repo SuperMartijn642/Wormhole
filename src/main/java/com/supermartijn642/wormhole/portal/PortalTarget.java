@@ -24,6 +24,7 @@ public class PortalTarget {
 
     public String name;
     public DyeColor color = null;
+    public String dimensionDisplayName;
 
     public PortalTarget(String dimension, int x, int y, int z, float yaw, String name){
         this.dimension = dimension;
@@ -32,15 +33,29 @@ public class PortalTarget {
         this.z = z;
         this.yaw = yaw;
         this.name = name;
+
+        String dimensionName = dimension.substring(Math.min(dimension.length() - 1, Math.max(0, dimension.indexOf(':') + 1))).toLowerCase();
+        dimensionName = dimensionName.substring(0, 1).toUpperCase() + dimensionName.substring(1);
+        for(int i = 0; i < dimensionName.length() - 1; i++)
+            if(dimensionName.charAt(i) == '_' && Character.isAlphabetic(dimensionName.charAt(i + 1)))
+                dimensionName = dimensionName.substring(0, i) + ' ' + (i + 2 < dimensionName.length() ? dimensionName.substring(i + 1, i + 2).toUpperCase() + dimensionName.substring(i + 2) : dimensionName.substring(i + 1).toUpperCase());
+        this.dimensionDisplayName = dimensionName;
     }
 
     public PortalTarget(World world, BlockPos pos, float yaw, String name){
-        this(world.func_234923_W_().func_240901_a_().toString(), pos.getX(), pos.getY(), pos.getZ(), yaw, name);
+        this(world.getDimensionKey().getLocation().toString(), pos.getX(), pos.getY(), pos.getZ(), yaw, name);
     }
 
     public PortalTarget(CompoundNBT tag){
         this(tag.getString("dimension"), tag.getInt("x"), tag.getInt("y"), tag.getInt("z"), tag.getFloat("yaw"), tag.contains("name") ? tag.getString("name") : "Target Destination");
         this.color = tag.contains("color") ? DyeColor.byId(tag.getInt("color")) : null;
+
+        String dimensionName = this.dimension.substring(Math.min(this.dimension.length() - 1, Math.max(0, this.dimension.indexOf(':') + 1))).toLowerCase();
+        dimensionName = dimensionName.substring(0, 1).toUpperCase() + dimensionName.substring(1);
+        for(int i = 0; i < dimensionName.length() - 1; i++)
+            if(dimensionName.charAt(i) == '_' && Character.isAlphabetic(dimensionName.charAt(i + 1)))
+                dimensionName = dimensionName.substring(0, i) + ' ' + (i + 2 < dimensionName.length() ? dimensionName.substring(i + 1, i + 2).toUpperCase() + dimensionName.substring(i + 2) : dimensionName.substring(i + 1).toUpperCase());
+        this.dimensionDisplayName = dimensionName;
     }
 
     public static PortalTarget read(CompoundNBT tag){
@@ -61,7 +76,7 @@ public class PortalTarget {
     }
 
     public Optional<World> getWorld(MinecraftServer server){
-        RegistryKey<World> key = RegistryKey.func_240903_a_(Registry.WORLD_KEY, new ResourceLocation(this.dimension));
+        RegistryKey<World> key = RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(this.dimension));
         return Optional.ofNullable(server.getWorld(key));
     }
 
@@ -69,4 +84,7 @@ public class PortalTarget {
         return new BlockPos(this.x, this.y, this.z);
     }
 
+    public String getDimensionDisplayName(){
+        return this.dimensionDisplayName;
+    }
 }
