@@ -45,9 +45,9 @@ public class TeleportHelper {
         if(targetWorld.get() == entity.world){
             targetWorld.get().getChunkProvider().registerTicket(TicketType.POST_TELEPORT, new ChunkPos(target.getPos()), 1, entity.getEntityId());
             if(entity instanceof ServerPlayerEntity)
-                ((ServerPlayerEntity)entity).connection.setPlayerLocation(target.x + .5, target.y, target.z + .5, target.yaw, 0);
+                ((ServerPlayerEntity)entity).connection.setPlayerLocation(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
             else
-                entity.setLocationAndAngles(target.x + .5, target.y, target.z + .5, target.yaw, 0);
+                entity.setLocationAndAngles(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
             entity.setRotationYawHead(target.yaw);
             entity.setMotion(Vector3d.ZERO);
             entity.fallDistance = 0;
@@ -61,7 +61,7 @@ public class TeleportHelper {
 
                 @Override
                 public PortalInfo getPortalInfo(Entity entity, ServerWorld destWorld, Function<ServerWorld,PortalInfo> defaultPortalInfo){
-                    return new PortalInfo(new Vector3d(target.x + .5, target.y, target.z + .5), Vector3d.ZERO, target.yaw, 0);
+                    return new PortalInfo(new Vector3d(target.x + .5, target.y + .2, target.z + .5), Vector3d.ZERO, target.yaw, 0);
                 }
             });
         }

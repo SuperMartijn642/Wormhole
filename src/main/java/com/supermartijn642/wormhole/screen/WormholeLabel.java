@@ -1,9 +1,11 @@
 package com.supermartijn642.wormhole.screen;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.widget.Widget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -18,21 +20,21 @@ public class WormholeLabel extends Widget {
     private final Supplier<String> text;
     private final boolean translate;
 
-    public WormholeLabel(int x, int y, int width, int height, String title, Supplier<String> text, boolean translate){
-        super(x, y, width, height, new TranslationTextComponent(title));
+    public WormholeLabel(int x, int y, int width, int height, Supplier<String> text, boolean translate){
+        super(x, y, width, height);
         this.text = text;
         this.translate = translate;
     }
 
-    public WormholeLabel(int x, int y, int width, int height, String title, String text, boolean translate){
-        this(x, y, width, height, title, () -> text, translate);
+    public WormholeLabel(int x, int y, int width, int height, String text, boolean translate){
+        this(x, y, width, height, () -> text, translate);
     }
 
     @Override
-    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks){
-        if(this.visible){
-            fill(matrixStack, this.x - 1, this.y - 1, this.x + this.width + 1, this.y + this.height + 1, -6250336);
-            fill(matrixStack, this.x, this.y, this.x + this.width, this.y + this.height, 0xff404040);
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks){
+        if(this.active){
+            ScreenUtils.fillRect(matrixStack, this.x, this.y, this.width, this.height, -6250336);
+            ScreenUtils.fillRect(matrixStack, this.x + 1, this.y + 1, this.width - 2, this.height - 2, 0xff404040);
 
             int enabledTextColor = 14737632;
 //            int disabledTextColor = 7368816;
@@ -45,7 +47,7 @@ public class WormholeLabel extends Widget {
     }
 
     @Override
-    public boolean isMouseOver(double mouseX, double mouseY){
-        return this.visible && mouseX >= (double)this.x && mouseX < (double)(this.x + this.width) && mouseY >= (double)this.y && mouseY < (double)(this.y + this.height);
+    protected ITextComponent getNarrationMessage(){
+        return this.translate ? new TranslationTextComponent(this.text.get()) : new StringTextComponent(this.text.get());
     }
 }
