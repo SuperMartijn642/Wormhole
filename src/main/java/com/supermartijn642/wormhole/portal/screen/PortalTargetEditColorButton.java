@@ -1,13 +1,13 @@
 package com.supermartijn642.wormhole.portal.screen;
 
+import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.widget.AbstractButtonWidget;
+import com.supermartijn642.core.gui.widget.IHoverTextWidget;
 import com.supermartijn642.wormhole.ClientProxy;
 import com.supermartijn642.wormhole.portal.PortalTarget;
-import com.supermartijn642.wormhole.screen.IHoverTextWidget;
-import com.supermartijn642.wormhole.screen.WormholeAbstractButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
@@ -16,36 +16,51 @@ import java.util.function.Supplier;
 /**
  * Created 11/12/2020 by SuperMartijn642
  */
-public class PortalTargetEditColorButton extends WormholeAbstractButton implements IHoverTextWidget {
+public class PortalTargetEditColorButton extends AbstractButtonWidget implements IHoverTextWidget {
 
     private static final ResourceLocation BUTTONS = new ResourceLocation("wormhole", "textures/gui/small_color_buttons.png");
 
+    public boolean visible = true;
     private final Supplier<PortalTarget> target;
     private final Supplier<DyeColor> color;
 
-    public PortalTargetEditColorButton(PortalGroupScreen screen, BlockPos pos, int x, int y, Supplier<Integer> targetIndex, Supplier<DyeColor> color, Runnable returnScreen){
-        super(x, y, 10, 10, "color", () -> {
+    public PortalTargetEditColorButton(PortalGroupScreen screen, int x, int y, Supplier<Integer> targetIndex, Supplier<DyeColor> color, Runnable returnScreen){
+        super(x, y, 10, 10, () -> {
             PortalTarget target = screen.getFromPortalGroup(group -> group.getTarget(targetIndex.get()), null);
             if(target != null)
-                ClientProxy.openPortalTargetColorScreen(pos, targetIndex.get(), returnScreen);
+                ClientProxy.openPortalTargetColorScreen(screen.pos, targetIndex.get(), returnScreen);
         });
         this.target = () -> screen.getFromPortalGroup(group -> group.getTarget(targetIndex.get()), null);
         this.color = color;
     }
 
     @Override
-    protected void renderButton(int mouseX, int mouseY){
+    public void render(int mouseX, int mouseY, float partialTicks){
+        if(!this.visible)
+            return;
+
         PortalTarget target = this.target.get();
         Minecraft.getInstance().getTextureManager().bindTexture(BUTTONS);
         DyeColor color = this.color.get();
         float x = color == null ? 0 : (color.getId() + 1) * 8f / 136f;
         float y = target != null && this.isHovered() ? 0.5f : 0;
-        this.drawTexture(this.x, this.y, this.width, this.height, x, y, 8 / 136f, 0.5f);
+        ScreenUtils.drawTexture(this.x, this.y, this.width, this.height, x, y, 8 / 136f, 0.5f);
+    }
+
+    @Override
+    public void onPress(){
+        if(this.visible)
+            super.onPress();
     }
 
     @Override
     public ITextComponent getHoverText(){
-        return new TranslationTextComponent("wormhole.portal.gui.target_color");
+        return this.visible ? new TranslationTextComponent("wormhole.portal.gui.target_color") : null;
+    }
+
+    @Override
+    protected ITextComponent getNarrationMessage(){
+        return this.visible ? new TranslationTextComponent("wormhole.portal.gui.target_color") : null;
     }
 }
 

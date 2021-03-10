@@ -42,16 +42,16 @@ public class TeleportHelper {
 
         if(targetWorld == entity.world){
             if(entity instanceof ServerPlayerEntity)
-                ((ServerPlayerEntity)entity).connection.setPlayerLocation(target.x + .5, target.y, target.z + .5, target.yaw, 0);
+                ((ServerPlayerEntity)entity).connection.setPlayerLocation(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
             else
-                entity.setLocationAndAngles(target.x + .5, target.y, target.z + .5, target.yaw, 0);
+                entity.setLocationAndAngles(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
             entity.setRotationYawHead(target.yaw);
             entity.setMotion(Vec3d.ZERO);
             entity.fallDistance = 0;
             entity.onGround = true;
         }else{
             if(entity instanceof ServerPlayerEntity)
-                ((ServerPlayerEntity)entity).teleport(targetWorld, target.x, target.y, target.z, target.yaw, 0);
+                ((ServerPlayerEntity)entity).teleport(targetWorld, target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
             else{
                 entity.changeDimension(targetWorld.getDimension().getType(), new ITeleporter() {
                     @Override
@@ -59,7 +59,7 @@ public class TeleportHelper {
                         Entity newEntity = entity.getType().create(targetWorld);
                         if(newEntity != null){
                             newEntity.copyDataFromOld(entity);
-                            newEntity.setLocationAndAngles(target.x, target.y, target.z, target.yaw, 0);
+                            newEntity.setLocationAndAngles(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
                             newEntity.setMotion(Vec3d.ZERO);
                             targetWorld.func_217460_e(newEntity);
                         }

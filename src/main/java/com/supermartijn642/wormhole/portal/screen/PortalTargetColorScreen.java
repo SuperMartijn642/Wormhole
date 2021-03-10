@@ -1,5 +1,6 @@
 package com.supermartijn642.wormhole.portal.screen;
 
+import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.wormhole.screen.WormholeButton;
 import net.minecraft.item.DyeColor;
 import net.minecraft.util.Direction;
@@ -34,8 +35,8 @@ public class PortalTargetColorScreen extends PortalGroupScreen {
     @Override
     protected void addWidgets(){
         this.addWidget(new PortalTargetNameField(this, () -> this.targetIndex, 20, 20));
-        this.addWidget(new PortalTargetLabel(this, () -> this.targetIndex, 85, 20, 100, 10, "wormhole.target_device.gui.coords", target -> "(" + target.x + "," + target.y + "," + target.z + ")", false));
-        this.addWidget(new PortalTargetLabel(this, () -> this.targetIndex, 188, 20, 50, 10, "wormhole.target_device.gui.facing", target -> "wormhole.direction." + Direction.fromAngle(target.yaw).toString(), true));
+        this.addWidget(new PortalTargetLabel(this, () -> this.targetIndex, 84, 19, 102, 12, "wormhole.target_device.gui.coords", target -> "(" + target.x + "," + target.y + "," + target.z + ")", false));
+        this.addWidget(new PortalTargetLabel(this, () -> this.targetIndex, 187, 19, 52, 12, "wormhole.target_device.gui.facing", target -> "wormhole.direction." + Direction.fromAngle(target.yaw).toString(), true));
 
         this.addWidget(new PortalTargetSelectColorButton(11, 38, this, null));
         this.addWidget(new PortalTargetSelectColorButton(49, 38, this, DyeColor.WHITE));
@@ -60,7 +61,7 @@ public class PortalTargetColorScreen extends PortalGroupScreen {
 
     @Override
     protected void render(int mouseX, int mouseY){
-        this.drawBackground(0, 0, this.sizeX(), this.sizeY());
+        ScreenUtils.drawScreenBackground(0, 0, this.sizeX(), this.sizeY());
         this.font.drawString(this.title.getFormattedText(), 8, 7, 4210752);
         // target number
         this.font.drawString((this.targetIndex + 1) + ".", 8, 22, 4210752);
