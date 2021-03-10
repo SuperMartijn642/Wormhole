@@ -1,27 +1,28 @@
 package com.supermartijn642.wormhole.targetdevice;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.supermartijn642.core.gui.BaseScreen;
+import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.widget.AbstractButtonWidget;
+import com.supermartijn642.core.gui.widget.TextFieldWidget;
 import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.portal.PortalTarget;
-import com.supermartijn642.wormhole.screen.ArrowButton;
-import com.supermartijn642.wormhole.screen.WormholeButton;
+import com.supermartijn642.wormhole.portal.screen.ScreenBlockRenderer;
+import com.supermartijn642.wormhole.screen.WormholeColoredButton;
 import com.supermartijn642.wormhole.screen.WormholeLabel;
-import com.supermartijn642.wormhole.screen.WormholeScreen;
 import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceAddPacket;
-import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceMovePacket;
 import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceRemovePacket;
-import com.supermartijn642.wormhole.targetdevice.screen.CurrentTargetLabel;
-import com.supermartijn642.wormhole.targetdevice.screen.TargetLabel;
-import com.supermartijn642.wormhole.targetdevice.screen.TargetNameField;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.dimension.DimensionType;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -30,93 +31,49 @@ import java.util.function.Function;
 /**
  * Created 10/8/2020 by SuperMartijn642
  */
-public class TargetDeviceScreen extends WormholeScreen {
+public class TargetDeviceScreen extends BaseScreen {
 
-    private static final int BASE_HEIGHT = 20, HEIGHT_PER_TARGET = 15;
-    private static final int WIDTH = 300;
+    private static final ResourceLocation BACKGROUND = getTexture("select_target_screen/device_background");
+    private static final ResourceLocation SELECT_HIGHLIGHT = getTexture("select_target_screen/device_select_highlight");
+    private static final ResourceLocation HOVER_HIGHLIGHT = getTexture("select_target_screen/device_hover_highlight");
+    private static final ResourceLocation LOCATION_ICON = getTexture("select_target_screen/location_icon");
+    private static final ResourceLocation ENERGY_ICON = getTexture("select_target_screen/lightning_icon");
+    private static final ResourceLocation DIMENSION_ICON = getTexture("select_target_screen/dimension_icon");
+    private static final ResourceLocation DIRECTION_ICON = getTexture("select_target_screen/direction_icon");
+    private static final ResourceLocation SEPARATOR = getTexture("select_target_screen/separator");
+
+    private static ResourceLocation getTexture(String name){
+        return new ResourceLocation("wormhole", "textures/gui/" + name + ".png");
+    }
+
+    private static final int WIDTH = 324, HEIGHT = 185;
 
     private final PlayerEntity player;
     public final Hand hand;
-    private final BlockPos targetPos;
-    private final float targetYaw;
-
-    private final List<TargetNameField> textFields = new LinkedList<>();
-    private final List<ArrowButton> upArrows = new LinkedList<>();
-    private final List<ArrowButton> downArrows = new LinkedList<>();
-    private final List<TargetLabel> coordLabels = new LinkedList<>();
-    private final List<TargetLabel> facingLabels = new LinkedList<>();
-    private final List<WormholeButton> removeButtons = new LinkedList<>();
-    private TextFieldWidget currentTextField;
-    private WormholeLabel currentCoordLabel, currentFacingLabel;
-    private WormholeButton saveButton;
+    private final BlockPos currentPos;
+    private final float currentYaw;
+    private int selectedTarget;
+    private boolean selectedCurrentTarget = false;
+    private TextFieldWidget currentTargetNameField;
+    private final List<WormholeLabel> targetNameLabels = new LinkedList<>();
+    private WormholeColoredButton removeButton;
 
     public TargetDeviceScreen(PlayerEntity player, Hand hand, BlockPos pos, float yaw){
-        super("wormhole.target_device.gui.title");
+        super(new TranslationTextComponent("wormhole.target_device.gui.title"));
         this.player = player;
         this.hand = hand;
-        this.targetPos = pos;
-        this.targetYaw = yaw;
-    }
+        this.currentPos = pos;
+        this.currentYaw = yaw;
 
-    private void ensureTargetWidgetCount(int count){
-        int now = this.textFields.size();
-        while(this.textFields.size() < count)
-            this.addTargetWidgets();
-        while(this.textFields.size() > count)
-            this.removeTargetWidgets();
-        if(now != this.textFields.size())
-            this.updateCurrentWidgets();
-    }
-
-    private void addTargetWidgets(){
-        int y = BASE_HEIGHT + HEIGHT_PER_TARGET * this.textFields.size();
-        final int index = this.textFields.size();
-        // name field
-        this.textFields.add(this.addWidget(new TargetNameField(this::getOrDefault, this.hand, index, 8, y)));
-        // up arrow
-        ArrowButton upArrowButton = new ArrowButton(69, y, true, () ->
-            Wormhole.CHANNEL.sendToServer(new TargetDeviceMovePacket(this.hand, index, true))
-        );
-        upArrowButton.active = index > 0;
-        this.upArrows.add(this.addWidget(upArrowButton));
-        // down arrow
-        ArrowButton downArrowButton = new ArrowButton(69, y + 5, false, () ->
-            Wormhole.CHANNEL.sendToServer(new TargetDeviceMovePacket(this.hand, index, false))
-        );
-        downArrowButton.active = index < this.textFields.size() - 1;
-        if(index > 0)
-            downArrows.get(index - 1).active = true;
-        this.downArrows.add(this.addWidget(downArrowButton));
-        // labels
-        this.coordLabels.add(this.addWidget(new TargetLabel(this::getOrDefault, index, 84, y, 100, 10, "wormhole.target_device.gui.coords", target -> "(" + target.x + "," + target.y + "," + target.z + ")", false)));
-        this.facingLabels.add(this.addWidget(new TargetLabel(this::getOrDefault, index, 187, y, 50, 10, "wormhole.target_device.gui.facing", target -> "wormhole.direction." + Direction.fromAngle(target.yaw).toString(), true)));
-        // remove button
-        this.removeButtons.add(this.addWidget(new WormholeButton(250, y, 40, 10, "Remove", () ->
-            Wormhole.CHANNEL.sendToServer(new TargetDeviceRemovePacket(this.hand, index)))
-        ));
-    }
-
-    private void removeTargetWidgets(){
-        this.removeWidget(this.textFields.get(this.textFields.size() - 1));
-        this.textFields.remove(this.textFields.size() - 1);
-        this.removeWidget(this.upArrows.get(this.upArrows.size() - 1));
-        this.upArrows.remove(this.upArrows.size() - 1);
-        this.removeWidget(this.downArrows.get(this.downArrows.size() - 1));
-        this.downArrows.remove(this.downArrows.size() - 1);
-        this.removeWidget(this.coordLabels.get(this.coordLabels.size() - 1));
-        this.coordLabels.remove(this.coordLabels.size() - 1);
-        this.removeWidget(this.facingLabels.get(this.facingLabels.size() - 1));
-        this.facingLabels.remove(this.facingLabels.size() - 1);
-        this.removeWidget(this.removeButtons.get(this.removeButtons.size() - 1));
-        this.removeButtons.remove(this.removeButtons.size() - 1);
-    }
-
-    private void updateCurrentWidgets(){
-        int y = 2 * BASE_HEIGHT + Math.max(this.textFields.size(), 1) * HEIGHT_PER_TARGET + 1;
-        this.currentTextField.y = y;
-        this.currentCoordLabel.y = y;
-        this.currentFacingLabel.y = y;
-        this.saveButton.y = y;
+        // set the selected target to a non-null target
+        this.selectedTarget = this.getOrDefault(list -> {
+            for(int i = 0; i < list.size(); i++)
+                if(list.get(i) != null)
+                    return i;
+            return -1;
+        }, -1);
+        if(this.selectedTarget == -1)
+            this.selectedCurrentTarget = true;
     }
 
     @Override
@@ -126,67 +83,158 @@ public class TargetDeviceScreen extends WormholeScreen {
 
     @Override
     protected float sizeY(){
-        return this.getOrDefault(list -> 2 * BASE_HEIGHT + (Math.max(list.size(), 1) + 1) * HEIGHT_PER_TARGET + 1, 0);
+        return HEIGHT;
     }
 
     @Override
     protected void addWidgets(){
-        // remove current widgets
-        while(this.textFields.size() > 0)
-            this.removeTargetWidgets();
+        int targetCapacity = this.getFromStack(TargetDeviceItem::getMaxTargetCount, 0);
 
-        // current location
-        this.currentTextField = this.addWidget(new TextFieldWidget(this.font, 8, 0, 59, 10, I18n.format("wormhole.target_device.gui.target_name")));
-        this.currentCoordLabel = this.addWidget(new CurrentTargetLabel(84, 0, 100, 10, "wormhole.gui.label", "wormhole.target_device.gui.coords", "(" + this.targetPos.getX() + "," + this.targetPos.getY() + "," + this.targetPos.getZ() + ")", false));
-        this.currentFacingLabel = this.addWidget(new CurrentTargetLabel(187, 0, 50, 10, "wormhole.gui.label", "wormhole.target_device.gui.facing", "wormhole.direction." + Direction.fromAngle(this.targetYaw), true));
-        this.saveButton = this.addWidget(new WormholeButton(250, 0, 40, 10, "Save", () -> {
-            if(!this.currentTextField.getText().trim().isEmpty())
-                Wormhole.CHANNEL.sendToServer(new TargetDeviceAddPacket(this.hand, this.currentTextField.getText().trim(), this.targetPos, this.targetYaw));
-        }));
-
-        int targets = this.getOrDefault(List::size, -1);
-        if(targets != -1){
-            this.ensureTargetWidgetCount(targets);
-            this.updateCurrentWidgets();
+        for(int count = 0; count < Math.min(10, targetCapacity); count++){
+            final int index = count;
+            int y = 18 + index * 16;
+            this.targetNameLabels.add(this.addWidget(new WormholeLabel(7, y, 102, 12, () -> this.getOrDefault(list -> list.size() > index ? list.get(index).name : "", ""), false)));
         }
+
+        this.currentTargetNameField = this.addWidget(new TextFieldWidget(215, 18, 102, 12, "", PortalTarget.MAX_NAME_LENGTH));
+        this.currentTargetNameField.setSuggestion(I18n.format("wormhole.target_device.gui.target_name"));
+        if(this.selectedCurrentTarget)
+            this.currentTargetNameField.setFocused(true);
+
+        this.removeButton = this.addWidget(new WormholeColoredButton(131, 160, 62, 11, "", () -> {
+            if(this.selectedTarget >= 0)
+                Wormhole.CHANNEL.sendToServer(new TargetDeviceRemovePacket(this.hand, this.selectedTarget));
+            else if(this.selectedCurrentTarget)
+                Wormhole.CHANNEL.sendToServer(new TargetDeviceAddPacket(this.hand, this.currentTargetNameField.getText().trim(), this.currentPos, this.currentYaw));
+        }));
     }
 
     @Override
     protected void render(int mouseX, int mouseY){
-        List<PortalTarget> targets = this.getOrDefault(list -> list, null);
-        if(targets == null)
-            return;
+        ScreenUtils.bindTexture(BACKGROUND);
+        ScreenUtils.drawTexture(0, 0, this.sizeX(), this.sizeY());
 
-        this.ensureTargetWidgetCount(targets.size());
+        // draw titles
+        ScreenUtils.drawCenteredString(this.font, this.title, 58, 3, Integer.MAX_VALUE);
+        ScreenUtils.drawCenteredString(this.font, I18n.format("wormhole.target_device.gui.current_location"), 266, 3, Integer.MAX_VALUE);
 
-        this.saveButton.active = !this.currentTextField.getText().trim().isEmpty() && targets.size() < this.getFromStack(TargetDeviceItem::getMaxTargetCount, 0);
+        GlStateManager.enableAlphaTest();
+        // draw target select highlight
+        if(this.selectedTarget >= 0){
+            ScreenUtils.bindTexture(SELECT_HIGHLIGHT);
+            ScreenUtils.drawTexture(5, 16 + 16 * this.selectedTarget, 106, 16);
+        }else if(this.selectedCurrentTarget){
+            ScreenUtils.bindTexture(SELECT_HIGHLIGHT);
+            ScreenUtils.drawTexture(213, 16, 106, 16);
+        }
 
-        int height = BASE_HEIGHT + Math.max(this.getOrDefault(List::size, 0), 1) * HEIGHT_PER_TARGET;
-        this.drawTop(targets, this.sizeX(), height);
-        GlStateManager.translated(0, height + 1, 0);
-        this.drawBottom(this.sizeX(), BASE_HEIGHT + HEIGHT_PER_TARGET);
+        // draw hover highlight
+        if(mouseX > 5 && mouseX < 111 && mouseY > 16 && mouseY < 176){
+            int targetIndex = (mouseY - 16) / 16;
+            if(this.getOrDefault(list -> list.size() > targetIndex && list.get(targetIndex) != null, false)){
+                ScreenUtils.bindTexture(HOVER_HIGHLIGHT);
+                ScreenUtils.drawTexture(5, 16 + targetIndex * 16, 106, 16);
+            }
+        }else if(mouseX > 213 && mouseX < 319 && mouseY > 16 && mouseY < 32 && !(mouseX > 215 && mouseX < 317 && mouseY > 18 && mouseY < 30)){
+            ScreenUtils.bindTexture(HOVER_HIGHLIGHT);
+            ScreenUtils.drawTexture(213, 16, 106, 16);
+        }
+
+        // draw target info
+        if(this.selectedTarget >= 0){
+            PortalTarget target = this.getOrDefault(list -> list.size() > this.selectedTarget ? list.get(this.selectedTarget) : null, null);
+            if(target != null)
+                this.renderTargetInfo(target.name, target.getPos(), target.dimension, target.dimensionDisplayName, target.yaw);
+        }else if(this.selectedCurrentTarget){
+            String dimension = this.player.world.getDimension().getType().getRegistryName().toString();
+            String dimensionName = dimension.substring(Math.min(dimension.length() - 1, Math.max(0, dimension.indexOf(':') + 1))).toLowerCase();
+            dimensionName = dimensionName.substring(0, 1).toUpperCase() + dimensionName.substring(1);
+            for(int i = 0; i < dimensionName.length() - 1; i++)
+                if(dimensionName.charAt(i) == '_' && Character.isAlphabetic(dimensionName.charAt(i + 1)))
+                    dimensionName = dimensionName.substring(0, i) + ' ' + (i + 2 < dimensionName.length() ? dimensionName.substring(i + 1, i + 2).toUpperCase() + dimensionName.substring(i + 2) : dimensionName.substring(i + 1).toUpperCase());
+            this.renderTargetInfo(this.currentTargetNameField.getText().trim(), this.currentPos, this.player.world.getDimension().getType().getId(), dimensionName, this.currentYaw);
+        }
+
+        this.updateAddRemoveButton();
     }
 
-    private void drawTop(List<PortalTarget> targets, float width, float height){
-        this.drawBackground(0, 0, width, height);
-        this.font.drawString(this.title.getFormattedText(), 8, 7, 4210752);
-    }
+    private void renderTargetInfo(String name, BlockPos pos, int dimension, String dimensionName, float yaw){
+        ScreenUtils.drawCenteredString(this.font, name, 162, 31, Integer.MAX_VALUE);
 
-    private void drawBottom(float width, float height){
-        this.drawBackground(0, 0, width, height);
-        this.font.drawString(new TranslationTextComponent("wormhole.target_device.gui.current_location").getFormattedText(), 8, 7, 4210752);
+        ScreenUtils.bindTexture(SEPARATOR);
+        ScreenUtils.drawTexture(124, 41, 77, 1);
+
+        // location
+        GlStateManager.enableAlphaTest();
+        ScreenUtils.bindTexture(LOCATION_ICON);
+        ScreenUtils.drawTexture(121, 47, 9, 9);
+        ScreenUtils.drawString(this.font, "(" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")", 132, 48, Integer.MAX_VALUE);
+        // dimension
+        Block block = null;
+        if(dimension == DimensionType.OVERWORLD.getId())
+            block = Blocks.GRASS_PATH;
+        else if(dimension == DimensionType.THE_NETHER.getId())
+            block = Blocks.NETHERRACK;
+        else if(dimension == DimensionType.THE_END.getId())
+            block = Blocks.END_STONE;
+        if(block == null){
+            ScreenUtils.bindTexture(DIMENSION_ICON);
+            ScreenUtils.drawTexture(121, 59, 9, 9);
+        }else{
+            ScreenBlockRenderer.drawBlock(block, 125.5,  63.5, 5.5, 45, 40);
+        }
+        ScreenUtils.drawString(this.font, dimensionName, 132, 60, Integer.MAX_VALUE);
+        // direction
+        GlStateManager.enableAlphaTest();
+        ScreenUtils.bindTexture(DIRECTION_ICON);
+        ScreenUtils.drawTexture(119, 69, 13, 13);
+        ScreenUtils.drawString(this.font, I18n.format("wormhole.direction." + Direction.fromAngle(yaw).toString()), 132, 72, Integer.MAX_VALUE);
     }
 
     @Override
     protected void renderTooltips(int mouseX, int mouseY){
+        // location
+        if(mouseX >= 120 && mouseX <= 131 && mouseY >= 46 && mouseY <= 57)
+            this.renderTooltip(new TranslationTextComponent("wormhole.target.location").getFormattedText(), mouseX, mouseY);
+            // dimension
+        else if(mouseX >= 120 && mouseX <= 131 && mouseY >= 58 && mouseY <= 69)
+            this.renderTooltip(new TranslationTextComponent("wormhole.target.dimension").getFormattedText(), mouseX, mouseY);
+            // direction
+        else if(mouseX >= 120 && mouseX <= 131 && mouseY >= 70 && mouseY <= 81)
+            this.renderTooltip(new TranslationTextComponent("wormhole.target.direction").getFormattedText(), mouseX, mouseY);
+    }
 
+    private void updateAddRemoveButton(){
+        if(this.selectedTarget >= 0){
+            boolean notEmpty = this.getOrDefault(list -> list.size() > this.selectedTarget && list.get(this.selectedTarget) != null, false);
+            this.removeButton.setVisible();
+            this.removeButton.setColorRed();
+            this.removeButton.setTextKey("wormhole.portal.targets.gui.remove");
+            this.removeButton.active = notEmpty;
+        }else if(this.selectedCurrentTarget){
+            boolean notEmpty = !this.currentTargetNameField.getText().trim().isEmpty();
+            boolean space = this.getOrDefault(list -> {
+                if(list.size() < this.getFromStack(TargetDeviceItem::getMaxTargetCount, 0))
+                    return true;
+                for(PortalTarget target : list)
+                    if(target == null)
+                        return true;
+                return false;
+            }, false);
+            this.removeButton.setVisible();
+            this.removeButton.setColorWhite();
+            this.removeButton.setTextKey("wormhole.portal.targets.gui.add");
+            this.removeButton.active = notEmpty && space;
+        }else{
+            this.removeButton.setInvisible();
+        }
     }
 
     public <T> T getOrDefault(Function<List<PortalTarget>,T> function, T other){
         ItemStack stack = this.player.getHeldItem(this.hand);
         if(!stack.isEmpty() && stack.getItem() instanceof TargetDeviceItem)
             return function.apply(TargetDeviceItem.getTargets(stack));
-        Minecraft.getInstance().player.closeScreen();
+        this.closeScreen();
         return other;
     }
 
@@ -194,14 +242,26 @@ public class TargetDeviceScreen extends WormholeScreen {
         ItemStack stack = this.player.getHeldItem(this.hand);
         if(!stack.isEmpty() && stack.getItem() instanceof TargetDeviceItem)
             return function.apply(stack);
-        Minecraft.getInstance().player.closeScreen();
+        this.closeScreen();
         return other;
     }
 
     @Override
-    public void tick(){
-        super.tick();
-        if(this.currentTextField != null)
-            this.currentTextField.tick();
+    protected void onMousePress(int mouseX, int mouseY, int button){
+        if(button != 0)
+            return;
+
+        if(mouseX > 5 && mouseX < 111 && mouseY > 16 && mouseY < 176){
+            int targetIndex = (mouseY - 16) / 16;
+            if(this.getOrDefault(list -> list.size() > targetIndex && list.get(targetIndex) != null, false)){
+                AbstractButtonWidget.playClickSound();
+                this.selectedTarget = targetIndex;
+                this.selectedCurrentTarget = false;
+            }
+        }else if(mouseX > 213 && mouseX < 319 && mouseY > 16 && mouseY < 32 && !(mouseX > 215 && mouseX < 317 && mouseY > 18 && mouseY < 30)){
+            AbstractButtonWidget.playClickSound();
+            this.selectedTarget = -1;
+            this.selectedCurrentTarget = true;
+        }
     }
 }

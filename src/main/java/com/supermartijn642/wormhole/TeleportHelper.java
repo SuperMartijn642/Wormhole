@@ -48,9 +48,9 @@ public class TeleportHelper {
 
         if(targetWorld == entity.world){
             if(entity instanceof ServerPlayerEntity)
-                ((ServerPlayerEntity)entity).connection.setPlayerLocation(target.x + .5, target.y, target.z + .5, target.yaw, 0);
+                ((ServerPlayerEntity)entity).connection.setPlayerLocation(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
             else
-                entity.setLocationAndAngles(target.x + .5, target.y, target.z + .5, target.yaw, 0);
+                entity.setLocationAndAngles(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
             entity.setRotationYawHead(target.yaw);
             entity.setMotion(Vec3d.ZERO);
             entity.fallDistance = 0;

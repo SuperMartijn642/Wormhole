@@ -74,8 +74,8 @@ public class ClientProxy {
         Minecraft.getInstance().displayGuiScreen(new PortalTargetScreen(pos, getPlayer()));
     }
 
-    public static void openPortalTargetScreen(BlockPos pos, int scrollOffset){
-        Minecraft.getInstance().displayGuiScreen(new PortalTargetScreen(pos, scrollOffset, getPlayer()));
+    public static void openPortalTargetScreen(BlockPos pos, int scrollOffset, int selectedPortalTarget, int selectedDeviceTarget){
+        Minecraft.getInstance().displayGuiScreen(new PortalTargetScreen(pos, getPlayer(), scrollOffset, selectedPortalTarget, selectedDeviceTarget));
     }
 
     public static void openPortalTargetColorScreen(BlockPos pos, int targetIndex, Runnable returnScreen){
