@@ -50,7 +50,7 @@ public class Wormhole {
 
     public static final String MODID = "wormhole";
     public static final String NAME = "Wormhole (Portals)";
-    public static final String VERSION = "1.1.4b";
+    public static final String VERSION = "1.1.5";
     public static final String DEPENDENCIES = "required-after:supermartijn642corelib@[1.0.0,1.1.0)";
 
     @Mod.Instance
