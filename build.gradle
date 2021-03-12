@@ -33,7 +33,7 @@ minecraft {
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 
             mods {
-                simplemagnets {
+                wormhole {
                     source sourceSets.main
                 }
             }
@@ -46,7 +46,7 @@ minecraft {
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 
             mods {
-                simplemagnets {
+                wormhole {
                     source sourceSets.main
                 }
             }
@@ -61,7 +61,7 @@ minecraft {
             args '--mod', 'wormhole', '--all', '--output', file('src/generated/resources/')
 
             mods {
-                simplemagnets {
+                wormhole {
                     source sourceSets.main
                 }
             }
