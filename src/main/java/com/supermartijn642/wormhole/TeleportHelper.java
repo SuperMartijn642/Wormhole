@@ -25,19 +25,36 @@ public class TeleportHelper {
 
     private static final int TELEPORT_COOLDOWN = 2 * 20; // 2 seconds
 
-    public static void queTeleport(Entity entity, PortalTarget target){
-        if(entity.world.isRemote)
-            return;
+    public static boolean queTeleport(Entity entity, PortalTarget target){
+        if(!canTeleport(entity, target))
+            return false;
 
-        entity.world.getServer().enqueue(new TickDelayedTask(0, () -> teleport(entity, target)));
+        entity.world.getServer().enqueue(new TickDelayedTask(0, () -> teleportEntity(entity, target)));
+
+        entity.getPersistentData().putLong("wormhole:teleported", entity.ticksExisted);
+        return true;
     }
 
-    public static void teleport(Entity entity, PortalTarget target){
-        if(!(entity.world instanceof ServerWorld) || !target.getWorld(entity.getServer()).isPresent())
-            return;
+    public static boolean teleport(Entity entity, PortalTarget target){
+        if(!canTeleport(entity, target))
+            return false;
+
+        teleportEntity(entity, target);
+
+        entity.getPersistentData().putLong("wormhole:teleported", entity.ticksExisted);
+        return true;
+    }
+
+    public static boolean canTeleport(Entity entity, PortalTarget target){
+        if(entity.world.isRemote || !target.getWorld(entity.getServer()).isPresent())
+            return false;
 
         CompoundNBT tag = entity.getPersistentData();
-        if(tag.contains("wormhole:teleported") && entity.ticksExisted - tag.getLong("wormhole:teleported") > 0 && entity.ticksExisted - tag.getLong("wormhole:teleported") < TELEPORT_COOLDOWN)
+        return !tag.contains("wormhole:teleported") || entity.ticksExisted - tag.getLong("wormhole:teleported") < 0 || entity.ticksExisted - tag.getLong("wormhole:teleported") >= TELEPORT_COOLDOWN;
+    }
+
+    private static void teleportEntity(Entity entity, PortalTarget target){
+        if(entity.world.isRemote || !target.getWorld(entity.getServer()).isPresent())
             return;
 
         Optional<ServerWorld> optionalTargetWorld = target.getWorld(entity.getServer()).filter(ServerWorld.class::isInstance).map(ServerWorld.class::cast);
@@ -109,7 +126,5 @@ public class TeleportHelper {
                 targetWorld.resetUpdateEntityTick();
             }
         }
-
-        tag.putLong("wormhole:teleported", entity.ticksExisted);
     }
 }

@@ -54,13 +54,13 @@ public class StabilizerBlock extends PortalGroupBlock {
         CompoundNBT tag = stack.getOrCreateTag().contains("tileData") ? stack.getOrCreateTag().getCompound("tileData") : null;
 
         int targets = tag == null || tag.isEmpty() || !tag.contains("targetCount") ? 0 : tag.getInt("targetCount");
-        int targetCapacity = WormholeConfig.INSTANCE.stabilizerTargetCapacity.get();
+        int targetCapacity = WormholeConfig.stabilizerTargetCapacity.get();
 
         if(targetCapacity > 0)
             tooltip.add(new TranslationTextComponent("wormhole.portal_stabilizer.info.targets", targets, targetCapacity).applyTextStyle(TextFormatting.YELLOW));
 
         int energy = tag == null || tag.isEmpty() || !tag.contains("energy") ? 0 : tag.getInt("energy");
-        int energyCapacity = WormholeConfig.INSTANCE.stabilizerEnergyCapacity.get();
+        int energyCapacity = WormholeConfig.stabilizerEnergyCapacity.get();
 
         if(energyCapacity > 0)
             tooltip.add(new StringTextComponent(EnergyFormat.formatCapacity(energy, energyCapacity)).applyTextStyle(TextFormatting.YELLOW));
