@@ -5,10 +5,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.concurrent.TickDelayedTask;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.ITeleporter;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
+import java.lang.reflect.Field;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -16,6 +19,8 @@ import java.util.function.Function;
  * Created 12/10/2020 by SuperMartijn642
  */
 public class TeleportHelper {
+
+    private static final Field field_242271_ac = ObfuscationReflectionHelper.findField(Entity.class, "field_242271_ac");
 
     private static final int TELEPORT_COOLDOWN = 2 * 20; // 2 seconds
 
@@ -70,6 +75,12 @@ public class TeleportHelper {
             if(entity instanceof ServerPlayerEntity)
                 ((ServerPlayerEntity)entity).teleport(targetWorld, target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
             else{
+                try{
+                    field_242271_ac.setAccessible(true);
+                    field_242271_ac.set(entity, BlockPos.ZERO);
+                }catch(IllegalAccessException e){
+                    return;
+                }
                 entity.changeDimension(optionalTargetWorld.get(), new ITeleporter() {
                     @Override
                     public Entity placeEntity(Entity entity, ServerWorld currentWorld, ServerWorld destWorld, float yaw, Function<Boolean,Entity> repositionEntity){
