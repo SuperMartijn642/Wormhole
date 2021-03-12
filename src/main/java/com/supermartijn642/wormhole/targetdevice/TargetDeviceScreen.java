@@ -135,7 +135,7 @@ public class TargetDeviceScreen extends BaseScreen {
                 ScreenUtils.bindTexture(HOVER_HIGHLIGHT);
                 ScreenUtils.drawTexture(5, 16 + targetIndex * 16, 106, 16);
             }
-        }else if(mouseX > 213 && mouseX < 319 && mouseY > 16 && mouseY < 32 && !(mouseX > 215 && mouseX < 317 && mouseY > 18 && mouseY < 30)){
+        }else if(mouseX > 213 && mouseX < 319 && mouseY > 16 && mouseY < 32){
             ScreenUtils.bindTexture(HOVER_HIGHLIGHT);
             ScreenUtils.drawTexture(213, 16, 106, 16);
         }
@@ -259,7 +259,7 @@ public class TargetDeviceScreen extends BaseScreen {
                 this.selectedTarget = targetIndex;
                 this.selectedCurrentTarget = false;
             }
-        }else if(mouseX > 213 && mouseX < 319 && mouseY > 16 && mouseY < 32 && !(mouseX > 215 && mouseX < 317 && mouseY > 18 && mouseY < 30)){
+        }else if(mouseX > 213 && mouseX < 319 && mouseY > 16 && mouseY < 32){
             AbstractButtonWidget.playClickSound();
             this.selectedTarget = -1;
             this.selectedCurrentTarget = true;
