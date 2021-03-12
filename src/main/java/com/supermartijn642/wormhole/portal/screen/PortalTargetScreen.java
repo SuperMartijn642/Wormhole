@@ -320,7 +320,7 @@ public class PortalTargetScreen extends PortalGroupScreen {
             this.removeButton.setColorRed();
             this.removeButton.setTextKey("wormhole.portal.targets.gui.remove");
             this.removeButton.active = notEmpty;
-            this.colorButton.visible = true;
+            this.colorButton.visible = notEmpty;
         }else if(this.selectedDeviceTarget >= 0){
             boolean notEmpty = this.getFromDeviceTargets(group -> group.size() > this.selectedDeviceTarget && group.get(this.selectedDeviceTarget) != null, false);
             this.selectButton.setInvisible();
@@ -328,7 +328,7 @@ public class PortalTargetScreen extends PortalGroupScreen {
             this.removeButton.setColorWhite();
             this.removeButton.setTextKey("wormhole.portal.targets.gui.add");
             this.removeButton.active = notEmpty;
-            this.colorButton.visible = false;
+            this.colorButton.visible = notEmpty;
         }else{
             this.selectButton.setInvisible();
             this.removeButton.setInvisible();
