@@ -181,7 +181,7 @@ public class TargetDeviceScreen extends BaseScreen {
             ScreenUtils.bindTexture(DIMENSION_ICON);
             ScreenUtils.drawTexture(121, 59, 9, 9);
         }else{
-            ScreenBlockRenderer.drawBlock(block, this.left() + 125.5, this.top() + 63.5, 5.5, 45, 40);
+            ScreenBlockRenderer.drawBlock(block, 125.5, 63.5, 5.5, 45, 40);
         }
         ScreenUtils.drawString(this.font, dimensionName, 132, 60, Integer.MAX_VALUE);
         // direction
