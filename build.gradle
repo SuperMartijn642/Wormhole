@@ -97,4 +97,6 @@ dependencies {
 
     // Core Lib
     compile files('libraries/supermartijn642corelib-1.0.0-mc1.16.5.jar')
+    // Config Lib
+    compile fg.deobf("curse.maven:supermartijn642s-config-lib:3226128")
 }
