@@ -97,4 +97,13 @@ dependencies {
 
     // Core Lib
     compile files('libraries/supermartijn642corelib-1.0.0-mc1.16.5.jar')
+    // Config Lib
+    compile fg.deobf("curse.maven:supermartijn642s-config-lib:3226128")
+
+    // Thermal Expansion
+    runtimeOnly fg.deobf("curse.maven:thermal-expansion:3155832")
+    // Thermal Foundation
+    runtimeOnly fg.deobf("curse.maven:thermal-foundation:3155830")
+    // COFH Core
+    runtimeOnly fg.deobf("curse.maven:cofh-core:3155824")
 }

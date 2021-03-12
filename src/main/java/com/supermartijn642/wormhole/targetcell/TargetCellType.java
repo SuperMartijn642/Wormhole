@@ -20,9 +20,9 @@ public enum TargetCellType {
     public int getCapacity(){
         switch(this){
             case BASIC:
-                return WormholeConfig.INSTANCE.basicTargetCellCapacity.get();
+                return WormholeConfig.basicTargetCellCapacity.get();
             case ADVANCED:
-                return WormholeConfig.INSTANCE.advancedTargetCellCapacity.get();
+                return WormholeConfig.advancedTargetCellCapacity.get();
         }
         return 0;
     }
