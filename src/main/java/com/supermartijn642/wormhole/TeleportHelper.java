@@ -8,7 +8,6 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -17,7 +16,7 @@ import java.util.Optional;
 /**
  * Created 12/10/2020 by SuperMartijn642
  */
-@Mod.EventBusSubscriber(value = Side.SERVER)
+@Mod.EventBusSubscriber
 public class TeleportHelper {
 
     private static final int TELEPORT_COOLDOWN = 2 * 20; // 2 seconds
@@ -49,7 +48,7 @@ public class TeleportHelper {
             return false;
 
         NBTTagCompound tag = entity.getEntityData();
-        return !tag.hasKey("wormhole:teleported") || entity.ticksExisted - tag.getLong("wormhole:teleported") <= 0 || entity.ticksExisted - tag.getLong("wormhole:teleported") >= TELEPORT_COOLDOWN;
+        return !tag.hasKey("wormhole:teleported") || entity.ticksExisted - tag.getLong("wormhole:teleported") < 0 || entity.ticksExisted - tag.getLong("wormhole:teleported") >= TELEPORT_COOLDOWN;
     }
 
     public static void teleportEntity(Entity entity, PortalTarget target){
@@ -85,19 +84,8 @@ public class TeleportHelper {
         }
     }
 
-    /**
-     * Copy the logic from {@link Entity#copyDataFromOld(Entity)}, since that is private in 1.12
-     */
-    private static void copyDataFromOld(Entity from, Entity to){
-        NBTTagCompound nbttagcompound = from.writeToNBT(new NBTTagCompound());
-        nbttagcompound.removeTag("Dimension");
-        to.readFromNBT(nbttagcompound);
-        to.timeUntilPortal = from.timeUntilPortal;
-        // copying the other 3 portal related variables shouldn't be necessary
-    }
-
     @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent e){
+    public static void onPlayerTick(TickEvent.ServerTickEvent e){
         if(e.phase == TickEvent.Phase.START){
             tpQueue.forEach(Runnable::run);
             tpQueue.clear();
