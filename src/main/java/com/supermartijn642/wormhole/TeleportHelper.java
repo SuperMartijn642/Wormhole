@@ -24,19 +24,36 @@ public class TeleportHelper {
 
     private static final List<Runnable> tpQueue = new LinkedList<>();
 
-    public static void queTeleport(Entity entity, PortalTarget target){
-        if(entity.world.isRemote)
-            return;
+    public static boolean queTeleport(Entity entity, PortalTarget target){
+        if(!canTeleport(entity, target))
+            return false;
 
-        tpQueue.add(() -> teleport(entity, target));
+        tpQueue.add(() -> teleportEntity(entity, target));
+
+        entity.getEntityData().setLong("wormhole:teleported", entity.ticksExisted);
+        return true;
     }
 
-    public static void teleport(Entity entity, PortalTarget target){
-        if(!(entity.world instanceof WorldServer) || !target.getWorld(entity.getServer()).isPresent())
-            return;
+    public static boolean teleport(Entity entity, PortalTarget target){
+        if(!canTeleport(entity, target))
+            return false;
+
+        teleportEntity(entity, target);
+
+        entity.getEntityData().setLong("wormhole:teleported", entity.ticksExisted);
+        return true;
+    }
+
+    public static boolean canTeleport(Entity entity, PortalTarget target){
+        if(entity.world.isRemote || !target.getWorld(entity.getServer()).isPresent())
+            return false;
 
         NBTTagCompound tag = entity.getEntityData();
-        if(tag.hasKey("wormhole:teleported") && entity.ticksExisted - tag.getLong("wormhole:teleported") > 0 && entity.ticksExisted - tag.getLong("wormhole:teleported") < TELEPORT_COOLDOWN)
+        return !tag.hasKey("wormhole:teleported") || entity.ticksExisted - tag.getLong("wormhole:teleported") <= 0 || entity.ticksExisted - tag.getLong("wormhole:teleported") >= TELEPORT_COOLDOWN;
+    }
+
+    public static void teleportEntity(Entity entity, PortalTarget target){
+        if(!(entity.world instanceof WorldServer) || !target.getWorld(entity.getServer()).isPresent())
             return;
 
         Optional<WorldServer> optionalTargetWorld = target.getWorld(entity.getServer()).filter(WorldServer.class::isInstance).map(WorldServer.class::cast);
@@ -66,8 +83,6 @@ public class TeleportHelper {
                 entity.onGround = true;
             }
         }
-
-        tag.setLong("wormhole:teleported", entity.ticksExisted);
     }
 
     /**

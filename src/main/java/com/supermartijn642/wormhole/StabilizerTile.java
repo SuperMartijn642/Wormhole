@@ -64,7 +64,7 @@ public class StabilizerTile extends PortalGroupTile implements ITargetCellTile, 
 
     @Override
     public int getTargetCapacity(){
-        return WormholeConfig.stabilizerTargetCapacity;
+        return WormholeConfig.stabilizerTargetCapacity.get();
     }
 
     @Override
@@ -134,7 +134,7 @@ public class StabilizerTile extends PortalGroupTile implements ITargetCellTile, 
         if(!fromGroup && this.hasGroup())
             return this.getGroup().getEnergyCapacity();
 
-        return WormholeConfig.stabilizerEnergyCapacity;
+        return WormholeConfig.stabilizerEnergyCapacity.get();
     }
 
     @Override

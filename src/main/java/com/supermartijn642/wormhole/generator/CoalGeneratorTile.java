@@ -19,9 +19,9 @@ public class CoalGeneratorTile extends GeneratorTile implements IItemHandlerModi
     private ItemStack stack = ItemStack.EMPTY;
 
     public CoalGeneratorTile(){
-        super(WormholeConfig.coalGeneratorCapacity,
-            WormholeConfig.coalGeneratorRange,
-            WormholeConfig.coalGeneratorPower * 2);
+        super(WormholeConfig.coalGeneratorCapacity.get(),
+            WormholeConfig.coalGeneratorRange.get(),
+            WormholeConfig.coalGeneratorPower.get() * 2);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class CoalGeneratorTile extends GeneratorTile implements IItemHandlerModi
         if(this.energy < this.energyCapacity){
             if(this.burnTime > 0){
                 this.burnTime--;
-                this.energy += WormholeConfig.coalGeneratorPower;
+                this.energy += WormholeConfig.coalGeneratorPower.get();
                 if(this.energy > this.energyCapacity)
                     this.energy = this.energyCapacity;
                 if(this.burnTime == 0){

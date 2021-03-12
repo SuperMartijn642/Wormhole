@@ -87,8 +87,6 @@ public class Wormhole {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent e){
-        WormholeConfig.init(e.getModConfigurationDirectory());
-
         channel = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
         channel.registerMessage(TargetDeviceAddPacket.class, TargetDeviceAddPacket.class, 0, Side.SERVER);
         channel.registerMessage(TargetDeviceMovePacket.class, TargetDeviceMovePacket.class, 1, Side.SERVER);
@@ -152,8 +150,8 @@ public class Wormhole {
             e.getRegistry().register(new ItemBlock(advanced_target_cell).setRegistryName(advanced_target_cell.getRegistryName()));
             e.getRegistry().register(new ItemBlock(coal_generator).setRegistryName(coal_generator.getRegistryName()));
 
-            e.getRegistry().register(new TargetDeviceItem("target_device", () -> WormholeConfig.basicDeviceTargetCount));
-            e.getRegistry().register(new TargetDeviceItem("advanced_target_device", () -> WormholeConfig.advancedDeviceTargetCount));
+            e.getRegistry().register(new TargetDeviceItem("target_device", () -> WormholeConfig.basicDeviceTargetCount.get()));
+            e.getRegistry().register(new TargetDeviceItem("advanced_target_device", () -> WormholeConfig.advancedDeviceTargetCount.get()));
         }
     }
 

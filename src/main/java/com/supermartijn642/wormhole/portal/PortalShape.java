@@ -100,7 +100,7 @@ public class PortalShape {
                 if(frames >= 2)
                     corners.add(pos);
             }
-            if(done.size() + current.size() + next.size() > WormholeConfig.maxPortalSize)
+            if(done.size() + current.size() + next.size() > WormholeConfig.maxPortalSize.get())
                 return null;
             done.addAll(current);
             current.clear();
@@ -108,7 +108,7 @@ public class PortalShape {
             next.clear();
         }
 
-        if(WormholeConfig.requireCorners){
+        if(WormholeConfig.requireCorners.get()){
             if(!validateCorners(world, done, frame, corners, stabilizers, energyCells, targetCells, axis))
                 return null;
         }else

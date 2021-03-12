@@ -87,12 +87,12 @@ public class CoalGeneratorBlock extends WormholeBlock {
 
     @Override
     public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn){
-        int range = 2 * WormholeConfig.coalGeneratorRange + 1;
-        tooltip.add(new TextComponentTranslation("wormhole.coal_generator.info", range, EnergyFormat.formatEnergyPerTick(WormholeConfig.coalGeneratorPower)).setStyle(new Style().setColor(TextFormatting.AQUA)).getFormattedText());
+        int range = 2 * WormholeConfig.coalGeneratorRange.get() + 1;
+        tooltip.add(new TextComponentTranslation("wormhole.coal_generator.info", range, EnergyFormat.formatEnergyPerTick(WormholeConfig.coalGeneratorPower.get())).setStyle(new Style().setColor(TextFormatting.AQUA)).getFormattedText());
 
         NBTTagCompound tag = stack.hasTagCompound() && stack.getTagCompound().hasKey("tileData") ? stack.getTagCompound().getCompoundTag("tileData") : null;
         int energy = tag == null || tag.hasNoTags() || !tag.hasKey("energy") ? 0 : tag.getInteger("energy");
-        tooltip.add(new TextComponentString(EnergyFormat.formatCapacity(energy, WormholeConfig.coalGeneratorCapacity)).setStyle(new Style().setColor(TextFormatting.YELLOW)).getFormattedText());
+        tooltip.add(new TextComponentString(EnergyFormat.formatCapacity(energy, WormholeConfig.coalGeneratorCapacity.get())).setStyle(new Style().setColor(TextFormatting.YELLOW)).getFormattedText());
     }
 
     @Override
