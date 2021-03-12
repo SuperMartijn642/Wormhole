@@ -39,7 +39,7 @@ public class PortalGroup {
             return;
         this.canTick = false;
 
-        if(this.activated && WormholeConfig.INSTANCE.requirePower.get()){
+        if(this.activated && WormholeConfig.requirePower.get()){
             if(this.getStoredEnergy() < this.getIdleEnergyCost())
                 this.deactivate();
             else
@@ -226,7 +226,7 @@ public class PortalGroup {
 
     public void activate(){
         if(!this.activated && this.getActiveTarget() != null && this.shape.validatePortal(this.world)
-            && (!WormholeConfig.INSTANCE.requirePower.get() || this.getStoredEnergy() >= this.getIdleEnergyCost())){
+            && (!WormholeConfig.requirePower.get() || this.getStoredEnergy() >= this.getIdleEnergyCost())){
             this.shape.createPortals(this.world, this.getActiveTarget().color);
             this.activated = true;
             this.updateGroup();
@@ -247,10 +247,10 @@ public class PortalGroup {
 
     public void teleport(Entity entity){
         PortalTarget target = this.getActiveTarget();
-        if(!this.activated || target == null)
+        if(!this.activated || target == null || !TeleportHelper.canTeleport(entity, target))
             return;
 
-        if(WormholeConfig.INSTANCE.requirePower.get()){
+        if(WormholeConfig.requirePower.get()){
             int energy = this.getStoredEnergy();
             int cost = this.getTeleportEnergyCost();
             if(energy < cost){
@@ -271,7 +271,7 @@ public class PortalGroup {
     }
 
     public int getIdleEnergyCost(){
-        return WormholeConfig.INSTANCE.idlePowerDrain.get() + (int)Math.round(this.shape.area.size() * WormholeConfig.INSTANCE.sizePowerDrain.get());
+        return WormholeConfig.idlePowerDrain.get() + (int)Math.round(this.shape.area.size() * WormholeConfig.sizePowerDrain.get());
     }
 
     public void destroy(){
@@ -300,10 +300,10 @@ public class PortalGroup {
     }
 
     public static int getTeleportCostToTarget(World world, BlockPos portalCenter, PortalTarget target){
-        return WormholeConfig.INSTANCE.travelPowerDrain.get() +
+        return WormholeConfig.travelPowerDrain.get() +
             (target.dimension.equals(world.getDimensionKey().getLocation().toString()) ?
-                (int)Math.round(Math.pow(portalCenter.distanceSq(target.getPos()), 1/4d) * WormholeConfig.INSTANCE.distancePowerDrain.get()) :
-                WormholeConfig.INSTANCE.dimensionPowerDrain.get());
+                (int)Math.round(Math.pow(portalCenter.distanceSq(target.getPos()), 1 / 4d) * WormholeConfig.distancePowerDrain.get()) :
+                WormholeConfig.dimensionPowerDrain.get());
     }
 
 }

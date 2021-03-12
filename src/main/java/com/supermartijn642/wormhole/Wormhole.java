@@ -30,9 +30,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.NetworkRegistry;
@@ -106,7 +104,6 @@ public class Wormhole {
     public static ContainerType<CoalGeneratorContainer> coal_generator_container;
 
     public Wormhole(){
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, WormholeConfig.CONFIG_SPEC);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
 
         CHANNEL.registerMessage(0, TargetDeviceAddPacket.class, TargetDeviceAddPacket::encode, TargetDeviceAddPacket::new, TargetDeviceAddPacket::handle);
@@ -167,8 +164,8 @@ public class Wormhole {
             e.getRegistry().register(new BlockItem(advanced_target_cell, new Item.Properties().group(ItemGroup.SEARCH)).setRegistryName(advanced_target_cell.getRegistryName()));
             e.getRegistry().register(new BlockItem(coal_generator, new Item.Properties().group(ItemGroup.SEARCH)).setRegistryName(coal_generator.getRegistryName()));
 
-            e.getRegistry().register(new TargetDeviceItem("target_device", WormholeConfig.INSTANCE.basicDeviceTargetCount::get));
-            e.getRegistry().register(new TargetDeviceItem("advanced_target_device", WormholeConfig.INSTANCE.advancedDeviceTargetCount::get));
+            e.getRegistry().register(new TargetDeviceItem("target_device", WormholeConfig.basicDeviceTargetCount::get));
+            e.getRegistry().register(new TargetDeviceItem("advanced_target_device", WormholeConfig.advancedDeviceTargetCount::get));
         }
 
         @SubscribeEvent

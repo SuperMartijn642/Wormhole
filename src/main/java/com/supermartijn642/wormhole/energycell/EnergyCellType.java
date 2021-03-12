@@ -20,9 +20,9 @@ public enum EnergyCellType {
     public int getCapacity(){
         switch(this){
             case BASIC:
-                return WormholeConfig.INSTANCE.basicEnergyCellCapacity.get();
+                return WormholeConfig.basicEnergyCellCapacity.get();
             case ADVANCED:
-                return WormholeConfig.INSTANCE.advancedEnergyCellCapacity.get();
+                return WormholeConfig.advancedEnergyCellCapacity.get();
             case CREATIVE:
                 return 100000000;
         }

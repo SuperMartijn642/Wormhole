@@ -22,9 +22,9 @@ public class CoalGeneratorTile extends GeneratorTile implements IItemHandlerModi
 
     public CoalGeneratorTile(){
         super(Wormhole.coal_generator_tile,
-            WormholeConfig.INSTANCE.coalGeneratorCapacity.get(),
-            WormholeConfig.INSTANCE.coalGeneratorRange.get(),
-            WormholeConfig.INSTANCE.coalGeneratorPower.get() * 2);
+            WormholeConfig.coalGeneratorCapacity.get(),
+            WormholeConfig.coalGeneratorRange.get(),
+            WormholeConfig.coalGeneratorPower.get() * 2);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class CoalGeneratorTile extends GeneratorTile implements IItemHandlerModi
         if(this.energy < this.energyCapacity){
             if(this.burnTime > 0){
                 this.burnTime--;
-                this.energy += WormholeConfig.INSTANCE.coalGeneratorPower.get();
+                this.energy += WormholeConfig.coalGeneratorPower.get();
                 if(this.energy > this.energyCapacity)
                     this.energy = this.energyCapacity;
                 if(this.burnTime == 0){
