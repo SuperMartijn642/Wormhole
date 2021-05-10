@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "wormhole:block/advanced_target_cell" }
+  }
+}

@@ -41,7 +41,7 @@ public class WormholeLabel extends Widget {
             FontRenderer font = Minecraft.getInstance().fontRenderer;
             String s = this.translate ? I18n.format(text) : text;
             int width = font.getStringWidth(s);
-            ScreenUtils.drawString(Minecraft.getInstance().fontRenderer, s, this.x + (this.width - width) / 2f, this.y + 2, enabledTextColor);
+            ScreenUtils.drawString(s, this.x + (this.width - width) / 2f, this.y + 2, enabledTextColor);
         }
     }
 

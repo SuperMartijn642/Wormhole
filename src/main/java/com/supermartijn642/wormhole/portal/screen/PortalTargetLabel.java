@@ -18,7 +18,7 @@ public class PortalTargetLabel extends WormholeLabel implements IHoverTextWidget
 
     public PortalTargetLabel(PortalGroupScreen screen, Supplier<Integer> targetIndex, int x, int y, int width, int height, String hoverText, Function<PortalTarget,String> text, boolean translate){
         super(x, y, width, height, () -> {
-            PortalTarget target = screen.getPortalGroup().getTarget(targetIndex.get());
+            PortalTarget target = screen.getObject().getTarget(targetIndex.get());
             return target == null ? "" : text.apply(target);
         }, translate);
         this.hoverText = hoverText;

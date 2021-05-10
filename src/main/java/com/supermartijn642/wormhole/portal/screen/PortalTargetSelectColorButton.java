@@ -26,7 +26,7 @@ public class PortalTargetSelectColorButton extends AbstractButtonWidget {
 
     public PortalTargetSelectColorButton(int x, int y, PortalTargetColorScreen screen, DyeColor color){
         super(x, y, 36, 36, () ->
-            Wormhole.CHANNEL.sendToServer(new PortalColorTargetPacket(screen.getPortalGroup(), screen.targetIndex, color))
+            Wormhole.CHANNEL.sendToServer(new PortalColorTargetPacket(screen.getObject(), screen.targetIndex, color))
         );
         this.color = color;
         this.targetColor = () -> screen.getFromPortalGroup(group -> {

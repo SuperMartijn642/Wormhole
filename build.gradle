@@ -96,8 +96,7 @@ dependencies {
     runtimeOnly fg.deobf("mezz.jei:jei-1.15.2:6.0.0.2")
 
     // Core Lib
-//    compile files('libraries/supermartijn642corelib-1.0.0-mc1.15.jar')
-    compile fg.deobf("curse.maven:supermartijn642s-core-lib:3235055")
+    compile fg.deobf("curse.maven:supermartijn642s-core-lib:3300630")
     // Config Lib
     compile fg.deobf("curse.maven:supermartijn642s-config-lib:3211010")
 }
