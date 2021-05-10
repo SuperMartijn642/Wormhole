@@ -26,7 +26,7 @@ public class PortalTargetSelectColorButton extends AbstractButtonWidget {
 
     public PortalTargetSelectColorButton(int x, int y, PortalTargetColorScreen screen, EnumDyeColor color){
         super(x, y, 36, 36, () ->
-            Wormhole.channel.sendToServer(new PortalColorTargetPacket(screen.getPortalGroup(), screen.targetIndex, color))
+            Wormhole.channel.sendToServer(new PortalColorTargetPacket(screen.getObject(), screen.targetIndex, color))
         );
         this.color = color;
         this.targetColor = () -> screen.getFromPortalGroup(group -> {
@@ -45,7 +45,7 @@ public class PortalTargetSelectColorButton extends AbstractButtonWidget {
 
     private ResourceLocation getTextureLocation(){
         return this.color == null ? RANDOM_COLOR_PORTAL :
-                new ResourceLocation("wormhole", "textures/portal/portal_" + (this.color == EnumDyeColor.SILVER ? "light_gray" : this.color.getName()) + ".png");
+            new ResourceLocation("wormhole", "textures/portal/portal_" + (this.color == EnumDyeColor.SILVER ? "light_gray" : this.color.getName()) + ".png");
     }
 
     @Override

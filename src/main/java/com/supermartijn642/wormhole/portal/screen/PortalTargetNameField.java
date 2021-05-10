@@ -24,7 +24,7 @@ public class PortalTargetNameField extends TextFieldWidget {
         this.screen = screen;
         this.targetIndex = targetIndex;
 
-        PortalTarget target = screen.getPortalGroup().getTarget(targetIndex.get());
+        PortalTarget target = screen.getObject().getTarget(targetIndex.get());
         this.setTextSuppressed(target == null ? "" : target.name);
         this.lastTargetText = this.getText();
     }
@@ -32,7 +32,7 @@ public class PortalTargetNameField extends TextFieldWidget {
     public void tick(){
         super.tick();
 
-        PortalTarget target = screen.getPortalGroup().getTarget(targetIndex.get());
+        PortalTarget target = screen.getObject().getTarget(targetIndex.get());
         String s = target == null ? "" : target.name;
         if(!s.equals(this.lastTargetText)){
             if(s.equals(this.getText()))
@@ -53,6 +53,6 @@ public class PortalTargetNameField extends TextFieldWidget {
     @Override
     protected void onTextChanged(String oldText, String newText){
         this.pastText.add(oldText);
-        Wormhole.channel.sendToServer(new PortalNameTargetPacket(this.screen.getPortalGroup(), this.targetIndex.get(), newText));
+        Wormhole.channel.sendToServer(new PortalNameTargetPacket(this.screen.getObject(), this.targetIndex.get(), newText));
     }
 }
