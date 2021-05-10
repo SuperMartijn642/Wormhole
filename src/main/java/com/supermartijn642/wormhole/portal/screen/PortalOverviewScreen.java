@@ -173,9 +173,9 @@ public class PortalOverviewScreen extends PortalGroupScreen {
         NO_TARGET("no_target", TextFormatting.GOLD, WARNING_ICON),
         NO_DIMENSIONAL_CORE("no_dimensional_core", TextFormatting.RED, CROSS_ICON);
 
-        private String status;
-        private TextFormatting color;
-        private ResourceLocation icon;
+        private final String status;
+        private final TextFormatting color;
+        private final ResourceLocation icon;
 
         PortalStatus(String status, TextFormatting color, ResourceLocation icon){
             this.status = status;
