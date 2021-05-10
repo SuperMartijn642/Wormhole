@@ -2,6 +2,7 @@ package com.supermartijn642.wormhole.portal.screen;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.wormhole.portal.PortalGroup;
 import com.supermartijn642.wormhole.screen.WormholeButton;
 import net.minecraft.item.DyeColor;
 import net.minecraft.util.Direction;
@@ -24,17 +25,17 @@ public class PortalTargetColorScreen extends PortalGroupScreen {
     }
 
     @Override
-    protected float sizeX(){
+    protected float sizeX(PortalGroup group){
         return WIDTH;
     }
 
     @Override
-    protected float sizeY(){
+    protected float sizeY(PortalGroup group){
         return HEIGHT;
     }
 
     @Override
-    protected void addWidgets(){
+    protected void addWidgets(PortalGroup group){
         this.addWidget(new PortalTargetNameField(this, () -> this.targetIndex, 20, 20));
         this.addWidget(new PortalTargetLabel(this, () -> this.targetIndex, 84, 19, 102, 12, "wormhole.target_device.gui.coords", target -> "(" + target.x + "," + target.y + "," + target.z + ")", false));
         this.addWidget(new PortalTargetLabel(this, () -> this.targetIndex, 187, 19, 52, 12, "wormhole.target_device.gui.facing", target -> "wormhole.direction." + Direction.fromAngle(target.yaw).toString(), true));
@@ -61,15 +62,14 @@ public class PortalTargetColorScreen extends PortalGroupScreen {
     }
 
     @Override
-    protected void render(MatrixStack matrixStack, int mouseX, int mouseY){
+    protected void render(MatrixStack matrixStack, int mouseX, int mouseY, PortalGroup group){
         ScreenUtils.drawScreenBackground(matrixStack, 0, 0, this.sizeX(), this.sizeY());
-        this.font.func_243248_b(matrixStack, this.title, 8, 7, 4210752);
+        ScreenUtils.drawString(matrixStack, this.title, 8, 7);
         // target number
-        this.font.drawString(matrixStack, (this.targetIndex + 1) + ".", 8, 22, 4210752);
+        ScreenUtils.drawString(matrixStack, (this.targetIndex + 1) + ".", 8, 22);
     }
 
     @Override
-    protected void renderTooltips(MatrixStack matrixStack, int mouseX, int mouseY){
-
+    protected void renderTooltips(MatrixStack matrixStack, int mouseX, int mouseY, PortalGroup group){
     }
 }
