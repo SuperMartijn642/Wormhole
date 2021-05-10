@@ -1,5 +1,5 @@
 {
   "variants": {
-    "": { "model": "wormhole:block/target_cell/advanced_target_cell_0" }
+    "": { "model": "wormhole:block/advanced_target_cell" }
   }
 }

@@ -1,0 +1,7 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "particle": "wormhole:target_cells/basic_target_cell_0",
+    "all": "wormhole:target_cells/basic_target_cell_0"
+  }
+}
