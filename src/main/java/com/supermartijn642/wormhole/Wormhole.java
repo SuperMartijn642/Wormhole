@@ -24,8 +24,10 @@ import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.event.RegistryEvent;
@@ -36,6 +38,8 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import net.minecraftforge.registries.ObjectHolder;
+
+import java.util.Comparator;
 
 /**
  * Created 7/7/2020 by SuperMartijn642
@@ -57,6 +61,18 @@ public class Wormhole {
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(new ResourceLocation("wormhole", "main"), () -> "1", "1"::equals, "1"::equals);
 
     public static final IRecipeSerializer<NBTRecipe> NBT_RECIPE_SERIALIZER = new NBTRecipe.Serializer();
+    public static final ItemGroup ITEM_GROUP = new ItemGroup("wormhole") {
+        @Override
+        public ItemStack createIcon(){
+            return new ItemStack(advanced_target_device);
+        }
+
+        @Override
+        public void fill(NonNullList<ItemStack> items){
+            super.fill(items);
+            items.sort(Comparator.comparing(a -> a.getDisplayName().getString()));
+        }
+    };
 
     @ObjectHolder("wormhole:portal_frame")
     public static Block portal_frame;
@@ -128,6 +144,7 @@ public class Wormhole {
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class RegistryEvents {
+
         @SubscribeEvent
         public static void onBlockRegistry(final RegistryEvent.Register<Block> e){
             e.getRegistry().register(new PortalGroupBlock("portal_frame", () -> new PortalGroupTile(portal_frame_tile)));
@@ -154,15 +171,15 @@ public class Wormhole {
 
         @SubscribeEvent
         public static void onItemRegistry(final RegistryEvent.Register<Item> e){
-            e.getRegistry().register(new BlockItem(portal_frame, new Item.Properties().group(ItemGroup.SEARCH)).setRegistryName(portal_frame.getRegistryName()));
+            e.getRegistry().register(new BlockItem(portal_frame, new Item.Properties().group(ITEM_GROUP)).setRegistryName(portal_frame.getRegistryName()));
             e.getRegistry().register(new BlockItem(portal, new Item.Properties()).setRegistryName(portal.getRegistryName()));
-            e.getRegistry().register(new BlockItem(portal_stabilizer, new Item.Properties().group(ItemGroup.SEARCH)).setRegistryName(portal_stabilizer.getRegistryName()));
-            e.getRegistry().register(new BlockItem(basic_energy_cell, new Item.Properties().group(ItemGroup.SEARCH)).setRegistryName(basic_energy_cell.getRegistryName()));
-            e.getRegistry().register(new BlockItem(advanced_energy_cell, new Item.Properties().group(ItemGroup.SEARCH)).setRegistryName(advanced_energy_cell.getRegistryName()));
-            e.getRegistry().register(new BlockItem(creative_energy_cell, new Item.Properties().group(ItemGroup.SEARCH)).setRegistryName(creative_energy_cell.getRegistryName()));
-            e.getRegistry().register(new BlockItem(basic_target_cell, new Item.Properties().group(ItemGroup.SEARCH)).setRegistryName(basic_target_cell.getRegistryName()));
-            e.getRegistry().register(new BlockItem(advanced_target_cell, new Item.Properties().group(ItemGroup.SEARCH)).setRegistryName(advanced_target_cell.getRegistryName()));
-            e.getRegistry().register(new BlockItem(coal_generator, new Item.Properties().group(ItemGroup.SEARCH)).setRegistryName(coal_generator.getRegistryName()));
+            e.getRegistry().register(new BlockItem(portal_stabilizer, new Item.Properties().group(ITEM_GROUP)).setRegistryName(portal_stabilizer.getRegistryName()));
+            e.getRegistry().register(new BlockItem(basic_energy_cell, new Item.Properties().group(ITEM_GROUP)).setRegistryName(basic_energy_cell.getRegistryName()));
+            e.getRegistry().register(new BlockItem(advanced_energy_cell, new Item.Properties().group(ITEM_GROUP)).setRegistryName(advanced_energy_cell.getRegistryName()));
+            e.getRegistry().register(new BlockItem(creative_energy_cell, new Item.Properties().group(ITEM_GROUP)).setRegistryName(creative_energy_cell.getRegistryName()));
+            e.getRegistry().register(new BlockItem(basic_target_cell, new Item.Properties().group(ITEM_GROUP)).setRegistryName(basic_target_cell.getRegistryName()));
+            e.getRegistry().register(new BlockItem(advanced_target_cell, new Item.Properties().group(ITEM_GROUP)).setRegistryName(advanced_target_cell.getRegistryName()));
+            e.getRegistry().register(new BlockItem(coal_generator, new Item.Properties().group(ITEM_GROUP)).setRegistryName(coal_generator.getRegistryName()));
 
             e.getRegistry().register(new TargetDeviceItem("target_device", WormholeConfig.basicDeviceTargetCount::get));
             e.getRegistry().register(new TargetDeviceItem("advanced_target_device", WormholeConfig.advancedDeviceTargetCount::get));
