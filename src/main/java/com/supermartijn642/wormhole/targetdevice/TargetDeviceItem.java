@@ -2,9 +2,9 @@ package com.supermartijn642.wormhole.targetdevice;
 
 import com.google.common.collect.Lists;
 import com.supermartijn642.wormhole.ClientProxy;
+import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.portal.PortalTarget;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -36,7 +36,7 @@ public class TargetDeviceItem extends Item {
         this.setRegistryName(registryName);
         this.setUnlocalizedName("wormhole." + registryName);
         this.setMaxStackSize(1);
-        this.setCreativeTab(CreativeTabs.SEARCH);
+        this.setCreativeTab(Wormhole.ITEM_GROUP);
     }
 
     @Override

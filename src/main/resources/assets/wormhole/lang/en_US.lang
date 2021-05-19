@@ -1,5 +1,7 @@
 tile.wormhole.portal_frame.name=Portal Frame
-tile.wormhole.portal.name=Portal
+tile.wormhole.portal_x.name=Portal
+tile.wormhole.portal_y.name=Portal
+tile.wormhole.portal_z.name=Portal
 tile.wormhole.portal_stabilizer.name=Portal Stabilizer
 tile.wormhole.basic_energy_cell.name=Basic Energy Cell
 tile.wormhole.advanced_energy_cell.name=Advanced Energy Cell
@@ -9,6 +11,7 @@ tile.wormhole.advanced_target_cell.name=Advanced Target Cell
 tile.wormhole.coal_generator.name=Coal Generator
 item.wormhole.target_device.name=Target Definition Device
 item.wormhole.advanced_target_device.name=Advanced Target Definition Device
+itemGroup.wormhole=Wormhole
 wormhole.portal_stabilizer.error=Invalid portal construction!
 wormhole.portal_stabilizer.success=Wormhole stabilized!
 wormhole.target_device.gui.title=Device Targets

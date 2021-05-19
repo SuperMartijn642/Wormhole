@@ -19,7 +19,9 @@ import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -30,6 +32,8 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
+
+import java.util.Comparator;
 
 /**
  * Created 7/7/2020 by SuperMartijn642
@@ -52,6 +56,19 @@ public class Wormhole {
     public static final String NAME = "Wormhole (Portals)";
     public static final String VERSION = "1.1.7";
     public static final String DEPENDENCIES = "required-after:supermartijn642corelib@[1.0.3,1.1.0);required-after:supermartijn642configlib@[1.0.5,)";
+
+    public static final CreativeTabs ITEM_GROUP = new CreativeTabs("wormhole") {
+        @Override
+        public ItemStack getTabIconItem(){
+            return new ItemStack(advanced_target_device);
+        }
+
+        @Override
+        public void displayAllRelevantItems(NonNullList<ItemStack> items){
+            super.displayAllRelevantItems(items);
+            items.sort(Comparator.comparing(a -> a.getDisplayName()));
+        }
+    };
 
     @Mod.Instance
     public static Wormhole instance;
@@ -115,7 +132,7 @@ public class Wormhole {
     public static class RegistryEvents {
         @SubscribeEvent
         public static void onBlockRegistry(final RegistryEvent.Register<Block> e){
-            e.getRegistry().register(new PortalGroupBlock("portal_frame", PortalFrameTile::new).setCreativeTab(CreativeTabs.SEARCH));
+            e.getRegistry().register(new PortalGroupBlock("portal_frame", PortalFrameTile::new).setCreativeTab(Wormhole.ITEM_GROUP));
             e.getRegistry().register(new PortalBlock(EnumFacing.Axis.X));
             e.getRegistry().register(new PortalBlock(EnumFacing.Axis.Y));
             e.getRegistry().register(new PortalBlock(EnumFacing.Axis.Z));

@@ -46,6 +46,8 @@ public class PortalBlock extends PortalGroupBlock {
         super("portal_" + axis.name().toLowerCase(Locale.ROOT), PortalTile::new, Material.PORTAL, Material.PORTAL.getMaterialMapColor(), SoundType.GLASS, 0, 0);
         this.axis = axis;
         this.setDefaultState(this.blockState.getBaseState().withProperty(COLOR_PROPERTY, EnumDyeColor.WHITE));
+
+        this.setCreativeTab(null);
     }
 
     @Override

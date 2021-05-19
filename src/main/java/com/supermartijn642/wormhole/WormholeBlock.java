@@ -5,7 +5,6 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
@@ -36,7 +35,7 @@ public class WormholeBlock extends Block {
         this.setSoundType(soundType);
         this.setHardness(hardness);
         this.setResistance(resistance);
-        this.setCreativeTab(CreativeTabs.SEARCH);
+        this.setCreativeTab(Wormhole.ITEM_GROUP);
     }
 
     @Override
