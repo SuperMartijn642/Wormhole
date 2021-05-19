@@ -2,11 +2,11 @@ package com.supermartijn642.wormhole.targetdevice;
 
 import com.google.common.collect.Lists;
 import com.supermartijn642.wormhole.ClientProxy;
+import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.portal.PortalTarget;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
@@ -30,7 +30,7 @@ public class TargetDeviceItem extends Item {
     private final Supplier<Integer> maxTargetCount;
 
     public TargetDeviceItem(String registryName, Supplier<Integer> maxTargetCount){
-        super(new Properties().maxStackSize(1).group(ItemGroup.SEARCH));
+        super(new Properties().maxStackSize(1).group(Wormhole.ITEM_GROUP));
         this.maxTargetCount = maxTargetCount;
         this.setRegistryName(registryName);
     }
