@@ -4,6 +4,7 @@ import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -84,6 +85,10 @@ public class PortalTarget {
 
     public BlockPos getPos(){
         return new BlockPos(this.x, this.y, this.z);
+    }
+
+    public Vec3d getCenteredPos(){
+        return new Vec3d(this.x + 0.5, this.y + 0.2, this.z + 0.5);
     }
 
     public String getDimensionDisplayName(){
