@@ -11,7 +11,6 @@ import net.minecraft.util.concurrent.TickDelayedTask;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.ITeleporter;
-import net.minecraftforge.fml.common.Mod;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -21,7 +20,6 @@ import java.util.function.Function;
 /**
  * Created 12/10/2020 by SuperMartijn642
  */
-@Mod.EventBusSubscriber
 public class TeleportHelper {
 
     private static final int TELEPORT_COOLDOWN = 2 * 20; // 2 seconds
