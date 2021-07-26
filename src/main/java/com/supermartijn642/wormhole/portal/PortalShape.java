@@ -28,13 +28,13 @@ public class PortalShape {
     private static final Map<Direction.Axis,List<BlockPos>> ALL_OFFSETS = new EnumMap<>(Direction.Axis.class);
 
     static{
-        DIRECT_OFFSETS.put(Direction.Axis.X, Lists.newArrayList(BlockPos.ZERO.up(), BlockPos.ZERO.down(), BlockPos.ZERO.north(), BlockPos.ZERO.south()));
+        DIRECT_OFFSETS.put(Direction.Axis.X, Lists.newArrayList(BlockPos.ZERO.above(), BlockPos.ZERO.below(), BlockPos.ZERO.north(), BlockPos.ZERO.south()));
         DIRECT_OFFSETS.put(Direction.Axis.Y, Lists.newArrayList(BlockPos.ZERO.north(), BlockPos.ZERO.east(), BlockPos.ZERO.south(), BlockPos.ZERO.west()));
-        DIRECT_OFFSETS.put(Direction.Axis.Z, Lists.newArrayList(BlockPos.ZERO.up(), BlockPos.ZERO.down(), BlockPos.ZERO.east(), BlockPos.ZERO.west()));
+        DIRECT_OFFSETS.put(Direction.Axis.Z, Lists.newArrayList(BlockPos.ZERO.above(), BlockPos.ZERO.below(), BlockPos.ZERO.east(), BlockPos.ZERO.west()));
 
-        INDIRECT_OFFSETS.put(Direction.Axis.X, Lists.newArrayList(BlockPos.ZERO.up().north(), BlockPos.ZERO.up().south(), BlockPos.ZERO.down().north(), BlockPos.ZERO.down().south()));
+        INDIRECT_OFFSETS.put(Direction.Axis.X, Lists.newArrayList(BlockPos.ZERO.above().north(), BlockPos.ZERO.above().south(), BlockPos.ZERO.below().north(), BlockPos.ZERO.below().south()));
         INDIRECT_OFFSETS.put(Direction.Axis.Y, Lists.newArrayList(BlockPos.ZERO.north().east(), BlockPos.ZERO.north().west(), BlockPos.ZERO.south().east(), BlockPos.ZERO.south().west()));
-        INDIRECT_OFFSETS.put(Direction.Axis.Z, Lists.newArrayList(BlockPos.ZERO.up().east(), BlockPos.ZERO.up().west(), BlockPos.ZERO.down().east(), BlockPos.ZERO.down().west()));
+        INDIRECT_OFFSETS.put(Direction.Axis.Z, Lists.newArrayList(BlockPos.ZERO.above().east(), BlockPos.ZERO.above().west(), BlockPos.ZERO.below().east(), BlockPos.ZERO.below().west()));
 
         for(Direction.Axis axis : Direction.Axis.values()){
             List<BlockPos> pos = new ArrayList<>();
@@ -55,8 +55,8 @@ public class PortalShape {
 
     private static PortalShape find(IBlockReader world, BlockPos center, Direction.Axis axis){
         for(BlockPos offset : ALL_OFFSETS.get(axis)){
-            if(world.getBlockState(center.add(offset)).getBlock() == Blocks.AIR){
-                PortalShape shape = findArea(world, center.add(offset), axis);
+            if(world.getBlockState(center.offset(offset)).getBlock() == Blocks.AIR){
+                PortalShape shape = findArea(world, center.offset(offset), axis);
                 if(shape != null)
                     return shape;
             }
@@ -78,9 +78,9 @@ public class PortalShape {
             for(BlockPos pos : current){
                 int frames = 0;
                 for(BlockPos offset : DIRECT_OFFSETS.get(axis)){
-                    BlockPos offPos = pos.add(offset);
+                    BlockPos offPos = pos.offset(offset);
                     Block block = world.getBlockState(offPos).getBlock();
-                    TileEntity tile = world.getTileEntity(offPos);
+                    TileEntity tile = world.getBlockEntity(offPos);
                     if(block == Blocks.AIR){
                         if(!done.contains(offPos) && !current.contains(offPos) && !next.contains(offPos))
                             next.add(offPos);
@@ -122,8 +122,8 @@ public class PortalShape {
     }
 
     private static void collectCorners(IBlockReader world, List<BlockPos> area, List<BlockPos> frame, List<BlockPos> corners, List<BlockPos> stabilizers, List<BlockPos> energyCells, List<BlockPos> targetCells, Direction.Axis axis){
-        BlockPos dir1pos = axis == Direction.Axis.Y ? BlockPos.ZERO.east() : BlockPos.ZERO.up();
-        BlockPos dir1neg = axis == Direction.Axis.Y ? BlockPos.ZERO.west() : BlockPos.ZERO.down();
+        BlockPos dir1pos = axis == Direction.Axis.Y ? BlockPos.ZERO.east() : BlockPos.ZERO.above();
+        BlockPos dir1neg = axis == Direction.Axis.Y ? BlockPos.ZERO.west() : BlockPos.ZERO.below();
         BlockPos dir2pos = axis == Direction.Axis.Z ? BlockPos.ZERO.east() : BlockPos.ZERO.north();
         BlockPos dir2neg = axis == Direction.Axis.Z ? BlockPos.ZERO.west() : BlockPos.ZERO.south();
         for(BlockPos corner : corners){
@@ -135,8 +135,8 @@ public class PortalShape {
     }
 
     private static boolean validateCorners(IBlockReader world, List<BlockPos> area, List<BlockPos> frame, List<BlockPos> corners, List<BlockPos> stabilizers, List<BlockPos> energyCells, List<BlockPos> targetCells, Direction.Axis axis){
-        BlockPos dir1pos = axis == Direction.Axis.Y ? BlockPos.ZERO.east() : BlockPos.ZERO.up();
-        BlockPos dir1neg = axis == Direction.Axis.Y ? BlockPos.ZERO.west() : BlockPos.ZERO.down();
+        BlockPos dir1pos = axis == Direction.Axis.Y ? BlockPos.ZERO.east() : BlockPos.ZERO.above();
+        BlockPos dir1neg = axis == Direction.Axis.Y ? BlockPos.ZERO.west() : BlockPos.ZERO.below();
         BlockPos dir2pos = axis == Direction.Axis.Z ? BlockPos.ZERO.east() : BlockPos.ZERO.north();
         BlockPos dir2neg = axis == Direction.Axis.Z ? BlockPos.ZERO.west() : BlockPos.ZERO.south();
         for(BlockPos corner : corners){
@@ -153,9 +153,9 @@ public class PortalShape {
     }
 
     private static boolean collectCorner(IBlockReader world, List<BlockPos> area, List<BlockPos> frame, List<BlockPos> stabilizers, List<BlockPos> energyCells, List<BlockPos> targetCells, BlockPos corner, BlockPos dir1, BlockPos dir2){
-        if(frame.contains(corner.add(dir1)) && frame.contains(corner.add(dir2))){
-            BlockPos pos = corner.add(dir1).add(dir2);
-            TileEntity tile = world.getTileEntity(pos);
+        if(frame.contains(corner.offset(dir1)) && frame.contains(corner.offset(dir2))){
+            BlockPos pos = corner.offset(dir1).offset(dir2);
+            TileEntity tile = world.getBlockEntity(pos);
             if(tile instanceof IPortalGroupTile ? ((IPortalGroupTile)tile).hasGroup() : !area.contains(pos))
                 return false;
             else if(!frame.contains(pos)){
@@ -207,7 +207,7 @@ public class PortalShape {
             BlockPos pos1 = frame.get(i);
             for(int j = i + 1; j < frame.size(); j++){
                 BlockPos pos2 = frame.get(j);
-                double distance = pos1.distanceSq(pos2);
+                double distance = pos1.distSqr(pos2);
                 if(distance > span)
                     span = distance;
             }
@@ -233,31 +233,31 @@ public class PortalShape {
         this.axis = Enum.valueOf(Direction.Axis.class, tag.getString("axis"));
 
         CompoundNBT areaTag = tag.getCompound("area");
-        for(String key : areaTag.keySet()){
+        for(String key : areaTag.getAllKeys()){
             CompoundNBT pos = areaTag.getCompound(key);
             this.area.add(new BlockPos(pos.getInt("x"), pos.getInt("y"), pos.getInt("z")));
         }
 
         CompoundNBT frameTag = tag.getCompound("frame");
-        for(String key : frameTag.keySet()){
+        for(String key : frameTag.getAllKeys()){
             CompoundNBT pos = frameTag.getCompound(key);
             this.frame.add(new BlockPos(pos.getInt("x"), pos.getInt("y"), pos.getInt("z")));
         }
 
         CompoundNBT stabilizerTag = tag.getCompound("stabilizers");
-        for(String key : stabilizerTag.keySet()){
+        for(String key : stabilizerTag.getAllKeys()){
             CompoundNBT pos = stabilizerTag.getCompound(key);
             this.stabilizers.add(new BlockPos(pos.getInt("x"), pos.getInt("y"), pos.getInt("z")));
         }
 
         CompoundNBT energyCellsTag = tag.getCompound("energyCells");
-        for(String key : energyCellsTag.keySet()){
+        for(String key : energyCellsTag.getAllKeys()){
             CompoundNBT pos = energyCellsTag.getCompound(key);
             this.energyCells.add(new BlockPos(pos.getInt("x"), pos.getInt("y"), pos.getInt("z")));
         }
 
         CompoundNBT targetCellsTag = tag.getCompound("targetCells");
-        for(String key : targetCellsTag.keySet()){
+        for(String key : targetCellsTag.getAllKeys()){
             CompoundNBT pos = targetCellsTag.getCompound(key);
             this.targetCells.add(new BlockPos(pos.getInt("x"), pos.getInt("y"), pos.getInt("z")));
         }
@@ -272,15 +272,15 @@ public class PortalShape {
         if(color == null)
             color = DyeColor.values()[new Random().nextInt(DyeColor.values().length)];
         for(BlockPos pos : this.area){
-            if(!(world.getBlockState(pos).getBlock() instanceof PortalBlock) || world.getBlockState(pos).get(PortalBlock.AXIS_PROPERTY) != this.axis || world.getBlockState(pos).get(PortalBlock.COLOR_PROPERTY) != color)
-                world.setBlockState(pos, Wormhole.portal.getDefaultState().with(PortalBlock.AXIS_PROPERTY, this.axis).with(PortalBlock.COLOR_PROPERTY, color));
+            if(!(world.getBlockState(pos).getBlock() instanceof PortalBlock) || world.getBlockState(pos).getValue(PortalBlock.AXIS_PROPERTY) != this.axis || world.getBlockState(pos).getValue(PortalBlock.COLOR_PROPERTY) != color)
+                world.setBlockAndUpdate(pos, Wormhole.portal.defaultBlockState().setValue(PortalBlock.AXIS_PROPERTY, this.axis).setValue(PortalBlock.COLOR_PROPERTY, color));
         }
     }
 
     public void destroyPortals(World world){
         for(BlockPos pos : this.area){
             if(world.getBlockState(pos).getBlock() instanceof PortalBlock)
-                world.setBlockState(pos, Blocks.AIR.getDefaultState());
+                world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
         }
     }
 
@@ -295,7 +295,7 @@ public class PortalShape {
     public boolean validatePortal(IBlockReader world){
         for(BlockPos pos : this.area){
             BlockState state = world.getBlockState(pos);
-            if(!(state.getBlock() instanceof PortalBlock && state.get(PortalBlock.AXIS_PROPERTY) == this.axis) && state.getBlock() != Blocks.AIR)
+            if(!(state.getBlock() instanceof PortalBlock && state.getValue(PortalBlock.AXIS_PROPERTY) == this.axis) && state.getBlock() != Blocks.AIR)
                 return false;
         }
         return true;

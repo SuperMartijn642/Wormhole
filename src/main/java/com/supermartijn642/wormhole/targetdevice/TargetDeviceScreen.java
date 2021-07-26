@@ -98,7 +98,7 @@ public class TargetDeviceScreen extends BaseScreen {
         }
 
         this.currentTargetNameField = this.addWidget(new TextFieldWidget(215, 18, 102, 12, "", PortalTarget.MAX_NAME_LENGTH));
-        this.currentTargetNameField.setSuggestion(I18n.format("wormhole.target_device.gui.target_name"));
+        this.currentTargetNameField.setSuggestion(I18n.get("wormhole.target_device.gui.target_name"));
         if(this.selectedCurrentTarget)
             this.currentTargetNameField.setFocused(true);
 
@@ -117,9 +117,9 @@ public class TargetDeviceScreen extends BaseScreen {
 
         // draw titles
         ScreenUtils.drawCenteredString(matrixStack, this.font, this.title, 58, 3, Integer.MAX_VALUE);
-        ScreenUtils.drawCenteredString(matrixStack, this.font, I18n.format("wormhole.target_device.gui.current_location"), 266, 3, Integer.MAX_VALUE);
+        ScreenUtils.drawCenteredString(matrixStack, this.font, I18n.get("wormhole.target_device.gui.current_location"), 266, 3, Integer.MAX_VALUE);
 
-        GlStateManager.enableAlphaTest();
+        GlStateManager._enableAlphaTest();
         // draw target select highlight
         if(this.selectedTarget >= 0){
             ScreenUtils.bindTexture(SELECT_HIGHLIGHT);
@@ -147,7 +147,7 @@ public class TargetDeviceScreen extends BaseScreen {
             if(target != null)
                 this.renderTargetInfo(matrixStack, target.name, target.getPos(), target.dimension, target.dimensionDisplayName, target.yaw);
         }else if(this.selectedCurrentTarget){
-            String dimension = this.player.world.getDimensionKey().getLocation().toString();
+            String dimension = this.player.level.dimension().location().toString();
             String dimensionName = dimension.substring(Math.min(dimension.length() - 1, Math.max(0, dimension.indexOf(':') + 1))).toLowerCase();
             dimensionName = dimensionName.substring(0, 1).toUpperCase() + dimensionName.substring(1);
             for(int i = 0; i < dimensionName.length() - 1; i++)
@@ -166,17 +166,17 @@ public class TargetDeviceScreen extends BaseScreen {
         ScreenUtils.drawTexture(matrixStack, 124, 41, 77, 1);
 
         // location
-        GlStateManager.enableAlphaTest();
+        GlStateManager._enableAlphaTest();
         ScreenUtils.bindTexture(LOCATION_ICON);
         ScreenUtils.drawTexture(matrixStack, 121, 47, 9, 9);
         ScreenUtils.drawString(matrixStack, this.font, "(" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")", 132, 48, Integer.MAX_VALUE);
         // dimension
         Block block = null;
-        if(dimension.equals(World.OVERWORLD.getLocation().toString()))
+        if(dimension.equals(World.OVERWORLD.location().toString()))
             block = Blocks.GRASS_PATH;
-        else if(dimension.equals(World.THE_NETHER.getLocation().toString()))
+        else if(dimension.equals(World.NETHER.location().toString()))
             block = Blocks.NETHERRACK;
-        else if(dimension.equals(World.THE_END.getLocation().toString()))
+        else if(dimension.equals(World.END.location().toString()))
             block = Blocks.END_STONE;
         if(block == null){
             ScreenUtils.bindTexture(DIMENSION_ICON);
@@ -186,10 +186,10 @@ public class TargetDeviceScreen extends BaseScreen {
         }
         ScreenUtils.drawString(matrixStack, this.font, dimensionName, 132, 60, Integer.MAX_VALUE);
         // direction
-        GlStateManager.enableAlphaTest();
+        GlStateManager._enableAlphaTest();
         ScreenUtils.bindTexture(DIRECTION_ICON);
         ScreenUtils.drawTexture(matrixStack, 119, 69, 13, 13);
-        ScreenUtils.drawString(matrixStack, this.font, I18n.format("wormhole.direction." + Direction.fromAngle(yaw).toString()), 132, 72, Integer.MAX_VALUE);
+        ScreenUtils.drawString(matrixStack, this.font, I18n.get("wormhole.direction." + Direction.fromYRot(yaw).toString()), 132, 72, Integer.MAX_VALUE);
     }
 
     @Override
@@ -232,18 +232,18 @@ public class TargetDeviceScreen extends BaseScreen {
     }
 
     public <T> T getOrDefault(Function<List<PortalTarget>,T> function, T other){
-        ItemStack stack = this.player.getHeldItem(this.hand);
+        ItemStack stack = this.player.getItemInHand(this.hand);
         if(!stack.isEmpty() && stack.getItem() instanceof TargetDeviceItem)
             return function.apply(TargetDeviceItem.getTargets(stack));
-        this.closeScreen();
+        this.onClose();
         return other;
     }
 
     public <T> T getFromStack(Function<ItemStack,T> function, T other){
-        ItemStack stack = this.player.getHeldItem(this.hand);
+        ItemStack stack = this.player.getItemInHand(this.hand);
         if(!stack.isEmpty() && stack.getItem() instanceof TargetDeviceItem)
             return function.apply(stack);
-        this.closeScreen();
+        this.onClose();
         return other;
     }
 

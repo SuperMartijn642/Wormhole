@@ -1,36 +1,33 @@
 buildscript {
     repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
-        jcenter()
+        maven { url = 'https://maven.minecraftforge.net' }
         mavenCentral()
-        maven { url = 'https://plugins.gradle.org/m2'}
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
-        classpath group: 'com.wynprice.cursemaven', name: 'CurseMaven', version: '2.1.4'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
-apply plugin: 'com.wynprice.cursemaven'
 
 version = '1.1.8-mc1.16.5'
 group = 'com.supermartijn642.wormhole' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'wormhole'
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+java.toolchain.languageVersion = JavaLanguageVersion.of(8) // Mojang ships Java 8 to end users, so your mod should target Java 8.
+
+println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
 minecraft {
-    mappings channel: 'snapshot', version: '20200916-1.16.2'
+    mappings channel: 'official', version: '1.16.5'
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 
     runs {
         client {
             workingDirectory project.file('run')
 
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.markers', 'REGISTRIES'
 
             mods {
                 wormhole {
@@ -42,8 +39,7 @@ minecraft {
         server {
             workingDirectory project.file('run')
 
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.markers', 'REGISTRIES'
 
             mods {
                 wormhole {
@@ -55,8 +51,7 @@ minecraft {
         data {
             workingDirectory project.file('run')
 
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.markers', 'REGISTRIES'
 
             args '--mod', 'wormhole', '--all', '--output', file('src/generated/resources/')
 
@@ -74,36 +69,26 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
     maven {
-        // location of the maven that hosts JEI files
-        name = "Progwml6 maven"
-        url = "https://dvs1.progwml6.com/files/maven/"
+        url "https://www.cursemaven.com"
     }
-//    maven {
-//        // location of a maven mirror for JEI files, as a fallback
-//        name = "ModMaven"
-//        url = "https://modmaven.k-4u.nl"
-//    }
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.3-34.1.42'
-
-    runtimeOnly fg.deobf("curse.maven:block-renderer:3149419")
-
-    // compile against the JEI API but do not include it at runtime
-    compileOnly fg.deobf("mezz.jei:jei-1.16.4:7.6.0.62:api")
-    // at runtime, use the full JEI jar
-    runtimeOnly fg.deobf("mezz.jei:jei-1.16.4:7.6.0.62")
+    minecraft 'net.minecraftforge:forge:1.16.5-36.2.0'
 
     // Core Lib
-    compile fg.deobf("curse.maven:supermartijn642s-core-lib:3300632")
+    compile fg.deobf('curse.maven:supermartijn642s-core-lib-454372:3390753')
     // Config Lib
-    compile fg.deobf("curse.maven:supermartijn642s-config-lib:3226128")
+    compile fg.deobf('curse.maven:supermartijn642s-config-lib-438332:3357667')
 
+    // Just Enough Items
+    runtimeOnly fg.deobf('curse.maven:jei-238222:3401260')
+    // Block Renderer
+    runtimeOnly fg.deobf('curse.maven:block-renderer-380456:3294692')
     // Thermal Expansion
-    runtimeOnly fg.deobf("curse.maven:thermal-expansion:3155832")
+    runtimeOnly fg.deobf('curse.maven:thermal-expansion-380456:3247000')
     // Thermal Foundation
-    runtimeOnly fg.deobf("curse.maven:thermal-foundation:3155830")
+    runtimeOnly fg.deobf('curse.maven:thermal-foundation-222880:3248150')
     // COFH Core
-    runtimeOnly fg.deobf("curse.maven:cofh-core:3155824")
+    runtimeOnly fg.deobf('curse.maven:cofh-core-69162:3249453')
 }

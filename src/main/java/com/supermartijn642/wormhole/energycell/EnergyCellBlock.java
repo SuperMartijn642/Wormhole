@@ -28,8 +28,8 @@ public class EnergyCellBlock extends PortalGroupBlock {
     }
 
     @Override
-    public void addInformation(ItemStack stack, IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
-        tooltip.add(new TranslationTextComponent("wormhole.energy_cell.info").mergeStyle(TextFormatting.AQUA));
+    public void appendHoverText(ItemStack stack, IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
+        tooltip.add(new TranslationTextComponent("wormhole.energy_cell.info").withStyle(TextFormatting.AQUA));
 
         CompoundNBT tag = stack.getOrCreateTag().contains("tileData") ? stack.getOrCreateTag().getCompound("tileData") : null;
 
@@ -38,11 +38,11 @@ public class EnergyCellBlock extends PortalGroupBlock {
         int capacity = this.type.getCapacity();
 
         if(capacity > 0)
-            tooltip.add(new StringTextComponent(EnergyFormat.formatCapacity(energy, capacity)).mergeStyle(TextFormatting.YELLOW));
+            tooltip.add(new StringTextComponent(EnergyFormat.formatCapacity(energy, capacity)).withStyle(TextFormatting.YELLOW));
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState state){
+    public BlockRenderType getRenderShape(BlockState state){
         return this.type == EnergyCellType.CREATIVE ? BlockRenderType.MODEL : BlockRenderType.INVISIBLE;
     }
 }

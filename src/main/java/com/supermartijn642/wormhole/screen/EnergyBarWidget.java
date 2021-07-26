@@ -31,8 +31,8 @@ public class EnergyBarWidget extends AbstractButtonWidget implements IHoverTextW
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks){
-        Minecraft.getInstance().getTextureManager().bindTexture(BARS);
-        GlStateManager.enableAlphaTest();
+        Minecraft.getInstance().getTextureManager().bind(BARS);
+        GlStateManager._enableAlphaTest();
         ScreenUtils.drawTexture(matrixStack, this.x, this.y, this.width, this.height, this.isHovered() ? 1 / 11f : 0, 0, 1 / 11f, 1);
         int energy = this.energy.get();
         int capacity = this.capacity.get();

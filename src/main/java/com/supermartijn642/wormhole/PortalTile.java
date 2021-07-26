@@ -24,8 +24,8 @@ public class PortalTile extends PortalGroupTile {
     }
 
     public boolean activate(PlayerEntity player, Hand hand){
-        if(player.getHeldItem(hand).getItem() instanceof DyeItem){
-            DyeColor color = ((DyeItem)player.getHeldItem(hand).getItem()).getDyeColor();
+        if(player.getItemInHand(hand).getItem() instanceof DyeItem){
+            DyeColor color = ((DyeItem)player.getItemInHand(hand).getItem()).getDyeColor();
             if(this.hasGroup() && this.getGroup().getActiveTarget() != null){
                 PortalGroup group = this.getGroup();
                 PortalTarget target = group.getTarget(group.getActiveTargetIndex());

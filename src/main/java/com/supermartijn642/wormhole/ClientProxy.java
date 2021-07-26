@@ -41,7 +41,7 @@ public class ClientProxy {
 
     @SubscribeEvent
     public static void clientSetupEvent(FMLClientSetupEvent e){
-        RenderTypeLookup.setRenderLayer(Wormhole.portal, RenderType.getTranslucent());
+        RenderTypeLookup.setRenderLayer(Wormhole.portal, RenderType.translucent());
 
         ClientRegistry.bindTileEntityRenderer(Wormhole.basic_energy_cell_tile, EnergyCellTileRenderer::new);
         ClientRegistry.bindTileEntityRenderer(Wormhole.advanced_energy_cell_tile, EnergyCellTileRenderer::new);
@@ -64,27 +64,27 @@ public class ClientProxy {
     }
 
     public static void registerScreen(){
-        ScreenManager.registerFactory(Wormhole.coal_generator_container, (ScreenManager.IScreenFactory<CoalGeneratorContainer,CoalGeneratorScreen>)((container, player, title) -> new CoalGeneratorScreen(container, player)));
+        ScreenManager.register(Wormhole.coal_generator_container, (ScreenManager.IScreenFactory<CoalGeneratorContainer,CoalGeneratorScreen>)((container, player, title) -> new CoalGeneratorScreen(container, player)));
     }
 
     public static void openTargetDeviceScreen(Hand hand, BlockPos pos, float yaw){
-        Minecraft.getInstance().displayGuiScreen(new TargetDeviceScreen(getPlayer(), hand, pos, yaw));
+        Minecraft.getInstance().setScreen(new TargetDeviceScreen(getPlayer(), hand, pos, yaw));
     }
 
     public static void openPortalTargetScreen(BlockPos pos){
-        Minecraft.getInstance().displayGuiScreen(new PortalTargetScreen(pos, getPlayer()));
+        Minecraft.getInstance().setScreen(new PortalTargetScreen(pos, getPlayer()));
     }
 
     public static void openPortalTargetScreen(BlockPos pos, int scrollOffset, int selectedPortalTarget, int selectedDeviceTarget){
-        Minecraft.getInstance().displayGuiScreen(new PortalTargetScreen(pos, getPlayer(), scrollOffset, selectedPortalTarget, selectedDeviceTarget));
+        Minecraft.getInstance().setScreen(new PortalTargetScreen(pos, getPlayer(), scrollOffset, selectedPortalTarget, selectedDeviceTarget));
     }
 
     public static void openPortalTargetColorScreen(BlockPos pos, int targetIndex, Runnable returnScreen){
-        Minecraft.getInstance().displayGuiScreen(new PortalTargetColorScreen(pos, targetIndex, returnScreen));
+        Minecraft.getInstance().setScreen(new PortalTargetColorScreen(pos, targetIndex, returnScreen));
     }
 
     public static void openPortalOverviewScreen(BlockPos pos){
-        Minecraft.getInstance().displayGuiScreen(new PortalOverviewScreen(pos));
+        Minecraft.getInstance().setScreen(new PortalOverviewScreen(pos));
     }
 
     public static PlayerEntity getPlayer(){
@@ -92,7 +92,7 @@ public class ClientProxy {
     }
 
     public static World getWorld(){
-        return Minecraft.getInstance().world;
+        return Minecraft.getInstance().level;
     }
 
     @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -100,30 +100,30 @@ public class ClientProxy {
         @SubscribeEvent
         public static void onBlockHighlight(DrawHighlightEvent.HighlightBlock e){
             World world = getWorld();
-            TileEntity tile = world.getTileEntity(e.getTarget().getPos());
+            TileEntity tile = world.getBlockEntity(e.getTarget().getBlockPos());
             if(tile instanceof GeneratorTile){
                 MatrixStack matrixStack = e.getMatrix();
-                matrixStack.push();
+                matrixStack.pushPose();
                 Vector3d playerPos = Minecraft.getInstance().player.getEyePosition(e.getPartialTicks());
                 matrixStack.translate(-playerPos.x, -playerPos.y, -playerPos.z);
-                IVertexBuilder builder = e.getBuffers().getBuffer(RenderType.getLines());
+                IVertexBuilder builder = e.getBuffers().getBuffer(RenderType.lines());
                 for(BlockPos pos : ((GeneratorTile)tile).getChargingPortalBlocks()){
-                    VoxelShape shape = world.getBlockState(pos).getRenderShape(world, pos);
+                    VoxelShape shape = world.getBlockState(pos).getBlockSupportShape(world, pos);
                     drawShape(e.getMatrix(), builder, shape, pos.getX(), pos.getY(), pos.getZ(), 66 / 255f, 108 / 255f, 245 / 255f, 1);
                 }
                 for(BlockPos pos : ((GeneratorTile)tile).getChargingEnergyBlocks()){
-                    VoxelShape shape = world.getBlockState(pos).getRenderShape(world, pos);
+                    VoxelShape shape = world.getBlockState(pos).getBlockSupportShape(world, pos);
                     drawShape(e.getMatrix(), builder, shape, pos.getX(), pos.getY(), pos.getZ(), 242 / 255f, 34 / 255f, 34 / 255f, 1);
                 }
-                matrixStack.pop();
+                matrixStack.popPose();
             }
         }
 
         private static void drawShape(MatrixStack matrixStackIn, IVertexBuilder bufferIn, VoxelShape shapeIn, double xIn, double yIn, double zIn, float red, float green, float blue, float alpha){
-            Matrix4f matrix4f = matrixStackIn.getLast().getMatrix();
-            shapeIn.forEachEdge((p_230013_12_, p_230013_14_, p_230013_16_, p_230013_18_, p_230013_20_, p_230013_22_) -> {
-                bufferIn.pos(matrix4f, (float)(p_230013_12_ + xIn), (float)(p_230013_14_ + yIn), (float)(p_230013_16_ + zIn)).color(red, green, blue, alpha).endVertex();
-                bufferIn.pos(matrix4f, (float)(p_230013_18_ + xIn), (float)(p_230013_20_ + yIn), (float)(p_230013_22_ + zIn)).color(red, green, blue, alpha).endVertex();
+            Matrix4f matrix4f = matrixStackIn.last().pose();
+            shapeIn.forAllEdges((p_230013_12_, p_230013_14_, p_230013_16_, p_230013_18_, p_230013_20_, p_230013_22_) -> {
+                bufferIn.vertex(matrix4f, (float)(p_230013_12_ + xIn), (float)(p_230013_14_ + yIn), (float)(p_230013_16_ + zIn)).color(red, green, blue, alpha).endVertex();
+                bufferIn.vertex(matrix4f, (float)(p_230013_18_ + xIn), (float)(p_230013_20_ + yIn), (float)(p_230013_22_ + zIn)).color(red, green, blue, alpha).endVertex();
             });
         }
     }

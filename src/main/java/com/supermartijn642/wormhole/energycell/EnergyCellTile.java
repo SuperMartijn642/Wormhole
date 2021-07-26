@@ -61,7 +61,7 @@ public class EnergyCellTile extends PortalGroupTile implements IEnergyCellTile {
         public void tick(){
             super.tick();
             for(Direction direction : Direction.values()){
-                TileEntity tile = this.world.getTileEntity(this.pos.offset(direction));
+                TileEntity tile = this.level.getBlockEntity(this.worldPosition.relative(direction));
                 if(tile != null)
                     tile.getCapability(CapabilityEnergy.ENERGY).ifPresent(this::pushEnergy);
             }

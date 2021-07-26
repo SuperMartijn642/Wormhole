@@ -32,25 +32,25 @@ public class StabilizerBlock extends PortalGroupBlock {
 
     public StabilizerBlock(){
         super("portal_stabilizer", StabilizerTile::new);
-        this.setDefaultState(this.getDefaultState().with(ON_PROPERTY, false));
+        this.registerDefaultState(this.defaultBlockState().setValue(ON_PROPERTY, false));
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_){
-        TileEntity tile = worldIn.getTileEntity(pos);
+    public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_){
+        TileEntity tile = worldIn.getBlockEntity(pos);
         if(tile instanceof StabilizerTile)
             return ((StabilizerTile)tile).activate(player) ? ActionResultType.SUCCESS : ActionResultType.PASS;
         return ActionResultType.PASS;
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block,BlockState> builder){
+    protected void createBlockStateDefinition(StateContainer.Builder<Block,BlockState> builder){
         builder.add(ON_PROPERTY);
     }
 
     @Override
-    public void addInformation(ItemStack stack, IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
-        tooltip.add(new TranslationTextComponent("wormhole.portal_stabilizer.info").mergeStyle(TextFormatting.AQUA));
+    public void appendHoverText(ItemStack stack, IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
+        tooltip.add(new TranslationTextComponent("wormhole.portal_stabilizer.info").withStyle(TextFormatting.AQUA));
 
         CompoundNBT tag = stack.getOrCreateTag().contains("tileData") ? stack.getOrCreateTag().getCompound("tileData") : null;
 
@@ -58,12 +58,12 @@ public class StabilizerBlock extends PortalGroupBlock {
         int targetCapacity = WormholeConfig.stabilizerTargetCapacity.get();
 
         if(targetCapacity > 0)
-            tooltip.add(new TranslationTextComponent("wormhole.portal_stabilizer.info.targets", targets, targetCapacity).mergeStyle(TextFormatting.YELLOW));
+            tooltip.add(new TranslationTextComponent("wormhole.portal_stabilizer.info.targets", targets, targetCapacity).withStyle(TextFormatting.YELLOW));
 
         int energy = tag == null || tag.isEmpty() || !tag.contains("energy") ? 0 : tag.getInt("energy");
         int energyCapacity = WormholeConfig.stabilizerEnergyCapacity.get();
 
         if(energyCapacity > 0)
-            tooltip.add(new StringTextComponent(EnergyFormat.formatCapacity(energy, energyCapacity)).mergeStyle(TextFormatting.YELLOW));
+            tooltip.add(new StringTextComponent(EnergyFormat.formatCapacity(energy, energyCapacity)).withStyle(TextFormatting.YELLOW));
     }
 }

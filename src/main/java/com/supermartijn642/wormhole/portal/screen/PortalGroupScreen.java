@@ -24,7 +24,7 @@ public abstract class PortalGroupScreen extends ObjectBaseScreen<PortalGroup> {
 
     @Override
     protected PortalGroup getObject(){
-        TileEntity tile = Minecraft.getInstance().world.getTileEntity(this.pos);
+        TileEntity tile = Minecraft.getInstance().level.getBlockEntity(this.pos);
         if(tile instanceof PortalGroupTile && ((PortalGroupTile)tile).hasGroup())
             return ((PortalGroupTile)tile).getGroup();
         return null;

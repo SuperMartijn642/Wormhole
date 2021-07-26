@@ -44,7 +44,7 @@ public class PortalTarget {
     }
 
     public PortalTarget(World world, BlockPos pos, float yaw, String name){
-        this(world.getDimensionKey().getLocation().toString(), pos.getX(), pos.getY(), pos.getZ(), yaw, name);
+        this(world.dimension().location().toString(), pos.getX(), pos.getY(), pos.getZ(), yaw, name);
     }
 
     public PortalTarget(CompoundNBT tag){
@@ -77,8 +77,8 @@ public class PortalTarget {
     }
 
     public Optional<World> getWorld(MinecraftServer server){
-        RegistryKey<World> key = RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(this.dimension));
-        return Optional.ofNullable(server.getWorld(key));
+        RegistryKey<World> key = RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(this.dimension));
+        return Optional.ofNullable(server.getLevel(key));
     }
 
     public BlockPos getPos(){

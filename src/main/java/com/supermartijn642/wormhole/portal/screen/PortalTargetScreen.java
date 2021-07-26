@@ -81,9 +81,9 @@ public class PortalTargetScreen extends PortalGroupScreen {
 
         // check for a target device
         Hand hand = Hand.MAIN_HAND;
-        ItemStack stack = player.getHeldItem(Hand.MAIN_HAND);
+        ItemStack stack = player.getItemInHand(Hand.MAIN_HAND);
         if(!(stack.getItem() instanceof TargetDeviceItem)){
-            stack = player.getHeldItem(Hand.OFF_HAND);
+            stack = player.getItemInHand(Hand.OFF_HAND);
             hand = Hand.OFF_HAND;
         }
         this.hasTargetDevice = stack.getItem() instanceof TargetDeviceItem;
@@ -140,9 +140,9 @@ public class PortalTargetScreen extends PortalGroupScreen {
         // draw titles
         ScreenUtils.drawCenteredString(matrixStack, this.font, this.title, 70, 3, Integer.MAX_VALUE);
         if(this.hasTargetDevice)
-            ScreenUtils.drawCenteredString(matrixStack, this.font, I18n.format("wormhole.target_device.gui.title"), 296, 3, Integer.MAX_VALUE);
+            ScreenUtils.drawCenteredString(matrixStack, this.font, I18n.get("wormhole.target_device.gui.title"), 296, 3, Integer.MAX_VALUE);
 
-        GlStateManager.enableAlphaTest();
+        GlStateManager._enableAlphaTest();
         // draw target select highlight
         if(this.selectedPortalTarget >= this.scrollOffset && this.selectedPortalTarget < this.scrollOffset + 10){
             ScreenUtils.bindTexture(SELECT_HIGHLIGHT);
@@ -173,7 +173,7 @@ public class PortalTargetScreen extends PortalGroupScreen {
             if(count + this.scrollOffset != activeTarget)
                 ScreenUtils.drawCenteredString(matrixStack, this.scrollOffset + count + 1 + ".", 14, 21 + count * 16);
             else{
-                GlStateManager.enableAlphaTest();
+                GlStateManager._enableAlphaTest();
                 ScreenUtils.bindTexture(STAR_ICON);
                 ScreenUtils.drawTexture(matrixStack, 8, 19 + 16 * count, 10, 10);
             }
@@ -200,17 +200,17 @@ public class PortalTargetScreen extends PortalGroupScreen {
         ScreenUtils.drawTexture(matrixStack, 153, 41, 77, 1);
 
         // location
-        GlStateManager.enableAlphaTest();
+        GlStateManager._enableAlphaTest();
         ScreenUtils.bindTexture(LOCATION_ICON);
         ScreenUtils.drawTexture(matrixStack, 150, 47, 9, 9);
         ScreenUtils.drawString(matrixStack, this.font, "(" + target.x + ", " + target.y + ", " + target.z + ")", 161, 48, Integer.MAX_VALUE);
         // dimension
         Block block = null;
-        if(target.dimension.equals(World.OVERWORLD.getLocation().toString()))
+        if(target.dimension.equals(World.OVERWORLD.location().toString()))
             block = Blocks.GRASS_PATH;
-        else if(target.dimension.equals(World.THE_NETHER.getLocation().toString()))
+        else if(target.dimension.equals(World.NETHER.location().toString()))
             block = Blocks.NETHERRACK;
-        else if(target.dimension.equals(World.THE_END.getLocation().toString()))
+        else if(target.dimension.equals(World.END.location().toString()))
             block = Blocks.END_STONE;
         if(block == null){
             ScreenUtils.bindTexture(DIMENSION_ICON);
@@ -220,27 +220,27 @@ public class PortalTargetScreen extends PortalGroupScreen {
         }
         ScreenUtils.drawString(matrixStack, this.font, target.getDimensionDisplayName(), 161, 60, Integer.MAX_VALUE);
         // direction
-        GlStateManager.enableAlphaTest();
+        GlStateManager._enableAlphaTest();
         ScreenUtils.bindTexture(DIRECTION_ICON);
         ScreenUtils.drawTexture(matrixStack, 148, 69, 13, 13);
-        ScreenUtils.drawString(matrixStack, this.font, I18n.format("wormhole.direction." + Direction.fromAngle(target.yaw).toString()), 161, 72, Integer.MAX_VALUE);
+        ScreenUtils.drawString(matrixStack, this.font, I18n.get("wormhole.direction." + Direction.fromYRot(target.yaw).toString()), 161, 72, Integer.MAX_VALUE);
 
         ScreenUtils.bindTexture(SEPARATOR);
         ScreenUtils.drawTexture(matrixStack, 153, 85, 77, 1);
 
         if(showColor){
             // color
-            ScreenUtils.drawString(matrixStack, this.font, I18n.format("wormhole.color." + (target.color == null ? "random" : target.color.getTranslationKey())), 161, 92, Integer.MAX_VALUE);
+            ScreenUtils.drawString(matrixStack, this.font, I18n.get("wormhole.color." + (target.color == null ? "random" : target.color.getName())), 161, 92, Integer.MAX_VALUE);
 
             ScreenUtils.bindTexture(SEPARATOR);
             ScreenUtils.drawTexture(matrixStack, 153, 105, 77, 1);
         }
 
         // energy cost
-        GlStateManager.enableAlphaTest();
+        GlStateManager._enableAlphaTest();
         ScreenUtils.bindTexture(ENERGY_ICON);
         ScreenUtils.drawTexture(matrixStack, 150, showColor ? 111 : 91, 9, 9);
-        int cost = PortalGroup.getTeleportCostToTarget(this.player.world, this.getFromPortalGroup(PortalGroup::getCenterPos, BlockPos.ZERO), target);
+        int cost = PortalGroup.getTeleportCostToTarget(this.player.level, this.getFromPortalGroup(PortalGroup::getCenterPos, BlockPos.ZERO), target);
         ScreenUtils.drawString(matrixStack, this.font, EnergyFormat.formatEnergy(cost), 161, showColor ? 112 : 92, Integer.MAX_VALUE);
     }
 
@@ -278,7 +278,7 @@ public class PortalTargetScreen extends PortalGroupScreen {
     }
 
     private void addDeviceTargetWidgets(){
-        ItemStack stack = this.player.getHeldItem(this.hand);
+        ItemStack stack = this.player.getItemInHand(this.hand);
         if(stack.isEmpty() || !(stack.getItem() instanceof TargetDeviceItem))
             return;
         int deviceCapacity = TargetDeviceItem.getMaxTargetCount(stack);
@@ -354,10 +354,10 @@ public class PortalTargetScreen extends PortalGroupScreen {
     }
 
     public <T> T getFromDeviceTargets(Function<List<PortalTarget>,T> function, T other){
-        ItemStack stack = this.player.getHeldItem(this.hand);
+        ItemStack stack = this.player.getItemInHand(this.hand);
         if(!stack.isEmpty() && stack.getItem() instanceof TargetDeviceItem)
             return function.apply(TargetDeviceItem.getTargets(stack));
-        this.closeScreen();
+        this.onClose();
         return other;
     }
 

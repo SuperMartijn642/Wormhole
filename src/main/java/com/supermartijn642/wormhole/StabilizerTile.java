@@ -33,28 +33,28 @@ public class StabilizerTile extends PortalGroupTile implements ITargetCellTile, 
     @Override
     public void tick(){
         super.tick();
-        if(this.getBlockState().getBlock() instanceof StabilizerBlock && this.hasGroup() != this.getBlockState().get(StabilizerBlock.ON_PROPERTY))
-            this.world.setBlockState(this.pos, Wormhole.portal_stabilizer.getDefaultState().with(StabilizerBlock.ON_PROPERTY, this.hasGroup()), 2);
+        if(this.getBlockState().getBlock() instanceof StabilizerBlock && this.hasGroup() != this.getBlockState().getValue(StabilizerBlock.ON_PROPERTY))
+            this.level.setBlock(this.worldPosition, Wormhole.portal_stabilizer.defaultBlockState().setValue(StabilizerBlock.ON_PROPERTY, this.hasGroup()), 2);
     }
 
     public boolean activate(PlayerEntity player){
         if(this.hasGroup()){
-            ItemStack stack = player.getHeldItem(Hand.MAIN_HAND);
+            ItemStack stack = player.getItemInHand(Hand.MAIN_HAND);
             if(!(stack.getItem() instanceof TargetDeviceItem))
-                stack = player.getHeldItem(Hand.OFF_HAND);
+                stack = player.getItemInHand(Hand.OFF_HAND);
 
             if(stack.getItem() instanceof TargetDeviceItem){
-                if(this.world.isRemote)
-                    ClientProxy.openPortalTargetScreen(this.pos);
-            }else if(this.world.isRemote)
-                ClientProxy.openPortalOverviewScreen(this.pos);
-        }else if(!this.world.isRemote){
-            PortalShape shape = PortalShape.find(this.world, this.pos);
+                if(this.level.isClientSide)
+                    ClientProxy.openPortalTargetScreen(this.worldPosition);
+            }else if(this.level.isClientSide)
+                ClientProxy.openPortalOverviewScreen(this.worldPosition);
+        }else if(!this.level.isClientSide){
+            PortalShape shape = PortalShape.find(this.level, this.worldPosition);
             if(shape == null)
-                player.sendMessage(new TranslationTextComponent("wormhole.portal_stabilizer.error").mergeStyle(TextFormatting.RED), player.getUniqueID());
+                player.sendMessage(new TranslationTextComponent("wormhole.portal_stabilizer.error").withStyle(TextFormatting.RED), player.getUUID());
             else{
-                this.world.getCapability(PortalGroupCapability.CAPABILITY).ifPresent(groups -> groups.add(shape));
-                player.sendMessage(new TranslationTextComponent("wormhole.portal_stabilizer.success").mergeStyle(TextFormatting.YELLOW), player.getUniqueID());
+                this.level.getCapability(PortalGroupCapability.CAPABILITY).ifPresent(groups -> groups.add(shape));
+                player.sendMessage(new TranslationTextComponent("wormhole.portal_stabilizer.success").withStyle(TextFormatting.YELLOW), player.getUUID());
             }
         }
         return true;

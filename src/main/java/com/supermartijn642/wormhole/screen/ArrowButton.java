@@ -40,7 +40,7 @@ public class ArrowButton extends AbstractButtonWidget implements IHoverTextWidge
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks){
-        Minecraft.getInstance().getTextureManager().bindTexture(BUTTONS);
+        Minecraft.getInstance().getTextureManager().bind(BUTTONS);
         float x = (this.active ? this.hovered ? 15 : 0 : 30) / 45f;
         float y = (this.up ? 0 : 8) / 16f;
         ScreenUtils.drawTexture(matrixStack, this.x, this.y, this.width, this.height, x, y, 15 / 45f, 8 / 16f);

@@ -42,8 +42,8 @@ public class TargetCellTileRenderer extends TileEntityRenderer<TargetCellTile> {
             modelLocation = ADVANCED_TARGET_CELL_MODELS[(int)Math.ceil(Math.min(percent, 1) * (ADVANCED_TARGET_CELL_MODELS.length - 1))];
 
         IBakedModel model = Minecraft.getInstance().getModelManager().getModel(modelLocation);
-        Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelRenderer().renderModel(
-            tile.getWorld(), model, tile.getBlockState(), tile.getPos(), matrixStack, buffer.getBuffer(RenderType.getSolid()), true, new Random(), 42L, combinedOverlay, EmptyModelData.INSTANCE
+        Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(
+            tile.getLevel(), model, tile.getBlockState(), tile.getBlockPos(), matrixStack, buffer.getBuffer(RenderType.solid()), true, new Random(), 42L, combinedOverlay, EmptyModelData.INSTANCE
         );
     }
 

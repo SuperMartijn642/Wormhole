@@ -38,14 +38,14 @@ public class PortalTargetSelectColorButton extends AbstractButtonWidget {
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks){
-        Minecraft.getInstance().getTextureManager().bindTexture(BUTTON_OUTLINE);
+        Minecraft.getInstance().getTextureManager().bind(BUTTON_OUTLINE);
         ScreenUtils.drawTexture(matrixStack, this.x, this.y, this.width, this.height, 0, this.targetColor.get() == this.color ? 2 / 3f : this.isHovered() ? 1 / 3f : 0, 1, 1 / 3f);
-        Minecraft.getInstance().getTextureManager().bindTexture(this.color == null ? RANDOM_COLOR_PORTAL : new ResourceLocation("wormhole", "textures/portal/portal_" + this.color.getTranslationKey() + ".png"));
+        Minecraft.getInstance().getTextureManager().bind(this.color == null ? RANDOM_COLOR_PORTAL : new ResourceLocation("wormhole", "textures/portal/portal_" + this.color.getName() + ".png"));
         ScreenUtils.drawTexture(matrixStack, this.x + 2, this.y + 2, this.width - 4, this.height - 4, 0, 0, 1, 16 / 512f);
     }
 
     @Override
     protected ITextComponent getNarrationMessage(){
-        return new TranslationTextComponent("wormhole.color." + (this.color == null ? "random" : this.color.getTranslationKey()));
+        return new TranslationTextComponent("wormhole.color." + (this.color == null ? "random" : this.color.getName()));
     }
 }

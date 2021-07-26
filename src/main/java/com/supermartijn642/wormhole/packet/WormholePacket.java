@@ -31,7 +31,7 @@ public abstract class WormholePacket {
         PlayerEntity player = contextSupplier.get().getSender();
         if(player == null)
             return;
-        World world = player.world;
+        World world = player.level;
         if(world == null)
             return;
         contextSupplier.get().enqueueWork(() -> this.handle(player, world));

@@ -16,7 +16,7 @@ public class CoalGeneratorScreen extends TileEntityBaseContainerScreen<CoalGener
     private final int WIDTH = 176, HEIGHT = 166;
 
     public CoalGeneratorScreen(CoalGeneratorContainer screenContainer, PlayerInventory inv){
-        super(screenContainer, new TranslationTextComponent(Wormhole.coal_generator.getTranslationKey()));
+        super(screenContainer, new TranslationTextComponent(Wormhole.coal_generator.getDescriptionId()));
     }
 
     @Override

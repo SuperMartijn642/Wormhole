@@ -61,25 +61,25 @@ public class PortalRendererHelper {
         RenderSystem.translatef(x + width / 2, y + height / 2, 350);
         RenderSystem.scalef(1.0F, -1.0F, 1.0F);
         RenderSystem.scaled(scale, scale, scale);
-        IRenderTypeBuffer.Impl renderTypeBuffer = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
-        RenderHelper.setupGuiFlatDiffuseLighting();
+        IRenderTypeBuffer.Impl renderTypeBuffer = Minecraft.getInstance().renderBuffers().bufferSource();
+        RenderHelper.setupForFlatItems();
 
         MatrixStack matrixstack = new MatrixStack();
-        matrixstack.rotate(new Quaternion(45, (float)(System.currentTimeMillis() % ROTATE_TIME) / ROTATE_TIME * 360, 0, true));
-        matrixstack.translate(-center.getX(), -center.getY(), -center.getZ());
+        matrixstack.mulPose(new Quaternion(45, (float)(System.currentTimeMillis() % ROTATE_TIME) / ROTATE_TIME * 360, 0, true));
+        matrixstack.translate(-center.x(), -center.y(), -center.z());
 
         for(BlockPos pos : shape.frame)
             renderBlock(world, pos, matrixstack, renderTypeBuffer, true);
         for(BlockPos pos : shape.area){
-            if(!world.isAirBlock(pos)){
+            if(!world.isEmptyBlock(pos)){
                 renderBlock(world, pos, matrixstack, renderTypeBuffer, world.getBlockState(pos).getBlock() instanceof PortalBlock);
                 renderTileEntity(world, pos, matrixstack, renderTypeBuffer);
             }
         }
 
-        renderTypeBuffer.finish();
+        renderTypeBuffer.endBatch();
         RenderSystem.enableDepthTest();
-        RenderHelper.setupGui3DDiffuseLighting();
+        RenderHelper.setupFor3DItems();
         RenderSystem.disableAlphaTest();
         RenderSystem.disableRescaleNormal();
         RenderSystem.popMatrix();
@@ -88,34 +88,34 @@ public class PortalRendererHelper {
     private static void renderBlock(World world, BlockPos pos, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, boolean valid){
         BlockState state = world.getBlockState(pos);
 
-        if(!(state.getBlock() instanceof EnergyCellBlock) && !(state.getBlock() instanceof TargetCellBlock) && state.getRenderType() != BlockRenderType.MODEL)
+        if(!(state.getBlock() instanceof EnergyCellBlock) && !(state.getBlock() instanceof TargetCellBlock) && state.getRenderShape() != BlockRenderType.MODEL)
             return;
 
-        TileEntity tile = world.getTileEntity(pos);
+        TileEntity tile = world.getBlockEntity(pos);
 
         IBakedModel model =
             tile instanceof TargetCellTile ? TargetCellTileRenderer.getModelForTile((TargetCellTile)tile) :
                 tile instanceof EnergyCellTile ? EnergyCellTileRenderer.getModelForTile((EnergyCellTile)tile) :
-                    Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(state);
+                    Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
         IModelData modelData = tile == null ? EmptyModelData.INSTANCE : tile.getModelData();
         modelData = model.getModelData(world, pos, state, modelData);
 
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(pos.getX(), pos.getY(), pos.getZ());
 
         translateAndRenderModel(state, matrixStack, renderTypeBuffer, 15728880, OverlayTexture.NO_OVERLAY, model, modelData, valid);
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     private static void translateAndRenderModel(BlockState state, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn, IBakedModel modelIn, IModelData modelData, boolean valid){
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
 
         matrixStackIn.translate(-0.5D, -0.5D, -0.5D);
-        RenderType rendertype = RenderType.getTranslucent();
+        RenderType rendertype = RenderType.translucent();
         renderModel(modelIn, state, combinedLightIn, combinedOverlayIn, matrixStackIn, bufferIn.getBuffer(rendertype), modelData, valid);
 
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
     }
 
     private static void renderModel(IBakedModel modelIn, BlockState state, int combinedLightIn, int combinedOverlayIn, MatrixStack matrixStackIn, IVertexBuilder bufferIn, IModelData modelData, boolean valid){
@@ -131,25 +131,25 @@ public class PortalRendererHelper {
     }
 
     private static void renderQuads(MatrixStack matrixStackIn, IVertexBuilder bufferIn, List<BakedQuad> quadsIn, int combinedLightIn, int combinedOverlayIn, boolean valid){
-        MatrixStack.Entry matrix = matrixStackIn.getLast();
+        MatrixStack.Entry matrix = matrixStackIn.last();
 
         for(BakedQuad bakedquad : quadsIn)
             bufferIn.addVertexData(matrix, bakedquad, 1, valid ? 1 : 0.5f, valid ? 1 : 0.5f, valid ? 1 : 0.8f, combinedLightIn, combinedOverlayIn, false);
     }
 
     private static void renderTileEntity(World world, BlockPos pos, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer){
-        TileEntity tile = world.getTileEntity(pos);
+        TileEntity tile = world.getBlockEntity(pos);
 
         if(tile != null){
             TileEntityRenderer<TileEntity> tileRenderer = TileEntityRendererDispatcher.instance.getRenderer(tile);
 
             if(tileRenderer != null){
-                matrixStack.push();
+                matrixStack.pushPose();
                 matrixStack.translate(pos.getX() - 0.5, pos.getY() - 0.5, pos.getZ() - 0.5);
 
-                tileRenderer.render(tile, Minecraft.getInstance().getRenderPartialTicks(), matrixStack, renderTypeBuffer, 15728880, OverlayTexture.NO_OVERLAY);
+                tileRenderer.render(tile, Minecraft.getInstance().getFrameTime(), matrixStack, renderTypeBuffer, 15728880, OverlayTexture.NO_OVERLAY);
 
-                matrixStack.pop();
+                matrixStack.popPose();
             }
         }
     }
