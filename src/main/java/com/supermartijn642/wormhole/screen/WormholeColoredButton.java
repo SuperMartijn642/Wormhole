@@ -1,7 +1,7 @@
 package com.supermartijn642.wormhole.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.util.ResourceLocation;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Created 10/15/2020 by SuperMartijn642
@@ -44,7 +44,7 @@ public class WormholeColoredButton extends WormholeButton {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks){
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks){
         if(this.visible)
             super.render(matrixStack, mouseX, mouseY, partialTicks);
     }

@@ -1,20 +1,19 @@
 package com.supermartijn642.wormhole.portal.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Quaternion;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.vector.Quaternion;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 
@@ -29,22 +28,16 @@ public class ScreenBlockRenderer {
     public static void drawBlock(Block block, double x, double y, double scale, float yaw, float pitch){
         BlockState state = block.defaultBlockState();
 
-        RenderSystem.pushMatrix();
-        RenderSystem.enableRescaleNormal();
-        RenderSystem.enableAlphaTest();
-        RenderSystem.defaultAlphaFunc();
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        RenderSystem.translated(x, y, 350);
-        RenderSystem.scalef(1.0F, -1.0F, 1.0F);
-        RenderSystem.scaled(scale, scale, scale);
-        IRenderTypeBuffer.Impl renderTypeBuffer = Minecraft.getInstance().renderBuffers().bufferSource();
-        RenderHelper.setupForFlatItems();
+        PoseStack matrixstack = new PoseStack();
+        matrixstack.translate(x, y, 350);
+        matrixstack.scale(1, -1, 1);
+        matrixstack.scale((float)scale, (float)scale, (float)scale);
+        MultiBufferSource.BufferSource renderTypeBuffer = Minecraft.getInstance().renderBuffers().bufferSource();
+        Lighting.setupForFlatItems();
 
-        MatrixStack matrixstack = new MatrixStack();
         matrixstack.mulPose(new Quaternion(pitch, yaw, 0, true));
 
-        IBakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
+        BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
         IModelData modelData = EmptyModelData.INSTANCE;
 
         matrixstack.translate(-0.5, -0.5, -0.5);
@@ -53,13 +46,10 @@ public class ScreenBlockRenderer {
 
         renderTypeBuffer.endBatch();
         RenderSystem.enableDepthTest();
-        RenderHelper.setupFor3DItems();
-        RenderSystem.disableAlphaTest();
-        RenderSystem.disableRescaleNormal();
-        RenderSystem.popMatrix();
+        Lighting.setupFor3DItems();
     }
 
-    private static void renderModel(IBakedModel modelIn, BlockState state, MatrixStack matrixStackIn, IVertexBuilder bufferIn, IModelData modelData){
+    private static void renderModel(BakedModel modelIn, BlockState state, PoseStack matrixStackIn, VertexConsumer bufferIn, IModelData modelData){
         Random random = new Random();
 
         for(Direction direction : Direction.values()){
@@ -71,11 +61,11 @@ public class ScreenBlockRenderer {
         renderQuads(matrixStackIn, bufferIn, modelIn.getQuads(state, null, random, modelData));
     }
 
-    private static void renderQuads(MatrixStack matrixStackIn, IVertexBuilder bufferIn, List<BakedQuad> quadsIn){
-        MatrixStack.Entry matrix = matrixStackIn.last();
+    private static void renderQuads(PoseStack matrixStackIn, VertexConsumer bufferIn, List<BakedQuad> quadsIn){
+        PoseStack.Pose matrix = matrixStackIn.last();
 
         for(BakedQuad bakedquad : quadsIn)
-            bufferIn.addVertexData(matrix, bakedquad, 1, 1, 1, 1, 15728880, OverlayTexture.NO_OVERLAY, false);
+            bufferIn.putBulkData(matrix, bakedquad, 1, 1, 1, 1, 15728880, OverlayTexture.NO_OVERLAY, false);
     }
 
 }

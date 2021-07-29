@@ -5,16 +5,16 @@ import com.supermartijn642.wormhole.PortalBlock;
 import com.supermartijn642.wormhole.StabilizerTile;
 import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.WormholeConfig;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.DyeColor;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 
 import java.util.*;
 
@@ -44,7 +44,7 @@ public class PortalShape {
         }
     }
 
-    public static PortalShape find(IBlockReader world, BlockPos center){
+    public static PortalShape find(BlockGetter world, BlockPos center){
         for(Direction.Axis axis : Direction.Axis.values()){
             PortalShape shape = find(world, center, axis);
             if(shape != null)
@@ -53,7 +53,7 @@ public class PortalShape {
         return null;
     }
 
-    private static PortalShape find(IBlockReader world, BlockPos center, Direction.Axis axis){
+    private static PortalShape find(BlockGetter world, BlockPos center, Direction.Axis axis){
         for(BlockPos offset : ALL_OFFSETS.get(axis)){
             if(world.getBlockState(center.offset(offset)).getBlock() == Blocks.AIR){
                 PortalShape shape = findArea(world, center.offset(offset), axis);
@@ -64,7 +64,7 @@ public class PortalShape {
         return null;
     }
 
-    private static PortalShape findArea(IBlockReader world, BlockPos start, Direction.Axis axis){
+    private static PortalShape findArea(BlockGetter world, BlockPos start, Direction.Axis axis){
         List<BlockPos> next = new LinkedList<>();
         List<BlockPos> current = new LinkedList<>();
         current.add(start);
@@ -80,7 +80,7 @@ public class PortalShape {
                 for(BlockPos offset : DIRECT_OFFSETS.get(axis)){
                     BlockPos offPos = pos.offset(offset);
                     Block block = world.getBlockState(offPos).getBlock();
-                    TileEntity tile = world.getBlockEntity(offPos);
+                    BlockEntity tile = world.getBlockEntity(offPos);
                     if(block == Blocks.AIR){
                         if(!done.contains(offPos) && !current.contains(offPos) && !next.contains(offPos))
                             next.add(offPos);
@@ -121,7 +121,7 @@ public class PortalShape {
         return new PortalShape(axis, done, frame, stabilizers, energyCells, targetCells);
     }
 
-    private static void collectCorners(IBlockReader world, List<BlockPos> area, List<BlockPos> frame, List<BlockPos> corners, List<BlockPos> stabilizers, List<BlockPos> energyCells, List<BlockPos> targetCells, Direction.Axis axis){
+    private static void collectCorners(BlockGetter world, List<BlockPos> area, List<BlockPos> frame, List<BlockPos> corners, List<BlockPos> stabilizers, List<BlockPos> energyCells, List<BlockPos> targetCells, Direction.Axis axis){
         BlockPos dir1pos = axis == Direction.Axis.Y ? BlockPos.ZERO.east() : BlockPos.ZERO.above();
         BlockPos dir1neg = axis == Direction.Axis.Y ? BlockPos.ZERO.west() : BlockPos.ZERO.below();
         BlockPos dir2pos = axis == Direction.Axis.Z ? BlockPos.ZERO.east() : BlockPos.ZERO.north();
@@ -134,7 +134,7 @@ public class PortalShape {
         }
     }
 
-    private static boolean validateCorners(IBlockReader world, List<BlockPos> area, List<BlockPos> frame, List<BlockPos> corners, List<BlockPos> stabilizers, List<BlockPos> energyCells, List<BlockPos> targetCells, Direction.Axis axis){
+    private static boolean validateCorners(BlockGetter world, List<BlockPos> area, List<BlockPos> frame, List<BlockPos> corners, List<BlockPos> stabilizers, List<BlockPos> energyCells, List<BlockPos> targetCells, Direction.Axis axis){
         BlockPos dir1pos = axis == Direction.Axis.Y ? BlockPos.ZERO.east() : BlockPos.ZERO.above();
         BlockPos dir1neg = axis == Direction.Axis.Y ? BlockPos.ZERO.west() : BlockPos.ZERO.below();
         BlockPos dir2pos = axis == Direction.Axis.Z ? BlockPos.ZERO.east() : BlockPos.ZERO.north();
@@ -152,10 +152,10 @@ public class PortalShape {
         return true;
     }
 
-    private static boolean collectCorner(IBlockReader world, List<BlockPos> area, List<BlockPos> frame, List<BlockPos> stabilizers, List<BlockPos> energyCells, List<BlockPos> targetCells, BlockPos corner, BlockPos dir1, BlockPos dir2){
+    private static boolean collectCorner(BlockGetter world, List<BlockPos> area, List<BlockPos> frame, List<BlockPos> stabilizers, List<BlockPos> energyCells, List<BlockPos> targetCells, BlockPos corner, BlockPos dir1, BlockPos dir2){
         if(frame.contains(corner.offset(dir1)) && frame.contains(corner.offset(dir2))){
             BlockPos pos = corner.offset(dir1).offset(dir2);
-            TileEntity tile = world.getBlockEntity(pos);
+            BlockEntity tile = world.getBlockEntity(pos);
             if(tile instanceof IPortalGroupTile ? ((IPortalGroupTile)tile).hasGroup() : !area.contains(pos))
                 return false;
             else if(!frame.contains(pos)){
@@ -229,36 +229,36 @@ public class PortalShape {
         this.maxCorner = new BlockPos(maxX, maxY, maxZ);
     }
 
-    public PortalShape(CompoundNBT tag){
+    public PortalShape(CompoundTag tag){
         this.axis = Enum.valueOf(Direction.Axis.class, tag.getString("axis"));
 
-        CompoundNBT areaTag = tag.getCompound("area");
+        CompoundTag areaTag = tag.getCompound("area");
         for(String key : areaTag.getAllKeys()){
-            CompoundNBT pos = areaTag.getCompound(key);
+            CompoundTag pos = areaTag.getCompound(key);
             this.area.add(new BlockPos(pos.getInt("x"), pos.getInt("y"), pos.getInt("z")));
         }
 
-        CompoundNBT frameTag = tag.getCompound("frame");
+        CompoundTag frameTag = tag.getCompound("frame");
         for(String key : frameTag.getAllKeys()){
-            CompoundNBT pos = frameTag.getCompound(key);
+            CompoundTag pos = frameTag.getCompound(key);
             this.frame.add(new BlockPos(pos.getInt("x"), pos.getInt("y"), pos.getInt("z")));
         }
 
-        CompoundNBT stabilizerTag = tag.getCompound("stabilizers");
+        CompoundTag stabilizerTag = tag.getCompound("stabilizers");
         for(String key : stabilizerTag.getAllKeys()){
-            CompoundNBT pos = stabilizerTag.getCompound(key);
+            CompoundTag pos = stabilizerTag.getCompound(key);
             this.stabilizers.add(new BlockPos(pos.getInt("x"), pos.getInt("y"), pos.getInt("z")));
         }
 
-        CompoundNBT energyCellsTag = tag.getCompound("energyCells");
+        CompoundTag energyCellsTag = tag.getCompound("energyCells");
         for(String key : energyCellsTag.getAllKeys()){
-            CompoundNBT pos = energyCellsTag.getCompound(key);
+            CompoundTag pos = energyCellsTag.getCompound(key);
             this.energyCells.add(new BlockPos(pos.getInt("x"), pos.getInt("y"), pos.getInt("z")));
         }
 
-        CompoundNBT targetCellsTag = tag.getCompound("targetCells");
+        CompoundTag targetCellsTag = tag.getCompound("targetCells");
         for(String key : targetCellsTag.getAllKeys()){
-            CompoundNBT pos = targetCellsTag.getCompound(key);
+            CompoundTag pos = targetCellsTag.getCompound(key);
             this.targetCells.add(new BlockPos(pos.getInt("x"), pos.getInt("y"), pos.getInt("z")));
         }
 
@@ -268,7 +268,7 @@ public class PortalShape {
         this.maxCorner = new BlockPos(tag.getInt("maxCornerX"), tag.getInt("maxCornerY"), tag.getInt("maxCornerZ"));
     }
 
-    public void createPortals(World world, DyeColor color){
+    public void createPortals(Level world, DyeColor color){
         if(color == null)
             color = DyeColor.values()[new Random().nextInt(DyeColor.values().length)];
         for(BlockPos pos : this.area){
@@ -277,14 +277,14 @@ public class PortalShape {
         }
     }
 
-    public void destroyPortals(World world){
+    public void destroyPortals(Level world){
         for(BlockPos pos : this.area){
             if(world.getBlockState(pos).getBlock() instanceof PortalBlock)
                 world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
         }
     }
 
-    public boolean validateFrame(IBlockReader world){
+    public boolean validateFrame(BlockGetter world){
         for(BlockPos pos : this.frame){
             if(!(world.getBlockState(pos).getBlock() instanceof IPortalGroupTile))
                 return false;
@@ -292,7 +292,7 @@ public class PortalShape {
         return true;
     }
 
-    public boolean validatePortal(IBlockReader world){
+    public boolean validatePortal(BlockGetter world){
         for(BlockPos pos : this.area){
             BlockState state = world.getBlockState(pos);
             if(!(state.getBlock() instanceof PortalBlock && state.getValue(PortalBlock.AXIS_PROPERTY) == this.axis) && state.getBlock() != Blocks.AIR)
@@ -301,13 +301,13 @@ public class PortalShape {
         return true;
     }
 
-    public CompoundNBT write(){
-        CompoundNBT tag = new CompoundNBT();
+    public CompoundTag write(){
+        CompoundTag tag = new CompoundTag();
         tag.putString("axis", this.axis.name());
 
-        CompoundNBT areaTag = new CompoundNBT();
+        CompoundTag areaTag = new CompoundTag();
         for(int i = 0; i < this.area.size(); i++){
-            CompoundNBT pos = new CompoundNBT();
+            CompoundTag pos = new CompoundTag();
             pos.putInt("x", this.area.get(i).getX());
             pos.putInt("y", this.area.get(i).getY());
             pos.putInt("z", this.area.get(i).getZ());
@@ -315,9 +315,9 @@ public class PortalShape {
         }
         tag.put("area", areaTag);
 
-        CompoundNBT frameTag = new CompoundNBT();
+        CompoundTag frameTag = new CompoundTag();
         for(int i = 0; i < this.frame.size(); i++){
-            CompoundNBT pos = new CompoundNBT();
+            CompoundTag pos = new CompoundTag();
             pos.putInt("x", this.frame.get(i).getX());
             pos.putInt("y", this.frame.get(i).getY());
             pos.putInt("z", this.frame.get(i).getZ());
@@ -325,9 +325,9 @@ public class PortalShape {
         }
         tag.put("frame", frameTag);
 
-        CompoundNBT stabilizerTag = new CompoundNBT();
+        CompoundTag stabilizerTag = new CompoundTag();
         for(int i = 0; i < this.stabilizers.size(); i++){
-            CompoundNBT pos = new CompoundNBT();
+            CompoundTag pos = new CompoundTag();
             pos.putInt("x", this.stabilizers.get(i).getX());
             pos.putInt("y", this.stabilizers.get(i).getY());
             pos.putInt("z", this.stabilizers.get(i).getZ());
@@ -335,9 +335,9 @@ public class PortalShape {
         }
         tag.put("stabilizers", stabilizerTag);
 
-        CompoundNBT energyCellsTag = new CompoundNBT();
+        CompoundTag energyCellsTag = new CompoundTag();
         for(int i = 0; i < this.energyCells.size(); i++){
-            CompoundNBT pos = new CompoundNBT();
+            CompoundTag pos = new CompoundTag();
             pos.putInt("x", this.energyCells.get(i).getX());
             pos.putInt("y", this.energyCells.get(i).getY());
             pos.putInt("z", this.energyCells.get(i).getZ());
@@ -345,9 +345,9 @@ public class PortalShape {
         }
         tag.put("energyCells", energyCellsTag);
 
-        CompoundNBT targetCellsTag = new CompoundNBT();
+        CompoundTag targetCellsTag = new CompoundTag();
         for(int i = 0; i < this.targetCells.size(); i++){
-            CompoundNBT pos = new CompoundNBT();
+            CompoundTag pos = new CompoundTag();
             pos.putInt("x", this.targetCells.get(i).getX());
             pos.putInt("y", this.targetCells.get(i).getY());
             pos.putInt("z", this.targetCells.get(i).getZ());
@@ -368,7 +368,7 @@ public class PortalShape {
         return tag;
     }
 
-    public static PortalShape read(CompoundNBT tag){
+    public static PortalShape read(CompoundTag tag){
         return new PortalShape(tag);
     }
 

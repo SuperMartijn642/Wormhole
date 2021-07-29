@@ -4,11 +4,11 @@ import com.supermartijn642.wormhole.packet.PortalGroupPacket;
 import com.supermartijn642.wormhole.portal.PortalGroup;
 import com.supermartijn642.wormhole.portal.PortalTarget;
 import com.supermartijn642.wormhole.targetdevice.TargetDeviceItem;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Hand;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.Level;
 
 import java.util.List;
 
@@ -17,35 +17,35 @@ import java.util.List;
  */
 public class PortalAddTargetPacket extends PortalGroupPacket {
 
-    private Hand hand;
+    private InteractionHand hand;
     private int index;
 
-    public PortalAddTargetPacket(PortalGroup group, Hand hand, int index){
+    public PortalAddTargetPacket(PortalGroup group, InteractionHand hand, int index){
         super(group);
         this.hand = hand;
         this.index = index;
     }
 
-    public PortalAddTargetPacket(PacketBuffer buffer){
+    public PortalAddTargetPacket(FriendlyByteBuf buffer){
         super(buffer);
     }
 
     @Override
-    public void encode(PacketBuffer buffer){
+    public void encode(FriendlyByteBuf buffer){
         super.encode(buffer);
         buffer.writeEnum(this.hand);
         buffer.writeInt(this.index);
     }
 
     @Override
-    protected void decode(PacketBuffer buffer){
+    protected void decode(FriendlyByteBuf buffer){
         super.decode(buffer);
-        this.hand = buffer.readEnum(Hand.class);
+        this.hand = buffer.readEnum(InteractionHand.class);
         this.index = buffer.readInt();
     }
 
     @Override
-    protected void handle(PlayerEntity player, World world, PortalGroup group){
+    protected void handle(Player player, Level world, PortalGroup group){
         ItemStack stack = player.getItemInHand(this.hand);
         if(stack.isEmpty() || !(stack.getItem() instanceof TargetDeviceItem))
             return;

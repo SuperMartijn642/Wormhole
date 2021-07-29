@@ -1,13 +1,12 @@
 package com.supermartijn642.wormhole.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.widget.AbstractButtonWidget;
 import com.supermartijn642.core.gui.widget.IHoverTextWidget;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Created 10/9/2020 by SuperMartijn642
@@ -29,18 +28,18 @@ public class ArrowButton extends AbstractButtonWidget implements IHoverTextWidge
     }
 
     @Override
-    public ITextComponent getHoverText(){
-        return this.active ? new TranslationTextComponent("wormhole.gui.arrow_button." + (this.up ? "up" : "down")) : null;
+    public Component getHoverText(){
+        return this.active ? new TranslatableComponent("wormhole.gui.arrow_button." + (this.up ? "up" : "down")) : null;
     }
 
     @Override
-    protected ITextComponent getNarrationMessage(){
-        return new TranslationTextComponent("wormhole.gui.arrow_button." + (up ? "up" : "down"));
+    protected Component getNarrationMessage(){
+        return new TranslatableComponent("wormhole.gui.arrow_button." + (up ? "up" : "down"));
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks){
-        Minecraft.getInstance().getTextureManager().bind(BUTTONS);
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks){
+        ScreenUtils.bindTexture(BUTTONS);
         float x = (this.active ? this.hovered ? 15 : 0 : 30) / 45f;
         float y = (this.up ? 0 : 8) / 16f;
         ScreenUtils.drawTexture(matrixStack, this.x, this.y, this.width, this.height, x, y, 15 / 45f, 8 / 16f);

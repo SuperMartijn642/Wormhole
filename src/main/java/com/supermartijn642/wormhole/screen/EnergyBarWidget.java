@@ -1,16 +1,16 @@
 package com.supermartijn642.wormhole.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.widget.AbstractButtonWidget;
 import com.supermartijn642.core.gui.widget.IHoverTextWidget;
 import com.supermartijn642.wormhole.EnergyFormat;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 import java.util.function.Supplier;
 
@@ -30,9 +30,8 @@ public class EnergyBarWidget extends AbstractButtonWidget implements IHoverTextW
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks){
-        Minecraft.getInstance().getTextureManager().bind(BARS);
-        GlStateManager._enableAlphaTest();
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks){
+        ScreenUtils.bindTexture(BARS);
         ScreenUtils.drawTexture(matrixStack, this.x, this.y, this.width, this.height, this.isHovered() ? 1 / 11f : 0, 0, 1 / 11f, 1);
         int energy = this.energy.get();
         int capacity = this.capacity.get();
@@ -42,14 +41,14 @@ public class EnergyBarWidget extends AbstractButtonWidget implements IHoverTextW
     }
 
     @Override
-    public ITextComponent getHoverText(){
+    public Component getHoverText(){
         int energy = this.energy.get();
         int capacity = this.capacity.get();
-        return new StringTextComponent(EnergyFormat.formatCapacity(energy, capacity));
+        return new TextComponent(EnergyFormat.formatCapacity(energy, capacity));
     }
 
     @Override
-    protected ITextComponent getNarrationMessage(){
+    protected Component getNarrationMessage(){
         return this.getHoverText();
     }
 }

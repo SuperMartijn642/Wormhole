@@ -2,9 +2,9 @@ package com.supermartijn642.wormhole.packet;
 
 import com.supermartijn642.wormhole.ClientProxy;
 import com.supermartijn642.wormhole.PortalGroupCapability;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -13,21 +13,21 @@ import java.util.function.Supplier;
  */
 public class UpdateGroupsPacket {
 
-    private CompoundNBT groupsData;
+    private CompoundTag groupsData;
 
-    public UpdateGroupsPacket(CompoundNBT groupsData){
+    public UpdateGroupsPacket(CompoundTag groupsData){
         this.groupsData = groupsData;
     }
 
-    public UpdateGroupsPacket(PacketBuffer buffer){
+    public UpdateGroupsPacket(FriendlyByteBuf buffer){
         this.decode(buffer);
     }
 
-    public void encode(PacketBuffer buffer){
+    public void encode(FriendlyByteBuf buffer){
         buffer.writeNbt(this.groupsData);
     }
 
-    protected void decode(PacketBuffer buffer){
+    protected void decode(FriendlyByteBuf buffer){
         this.groupsData = buffer.readNbt();
     }
 

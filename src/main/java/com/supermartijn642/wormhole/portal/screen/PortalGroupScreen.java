@@ -4,9 +4,9 @@ import com.supermartijn642.core.gui.ObjectBaseScreen;
 import com.supermartijn642.wormhole.portal.PortalGroup;
 import com.supermartijn642.wormhole.portal.PortalGroupTile;
 import net.minecraft.client.Minecraft;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.function.Function;
 
@@ -18,13 +18,13 @@ public abstract class PortalGroupScreen extends ObjectBaseScreen<PortalGroup> {
     public final BlockPos pos;
 
     public PortalGroupScreen(String titleKey, BlockPos pos){
-        super(new TranslationTextComponent(titleKey));
+        super(new TranslatableComponent(titleKey));
         this.pos = pos;
     }
 
     @Override
     protected PortalGroup getObject(){
-        TileEntity tile = Minecraft.getInstance().level.getBlockEntity(this.pos);
+        BlockEntity tile = Minecraft.getInstance().level.getBlockEntity(this.pos);
         if(tile instanceof PortalGroupTile && ((PortalGroupTile)tile).hasGroup())
             return ((PortalGroupTile)tile).getGroup();
         return null;

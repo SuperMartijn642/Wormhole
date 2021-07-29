@@ -1,12 +1,12 @@
 package com.supermartijn642.wormhole.portal.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.wormhole.portal.PortalGroup;
 import com.supermartijn642.wormhole.screen.WormholeButton;
-import net.minecraft.item.DyeColor;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
 
 /**
  * Created 11/12/2020 by SuperMartijn642
@@ -62,7 +62,7 @@ public class PortalTargetColorScreen extends PortalGroupScreen {
     }
 
     @Override
-    protected void render(MatrixStack matrixStack, int mouseX, int mouseY, PortalGroup group){
+    protected void render(PoseStack matrixStack, int mouseX, int mouseY, PortalGroup group){
         ScreenUtils.drawScreenBackground(matrixStack, 0, 0, this.sizeX(), this.sizeY());
         ScreenUtils.drawString(matrixStack, this.title, 8, 7);
         // target number
@@ -70,6 +70,6 @@ public class PortalTargetColorScreen extends PortalGroupScreen {
     }
 
     @Override
-    protected void renderTooltips(MatrixStack matrixStack, int mouseX, int mouseY, PortalGroup group){
+    protected void renderTooltips(PoseStack matrixStack, int mouseX, int mouseY, PortalGroup group){
     }
 }

@@ -2,13 +2,15 @@ package com.supermartijn642.wormhole;
 
 import com.supermartijn642.wormhole.portal.*;
 import com.supermartijn642.wormhole.targetdevice.TargetDeviceItem;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -24,8 +26,8 @@ public class StabilizerTile extends PortalGroupTile implements ITargetCellTile, 
     private final List<PortalTarget> targets = new ArrayList<>();
     private int energy = 0;
 
-    public StabilizerTile(){
-        super(Wormhole.stabilizer_tile);
+    public StabilizerTile(BlockPos pos, BlockState state){
+        super(Wormhole.stabilizer_tile, pos, state);
         for(int i = 0; i < this.getTargetCapacity(); i++)
             this.targets.add(null);
     }
@@ -37,11 +39,11 @@ public class StabilizerTile extends PortalGroupTile implements ITargetCellTile, 
             this.level.setBlock(this.worldPosition, Wormhole.portal_stabilizer.defaultBlockState().setValue(StabilizerBlock.ON_PROPERTY, this.hasGroup()), 2);
     }
 
-    public boolean activate(PlayerEntity player){
+    public boolean activate(Player player){
         if(this.hasGroup()){
-            ItemStack stack = player.getItemInHand(Hand.MAIN_HAND);
+            ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
             if(!(stack.getItem() instanceof TargetDeviceItem))
-                stack = player.getItemInHand(Hand.OFF_HAND);
+                stack = player.getItemInHand(InteractionHand.OFF_HAND);
 
             if(stack.getItem() instanceof TargetDeviceItem){
                 if(this.level.isClientSide)
@@ -51,10 +53,10 @@ public class StabilizerTile extends PortalGroupTile implements ITargetCellTile, 
         }else if(!this.level.isClientSide){
             PortalShape shape = PortalShape.find(this.level, this.worldPosition);
             if(shape == null)
-                player.sendMessage(new TranslationTextComponent("wormhole.portal_stabilizer.error").withStyle(TextFormatting.RED), player.getUUID());
+                player.sendMessage(new TranslatableComponent("wormhole.portal_stabilizer.error").withStyle(ChatFormatting.RED), player.getUUID());
             else{
                 this.level.getCapability(PortalGroupCapability.CAPABILITY).ifPresent(groups -> groups.add(shape));
-                player.sendMessage(new TranslationTextComponent("wormhole.portal_stabilizer.success").withStyle(TextFormatting.YELLOW), player.getUUID());
+                player.sendMessage(new TranslatableComponent("wormhole.portal_stabilizer.success").withStyle(ChatFormatting.YELLOW), player.getUUID());
             }
         }
         return true;
@@ -153,9 +155,9 @@ public class StabilizerTile extends PortalGroupTile implements ITargetCellTile, 
     }
 
     @Override
-    protected CompoundNBT writeData(){
-        CompoundNBT tag = super.writeData();
-        CompoundNBT targetsTag = new CompoundNBT();
+    protected CompoundTag writeData(){
+        CompoundTag tag = super.writeData();
+        CompoundTag targetsTag = new CompoundTag();
         int count = 0;
         for(int i = 0; i < this.targets.size(); i++){
             targetsTag.putBoolean("has" + i, this.targets.get(i) != null);
@@ -171,11 +173,11 @@ public class StabilizerTile extends PortalGroupTile implements ITargetCellTile, 
     }
 
     @Override
-    protected void readData(CompoundNBT tag){
+    protected void readData(CompoundTag tag){
         super.readData(tag);
         this.targets.clear();
         int count = tag.contains("targetCount") ? tag.getInt("targetCount") : 0;
-        CompoundNBT targetsTag = tag.getCompound("targets");
+        CompoundTag targetsTag = tag.getCompound("targets");
         for(int i = 0; i < this.getTargetCapacity(); i++){
             if(i < count && targetsTag.contains("has" + i) && targetsTag.getBoolean("has" + i) && targetsTag.contains("target" + i))
                 this.targets.add(new PortalTarget(targetsTag.getCompound("target" + i)));
@@ -185,7 +187,7 @@ public class StabilizerTile extends PortalGroupTile implements ITargetCellTile, 
         this.energy = tag.contains("energy") ? tag.getInt("energy") : 0;
 
         if(tag.contains("group")){ // for older versions
-            CompoundNBT groupTag = new CompoundNBT();
+            CompoundTag groupTag = new CompoundTag();
             if(groupTag.contains("target"))
                 this.targets.set(0, PortalTarget.read(groupTag.getCompound("target")));
         }

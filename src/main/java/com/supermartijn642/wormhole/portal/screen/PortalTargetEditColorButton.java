@@ -1,16 +1,16 @@
 package com.supermartijn642.wormhole.portal.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.widget.AbstractButtonWidget;
 import com.supermartijn642.core.gui.widget.IHoverTextWidget;
 import com.supermartijn642.wormhole.ClientProxy;
 import com.supermartijn642.wormhole.portal.PortalTarget;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.DyeColor;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.function.Supplier;
 
@@ -36,12 +36,12 @@ public class PortalTargetEditColorButton extends AbstractButtonWidget implements
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks){
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks){
         if(!this.visible)
             return;
 
         PortalTarget target = this.target.get();
-        Minecraft.getInstance().getTextureManager().bind(BUTTONS);
+        ScreenUtils.bindTexture(BUTTONS);
         DyeColor color = this.color.get();
         float x = color == null ? 0 : (color.getId() + 1) * 8f / 136f;
         float y = target != null && this.isHovered() ? 0.5f : 0;
@@ -55,13 +55,13 @@ public class PortalTargetEditColorButton extends AbstractButtonWidget implements
     }
 
     @Override
-    public ITextComponent getHoverText(){
-        return this.visible ? new TranslationTextComponent("wormhole.portal.gui.target_color") : null;
+    public Component getHoverText(){
+        return this.visible ? new TranslatableComponent("wormhole.portal.gui.target_color") : null;
     }
 
     @Override
-    protected ITextComponent getNarrationMessage(){
-        return this.visible ? new TranslationTextComponent("wormhole.portal.gui.target_color") : null;
+    protected Component getNarrationMessage(){
+        return this.visible ? new TranslatableComponent("wormhole.portal.gui.target_color") : null;
     }
 }
 

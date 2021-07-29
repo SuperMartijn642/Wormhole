@@ -1,9 +1,9 @@
 package com.supermartijn642.wormhole.packet;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -15,28 +15,28 @@ public abstract class WormholePacket {
     public WormholePacket(){
     }
 
-    public WormholePacket(PacketBuffer buffer){
+    public WormholePacket(FriendlyByteBuf buffer){
         this.decode(buffer);
     }
 
-    public void encode(PacketBuffer buffer){
+    public void encode(FriendlyByteBuf buffer){
     }
 
-    protected void decode(PacketBuffer buffer){
+    protected void decode(FriendlyByteBuf buffer){
     }
 
     public void handle(Supplier<NetworkEvent.Context> contextSupplier){
         contextSupplier.get().setPacketHandled(true);
 
-        PlayerEntity player = contextSupplier.get().getSender();
+        Player player = contextSupplier.get().getSender();
         if(player == null)
             return;
-        World world = player.level;
+        Level world = player.level;
         if(world == null)
             return;
         contextSupplier.get().enqueueWork(() -> this.handle(player, world));
     }
 
-    protected abstract void handle(PlayerEntity player, World world);
+    protected abstract void handle(Player player, Level world);
 
 }

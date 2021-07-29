@@ -1,14 +1,14 @@
 package com.supermartijn642.wormhole.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.widget.Widget;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.BaseComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.function.Supplier;
 
@@ -31,7 +31,7 @@ public class WormholeLabel extends Widget {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks){
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks){
         if(this.active){
             ScreenUtils.fillRect(matrixStack, this.x, this.y, this.width, this.height, -6250336);
             ScreenUtils.fillRect(matrixStack, this.x + 1, this.y + 1, this.width - 2, this.height - 2, 0xff404040);
@@ -39,15 +39,15 @@ public class WormholeLabel extends Widget {
             int enabledTextColor = 14737632;
 //            int disabledTextColor = 7368816;
             String text = this.text.get();
-            FontRenderer font = Minecraft.getInstance().font;
-            TextComponent textComponent = this.translate ? new TranslationTextComponent(text) : new StringTextComponent(text);
+            Font font = Minecraft.getInstance().font;
+            BaseComponent textComponent = this.translate ? new TranslatableComponent(text) : new TextComponent(text);
             int width = font.width(textComponent);
             font.draw(matrixStack, textComponent, this.x + (this.width - width) / 2f, this.y + 2, enabledTextColor);
         }
     }
 
     @Override
-    protected ITextComponent getNarrationMessage(){
-        return this.translate ? new TranslationTextComponent(this.text.get()) : new StringTextComponent(this.text.get());
+    protected Component getNarrationMessage(){
+        return this.translate ? new TranslatableComponent(this.text.get()) : new TextComponent(this.text.get());
     }
 }

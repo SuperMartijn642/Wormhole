@@ -1,16 +1,15 @@
 package com.supermartijn642.wormhole.portal.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.widget.AbstractButtonWidget;
 import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.portal.PortalTarget;
 import com.supermartijn642.wormhole.portal.packets.PortalColorTargetPacket;
-import net.minecraft.client.Minecraft;
-import net.minecraft.item.DyeColor;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.DyeColor;
 
 import java.util.function.Supplier;
 
@@ -37,15 +36,15 @@ public class PortalTargetSelectColorButton extends AbstractButtonWidget {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks){
-        Minecraft.getInstance().getTextureManager().bind(BUTTON_OUTLINE);
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks){
+        ScreenUtils.bindTexture(BUTTON_OUTLINE);
         ScreenUtils.drawTexture(matrixStack, this.x, this.y, this.width, this.height, 0, this.targetColor.get() == this.color ? 2 / 3f : this.isHovered() ? 1 / 3f : 0, 1, 1 / 3f);
-        Minecraft.getInstance().getTextureManager().bind(this.color == null ? RANDOM_COLOR_PORTAL : new ResourceLocation("wormhole", "textures/portal/portal_" + this.color.getName() + ".png"));
+        ScreenUtils.bindTexture(this.color == null ? RANDOM_COLOR_PORTAL : new ResourceLocation("wormhole", "textures/portal/portal_" + this.color.getName() + ".png"));
         ScreenUtils.drawTexture(matrixStack, this.x + 2, this.y + 2, this.width - 4, this.height - 4, 0, 0, 1, 16 / 512f);
     }
 
     @Override
-    protected ITextComponent getNarrationMessage(){
-        return new TranslationTextComponent("wormhole.color." + (this.color == null ? "random" : this.color.getName()));
+    protected Component getNarrationMessage(){
+        return new TranslatableComponent("wormhole.color." + (this.color == null ? "random" : this.color.getName()));
     }
 }

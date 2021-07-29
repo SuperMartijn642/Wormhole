@@ -3,8 +3,8 @@ package com.supermartijn642.wormhole.portal.screen;
 import com.supermartijn642.core.gui.widget.IHoverTextWidget;
 import com.supermartijn642.wormhole.portal.PortalTarget;
 import com.supermartijn642.wormhole.screen.WormholeLabel;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -25,7 +25,7 @@ public class PortalTargetLabel extends WormholeLabel implements IHoverTextWidget
     }
 
     @Override
-    public ITextComponent getHoverText(){
-        return new TranslationTextComponent(this.hoverText);
+    public Component getHoverText(){
+        return new TranslatableComponent(this.hoverText);
     }
 }

@@ -1,21 +1,19 @@
 package com.supermartijn642.wormhole.targetcell;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.supermartijn642.core.ClientUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.model.data.EmptyModelData;
-
-import java.util.Random;
 
 /**
  * Created 12/7/2020 by SuperMartijn642
  */
-public class TargetCellTileRenderer extends TileEntityRenderer<TargetCellTile> {
+public class TargetCellTileRenderer implements BlockEntityRenderer<TargetCellTile> {
 
     public static final ResourceLocation[] BASIC_TARGET_CELL_MODELS = new ResourceLocation[5];
     public static final ResourceLocation[] ADVANCED_TARGET_CELL_MODELS = new ResourceLocation[9];
@@ -27,12 +25,8 @@ public class TargetCellTileRenderer extends TileEntityRenderer<TargetCellTile> {
             ADVANCED_TARGET_CELL_MODELS[i] = new ResourceLocation("wormhole", "block/target_cell/advanced_target_cell_" + i);
     }
 
-    public TargetCellTileRenderer(TileEntityRendererDispatcher rendererDispatcherIn){
-        super(rendererDispatcherIn);
-    }
-
     @Override
-    public void render(TargetCellTile tile, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay){
+    public void render(TargetCellTile tile, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay){
         ResourceLocation modelLocation = null;
 
         double percent = (double)tile.getNonNullTargetCount() / tile.getTargetCapacity();
@@ -41,13 +35,13 @@ public class TargetCellTileRenderer extends TileEntityRenderer<TargetCellTile> {
         else if(tile.type == TargetCellType.ADVANCED)
             modelLocation = ADVANCED_TARGET_CELL_MODELS[(int)Math.ceil(Math.min(percent, 1) * (ADVANCED_TARGET_CELL_MODELS.length - 1))];
 
-        IBakedModel model = Minecraft.getInstance().getModelManager().getModel(modelLocation);
-        Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(
-            tile.getLevel(), model, tile.getBlockState(), tile.getBlockPos(), matrixStack, buffer.getBuffer(RenderType.solid()), true, new Random(), 42L, combinedOverlay, EmptyModelData.INSTANCE
+        BakedModel model = Minecraft.getInstance().getModelManager().getModel(modelLocation);
+        ClientUtils.getBlockRenderer().getModelRenderer().renderModel(
+            matrixStack.last(), buffer.getBuffer(RenderType.solid()), tile.getBlockState(), model, 1, 1, 1, combinedLight, combinedOverlay, EmptyModelData.INSTANCE
         );
     }
 
-    public static IBakedModel getModelForTile(TargetCellTile tile){
+    public static BakedModel getModelForTile(TargetCellTile tile){
         ResourceLocation modelLocation = null;
 
         double percent = (double)tile.getNonNullTargetCount() / tile.getTargetCapacity();

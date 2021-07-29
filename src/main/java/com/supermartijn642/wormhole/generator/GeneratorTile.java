@@ -3,11 +3,11 @@ package com.supermartijn642.wormhole.generator;
 import com.supermartijn642.wormhole.WormholeTile;
 import com.supermartijn642.wormhole.portal.IPortalGroupTile;
 import com.supermartijn642.wormhole.portal.PortalGroup;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
@@ -20,7 +20,7 @@ import java.util.Set;
 /**
  * Created 12/18/2020 by SuperMartijn642
  */
-public class GeneratorTile extends WormholeTile implements ITickableTileEntity, IEnergyStorage {
+public class GeneratorTile extends WormholeTile implements IEnergyStorage {
 
     private static final int BLOCKS_PER_TICK = 5;
 
@@ -34,22 +34,21 @@ public class GeneratorTile extends WormholeTile implements ITickableTileEntity, 
 
     private int searchX, searchY, searchZ;
 
-    public GeneratorTile(TileEntityType<?> tileEntityTypeIn, int energyCapacity, int energyRange, int energyTransferLimit){
-        super(tileEntityTypeIn);
+    public GeneratorTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state, int energyCapacity, int energyRange, int energyTransferLimit){
+        super(tileEntityTypeIn, pos, state);
         this.energyCapacity = energyCapacity;
         this.energyRange = energyRange;
         this.energyTransferLimit = energyTransferLimit;
         this.searchX = this.searchY = this.searchZ = -energyRange;
     }
 
-    @Override
     public void tick(){
         // find blocks with the energy capability
         for(int i = 0; i < BLOCKS_PER_TICK; i++){
             BlockPos pos = this.worldPosition.offset(this.searchX, this.searchY, this.searchZ);
 
             if(!pos.equals(this.worldPosition)){
-                TileEntity tile = this.level.getBlockEntity(pos);
+                BlockEntity tile = this.level.getBlockEntity(pos);
                 if(tile instanceof IPortalGroupTile && ((IPortalGroupTile)tile).hasGroup()){
                     this.portalBlocks.add(pos);
                     this.energyBlocks.remove(pos);
@@ -84,7 +83,7 @@ public class GeneratorTile extends WormholeTile implements ITickableTileEntity, 
         Iterator<BlockPos> iterator = this.portalBlocks.iterator();
         while(iterator.hasNext()){
             BlockPos pos = iterator.next();
-            TileEntity tile = this.level.getBlockEntity(pos);
+            BlockEntity tile = this.level.getBlockEntity(pos);
             if(tile instanceof IPortalGroupTile && ((IPortalGroupTile)tile).hasGroup()){
                 PortalGroup group = ((IPortalGroupTile)tile).getGroup();
                 int transferred = group.receiveEnergy(toTransfer, false);
@@ -100,7 +99,7 @@ public class GeneratorTile extends WormholeTile implements ITickableTileEntity, 
         iterator = this.energyBlocks.iterator();
         while(iterator.hasNext()){
             BlockPos pos = iterator.next();
-            TileEntity tile = this.level.getBlockEntity(pos);
+            BlockEntity tile = this.level.getBlockEntity(pos);
             LazyOptional<IEnergyStorage> optional;
             if(tile != null && (optional = tile.getCapability(CapabilityEnergy.ENERGY)).isPresent()){
                 final int max = toTransfer;
@@ -124,8 +123,8 @@ public class GeneratorTile extends WormholeTile implements ITickableTileEntity, 
     }
 
     @Override
-    protected CompoundNBT writeData(){
-        CompoundNBT data = new CompoundNBT();
+    protected CompoundTag writeData(){
+        CompoundTag data = new CompoundTag();
         data.putInt("energy", this.energy);
         data.putInt("searchX", this.searchX);
         data.putInt("searchY", this.searchY);
@@ -134,7 +133,7 @@ public class GeneratorTile extends WormholeTile implements ITickableTileEntity, 
     }
 
     @Override
-    protected void readData(CompoundNBT tag){
+    protected void readData(CompoundTag tag){
         this.energy = tag.contains("energy") ? tag.getInt("energy") : 0;
         this.searchX = tag.contains("searchX") ? Math.min(Math.max(tag.getInt("searchX"), -this.energyRange), this.energyRange) : 0;
         this.searchY = tag.contains("searchY") ? Math.min(Math.max(tag.getInt("searchY"), -this.energyRange), this.energyRange) : 0;

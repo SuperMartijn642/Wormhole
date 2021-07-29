@@ -2,16 +2,16 @@ package com.supermartijn642.wormhole.energycell;
 
 import com.supermartijn642.wormhole.EnergyFormat;
 import com.supermartijn642.wormhole.portal.PortalGroupBlock;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.BlockGetter;
 
 import java.util.List;
 
@@ -28,21 +28,21 @@ public class EnergyCellBlock extends PortalGroupBlock {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
-        tooltip.add(new TranslationTextComponent("wormhole.energy_cell.info").withStyle(TextFormatting.AQUA));
+    public void appendHoverText(ItemStack stack, BlockGetter worldIn, List<Component> tooltip, TooltipFlag flagIn){
+        tooltip.add(new TranslatableComponent("wormhole.energy_cell.info").withStyle(ChatFormatting.AQUA));
 
-        CompoundNBT tag = stack.getOrCreateTag().contains("tileData") ? stack.getOrCreateTag().getCompound("tileData") : null;
+        CompoundTag tag = stack.getOrCreateTag().contains("tileData") ? stack.getOrCreateTag().getCompound("tileData") : null;
 
         int energy = this.type == EnergyCellType.CREATIVE ? this.type.getCapacity() :
             tag == null || tag.isEmpty() || !tag.contains("energy") ? 0 : tag.getInt("energy");
         int capacity = this.type.getCapacity();
 
         if(capacity > 0)
-            tooltip.add(new StringTextComponent(EnergyFormat.formatCapacity(energy, capacity)).withStyle(TextFormatting.YELLOW));
+            tooltip.add(new TextComponent(EnergyFormat.formatCapacity(energy, capacity)).withStyle(ChatFormatting.YELLOW));
     }
 
     @Override
-    public BlockRenderType getRenderShape(BlockState state){
-        return this.type == EnergyCellType.CREATIVE ? BlockRenderType.MODEL : BlockRenderType.INVISIBLE;
+    public RenderShape getRenderShape(BlockState state){
+        return this.type == EnergyCellType.CREATIVE ? RenderShape.MODEL : RenderShape.INVISIBLE;
     }
 }

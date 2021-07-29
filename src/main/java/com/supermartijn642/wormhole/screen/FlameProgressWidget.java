@@ -1,11 +1,10 @@
 package com.supermartijn642.wormhole.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.widget.Widget;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.function.Supplier;
 
@@ -24,8 +23,8 @@ public class FlameProgressWidget extends Widget {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks){
-        Minecraft.getInstance().getTextureManager().bind(FLAME);
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks){
+        ScreenUtils.bindTexture(FLAME);
         float progress = Math.max(Math.min(this.progress.get(), 1), 0);
         if(progress != 1)
             ScreenUtils.drawTexture(matrixStack, this.x, this.y, this.width, this.height * (1 - progress), 0, 0, 0.5f, (1 - progress));
@@ -34,7 +33,7 @@ public class FlameProgressWidget extends Widget {
     }
 
     @Override
-    protected ITextComponent getNarrationMessage(){
+    protected Component getNarrationMessage(){
         return null;
     }
 }

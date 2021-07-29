@@ -2,17 +2,18 @@ package com.supermartijn642.wormhole.portal;
 
 import com.supermartijn642.wormhole.PortalGroupCapability;
 import com.supermartijn642.wormhole.WormholeTile;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * Created 7/24/2020 by SuperMartijn642
  */
-public class PortalGroupTile extends WormholeTile implements IPortalGroupTile, ITickableTileEntity {
+public class PortalGroupTile extends WormholeTile implements IPortalGroupTile {
 
-    public PortalGroupTile(TileEntityType<?> tileEntityTypeIn){
-        super(tileEntityTypeIn);
+    public PortalGroupTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state){
+        super(tileEntityTypeIn, pos, state);
     }
 
     @Override
@@ -26,19 +27,18 @@ public class PortalGroupTile extends WormholeTile implements IPortalGroupTile, I
         return this.level.getCapability(PortalGroupCapability.CAPABILITY).lazyMap(groups -> groups.getGroup(this)).orElse(null);
     }
 
-    @Override
     public void tick(){
         if(this.hasGroup())
             this.getGroup().tick();
     }
 
     @Override
-    protected CompoundNBT writeData(){
-        return new CompoundNBT();
+    protected CompoundTag writeData(){
+        return new CompoundTag();
     }
 
     @Override
-    protected void readData(CompoundNBT tag){
+    protected void readData(CompoundTag tag){
     }
 
     @Override

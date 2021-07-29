@@ -2,10 +2,10 @@ package com.supermartijn642.wormhole.generator;
 
 import com.supermartijn642.core.gui.TileEntityBaseContainer;
 import com.supermartijn642.wormhole.Wormhole;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
 
 /**
@@ -13,16 +13,16 @@ import net.minecraftforge.items.SlotItemHandler;
  */
 public class CoalGeneratorContainer extends TileEntityBaseContainer<CoalGeneratorTile> {
 
-    public CoalGeneratorContainer(int id, PlayerEntity player, BlockPos pos){
+    public CoalGeneratorContainer(int id, Player player, BlockPos pos){
         super(Wormhole.coal_generator_container, id, player, pos);
         this.addSlots();
     }
 
     @Override
-    protected void addSlots(PlayerEntity player, CoalGeneratorTile tile){
+    protected void addSlots(Player player, CoalGeneratorTile tile){
         this.addSlot(new SlotItemHandler(tile, 0, 79, 52) {
             @Override
-            public boolean mayPickup(PlayerEntity playerIn){
+            public boolean mayPickup(Player playerIn){
                 return true;
             }
 
@@ -44,7 +44,7 @@ public class CoalGeneratorContainer extends TileEntityBaseContainer<CoalGenerato
     }
 
     @Override
-    public ItemStack quickMoveStack(PlayerEntity playerIn, int index){
+    public ItemStack quickMoveStack(Player playerIn, int index){
         ItemStack itemstack = ItemStack.EMPTY;
 
         Slot slot = this.slots.get(index);

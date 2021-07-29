@@ -1,21 +1,22 @@
 package com.supermartijn642.wormhole;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * Created 11/4/2020 by SuperMartijn642
  */
-public abstract class WormholeTile extends TileEntity {
+public abstract class WormholeTile extends BlockEntity {
 
     private boolean dataChanged = false;
 
-    public WormholeTile(TileEntityType<?> tileEntityTypeIn){
-        super(tileEntityTypeIn);
+    public WormholeTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state){
+        super(tileEntityTypeIn, pos, state);
     }
 
     public void dataChanged(){
@@ -24,53 +25,53 @@ public abstract class WormholeTile extends TileEntity {
         this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 2 & 4);
     }
 
-    protected abstract CompoundNBT writeData();
+    protected abstract CompoundTag writeData();
 
-    protected CompoundNBT writeClientData(){
+    protected CompoundTag writeClientData(){
         return this.writeData();
     }
 
-    protected abstract void readData(CompoundNBT tag);
+    protected abstract void readData(CompoundTag tag);
 
     @Override
-    public CompoundNBT save(CompoundNBT compound){
+    public CompoundTag save(CompoundTag compound){
         super.save(compound);
-        CompoundNBT data = this.writeData();
+        CompoundTag data = this.writeData();
         if(data != null && !data.isEmpty())
             compound.put("data", this.writeData());
         return compound;
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT nbt){
-        super.load(state, nbt);
+    public void load(CompoundTag nbt){
+        super.load(nbt);
         this.readData(nbt.getCompound("data"));
     }
 
     @Override
-    public CompoundNBT getUpdateTag(){
-        CompoundNBT tag = super.save(new CompoundNBT());
+    public CompoundTag getUpdateTag(){
+        CompoundTag tag = super.save(new CompoundTag());
         tag.put("data", this.writeClientData());
         return tag;
     }
 
     @Override
-    public void handleUpdateTag(BlockState state, CompoundNBT tag){
-        super.load(state, tag);
+    public void handleUpdateTag(CompoundTag tag){
+        super.load(tag);
         this.readData(tag.getCompound("data"));
     }
 
     @Override
-    public SUpdateTileEntityPacket getUpdatePacket(){
+    public ClientboundBlockEntityDataPacket getUpdatePacket(){
         if(this.dataChanged){
             this.dataChanged = false;
-            return new SUpdateTileEntityPacket(this.worldPosition, 0, this.writeClientData());
+            return new ClientboundBlockEntityDataPacket(this.worldPosition, 0, this.writeClientData());
         }
         return null;
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt){
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt){
         this.readData(pkt.getTag());
     }
 }

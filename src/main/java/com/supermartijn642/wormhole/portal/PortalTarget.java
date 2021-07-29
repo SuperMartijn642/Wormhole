@@ -1,14 +1,14 @@
 package com.supermartijn642.wormhole.portal;
 
-import net.minecraft.item.DyeColor;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.core.Registry;
+import net.minecraft.world.level.Level;
 
 import java.util.Optional;
 
@@ -43,11 +43,11 @@ public class PortalTarget {
         this.dimensionDisplayName = dimensionName;
     }
 
-    public PortalTarget(World world, BlockPos pos, float yaw, String name){
+    public PortalTarget(Level world, BlockPos pos, float yaw, String name){
         this(world.dimension().location().toString(), pos.getX(), pos.getY(), pos.getZ(), yaw, name);
     }
 
-    public PortalTarget(CompoundNBT tag){
+    public PortalTarget(CompoundTag tag){
         this(tag.getString("dimension"), tag.getInt("x"), tag.getInt("y"), tag.getInt("z"), tag.getFloat("yaw"), tag.contains("name") ? tag.getString("name") : "Target Destination");
         this.color = tag.contains("color") ? DyeColor.byId(tag.getInt("color")) : null;
 
@@ -59,12 +59,12 @@ public class PortalTarget {
         this.dimensionDisplayName = dimensionName;
     }
 
-    public static PortalTarget read(CompoundNBT tag){
+    public static PortalTarget read(CompoundTag tag){
         return new PortalTarget(tag);
     }
 
-    public CompoundNBT write(){
-        CompoundNBT tag = new CompoundNBT();
+    public CompoundTag write(){
+        CompoundTag tag = new CompoundTag();
         tag.putString("dimension", this.dimension);
         tag.putInt("x", this.x);
         tag.putInt("y", this.y);
@@ -76,8 +76,8 @@ public class PortalTarget {
         return tag;
     }
 
-    public Optional<World> getWorld(MinecraftServer server){
-        RegistryKey<World> key = RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(this.dimension));
+    public Optional<Level> getWorld(MinecraftServer server){
+        ResourceKey<Level> key = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(this.dimension));
         return Optional.ofNullable(server.getLevel(key));
     }
 
@@ -85,8 +85,8 @@ public class PortalTarget {
         return new BlockPos(this.x, this.y, this.z);
     }
 
-    public Vector3d getCenteredPos(){
-        return new Vector3d(this.x + 0.5, this.y + 0.2, this.z + 0.5);
+    public Vec3 getCenteredPos(){
+        return new Vec3(this.x + 0.5, this.y + 0.2, this.z + 0.5);
     }
 
     public String getDimensionDisplayName(){

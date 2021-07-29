@@ -2,10 +2,12 @@ package com.supermartijn642.wormhole.generator;
 
 import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.WormholeConfig;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -20,8 +22,10 @@ public class CoalGeneratorTile extends GeneratorTile implements IItemHandlerModi
     private int burnTime = 0, totalBurnTime = 0;
     private ItemStack stack = ItemStack.EMPTY;
 
-    public CoalGeneratorTile(){
+    public CoalGeneratorTile(BlockPos pos, BlockState state){
         super(Wormhole.coal_generator_tile,
+            pos,
+            state,
             WormholeConfig.coalGeneratorCapacity.get(),
             WormholeConfig.coalGeneratorRange.get(),
             WormholeConfig.coalGeneratorPower.get() * 2);
@@ -48,7 +52,7 @@ public class CoalGeneratorTile extends GeneratorTile implements IItemHandlerModi
     }
 
     private void burnItem(){
-        int burnTime = this.stack.isEmpty() ? 0 : ForgeHooks.getBurnTime(this.stack);
+        int burnTime = this.stack.isEmpty() ? 0 : ForgeHooks.getBurnTime(this.stack, RecipeType.SMELTING);
         if(burnTime > 0){
             this.burnTime = this.totalBurnTime = burnTime;
             this.stack.shrink(1);
@@ -69,16 +73,16 @@ public class CoalGeneratorTile extends GeneratorTile implements IItemHandlerModi
     }
 
     @Override
-    protected CompoundNBT writeData(){
-        CompoundNBT data = super.writeData();
+    protected CompoundTag writeData(){
+        CompoundTag data = super.writeData();
         data.putInt("burnTime", this.burnTime);
         data.putInt("totalBurnTime", this.totalBurnTime);
-        data.put("stack", this.stack.save(new CompoundNBT()));
+        data.put("stack", this.stack.save(new CompoundTag()));
         return data;
     }
 
     @Override
-    protected void readData(CompoundNBT tag){
+    protected void readData(CompoundTag tag){
         super.readData(tag);
         this.burnTime = tag.contains("burnTime") ? tag.getInt("burnTime") : 0;
         this.totalBurnTime = tag.contains("totalBurnTime") ? tag.getInt("totalBurnTime") : 0;
@@ -135,6 +139,6 @@ public class CoalGeneratorTile extends GeneratorTile implements IItemHandlerModi
 
     @Override
     public boolean isItemValid(int slot, ItemStack stack){
-        return ForgeHooks.getBurnTime(stack) > 0;
+        return ForgeHooks.getBurnTime(stack, RecipeType.SMELTING) > 0;
     }
 }

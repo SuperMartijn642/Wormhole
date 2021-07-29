@@ -1,16 +1,16 @@
 package com.supermartijn642.wormhole;
 
 import com.google.gson.JsonObject;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapedRecipe;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
@@ -41,8 +41,8 @@ public class NBTRecipe extends ShapedRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingInventory inv){
-        CompoundNBT compound = null;
+    public ItemStack assemble(CraftingContainer inv){
+        CompoundTag compound = null;
         loop:
         for(int i = 0; i < inv.getHeight(); i++){
             for(int j = 0; j < inv.getWidth(); j++){
@@ -64,27 +64,27 @@ public class NBTRecipe extends ShapedRecipe {
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer(){
+    public RecipeSerializer<?> getSerializer(){
         return super.getSerializer();
     }
 
-    public static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<NBTRecipe> {
+    public static class Serializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<NBTRecipe> {
         @Override
         public NBTRecipe fromJson(ResourceLocation recipeId, JsonObject json){
-            ShapedRecipe recipe = IRecipeSerializer.SHAPED_RECIPE.fromJson(recipeId, json);
+            ShapedRecipe recipe = RecipeSerializer.SHAPED_RECIPE.fromJson(recipeId, json);
             return new NBTRecipe(recipeId, recipe.getGroup(), recipe.getRecipeWidth(), recipe.getRecipeHeight(), recipe.getIngredients(), recipe.getResultItem());
         }
 
         @Nullable
         @Override
-        public NBTRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer){
-            ShapedRecipe recipe = IRecipeSerializer.SHAPED_RECIPE.fromNetwork(recipeId, buffer);
+        public NBTRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer){
+            ShapedRecipe recipe = RecipeSerializer.SHAPED_RECIPE.fromNetwork(recipeId, buffer);
             return new NBTRecipe(recipeId, recipe.getGroup(), recipe.getRecipeWidth(), recipe.getRecipeHeight(), recipe.getIngredients(), recipe.getResultItem());
         }
 
         @Override
-        public void toNetwork(PacketBuffer buffer, NBTRecipe recipe){
-            IRecipeSerializer.SHAPED_RECIPE.toNetwork(buffer, recipe);
+        public void toNetwork(FriendlyByteBuf buffer, NBTRecipe recipe){
+            RecipeSerializer.SHAPED_RECIPE.toNetwork(buffer, recipe);
         }
     }
 }

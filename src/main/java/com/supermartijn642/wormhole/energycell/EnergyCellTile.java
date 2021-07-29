@@ -2,9 +2,11 @@ package com.supermartijn642.wormhole.energycell;
 
 import com.supermartijn642.wormhole.portal.IEnergyCellTile;
 import com.supermartijn642.wormhole.portal.PortalGroupTile;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -16,20 +18,23 @@ import net.minecraftforge.energy.IEnergyStorage;
 public class EnergyCellTile extends PortalGroupTile implements IEnergyCellTile {
 
     public static class BasicEnergyCellTile extends EnergyCellTile {
-        public BasicEnergyCellTile(){
-            super(EnergyCellType.BASIC);
+
+        public BasicEnergyCellTile(BlockPos pos, BlockState state){
+            super(EnergyCellType.BASIC, pos, state);
         }
     }
 
     public static class AdvancedEnergyCellTile extends EnergyCellTile {
-        public AdvancedEnergyCellTile(){
-            super(EnergyCellType.ADVANCED);
+
+        public AdvancedEnergyCellTile(BlockPos pos, BlockState state){
+            super(EnergyCellType.ADVANCED, pos, state);
         }
     }
 
     public static class CreativeEnergyCellTile extends EnergyCellTile {
-        public CreativeEnergyCellTile(){
-            super(EnergyCellType.CREATIVE);
+
+        public CreativeEnergyCellTile(BlockPos pos, BlockState state){
+            super(EnergyCellType.CREATIVE, pos, state);
         }
 
         @Override
@@ -61,7 +66,7 @@ public class EnergyCellTile extends PortalGroupTile implements IEnergyCellTile {
         public void tick(){
             super.tick();
             for(Direction direction : Direction.values()){
-                TileEntity tile = this.level.getBlockEntity(this.worldPosition.relative(direction));
+                BlockEntity tile = this.level.getBlockEntity(this.worldPosition.relative(direction));
                 if(tile != null)
                     tile.getCapability(CapabilityEnergy.ENERGY).ifPresent(this::pushEnergy);
             }
@@ -76,8 +81,8 @@ public class EnergyCellTile extends PortalGroupTile implements IEnergyCellTile {
     protected final EnergyCellType type;
     protected int energy = 0;
 
-    public EnergyCellTile(EnergyCellType type){
-        super(type.getTileEntityType());
+    public EnergyCellTile(EnergyCellType type, BlockPos pos, BlockState state){
+        super(type.getTileEntityType(), pos, state);
         this.type = type;
     }
 
@@ -144,14 +149,14 @@ public class EnergyCellTile extends PortalGroupTile implements IEnergyCellTile {
     }
 
     @Override
-    protected CompoundNBT writeData(){
-        CompoundNBT tag = super.writeData();
+    protected CompoundTag writeData(){
+        CompoundTag tag = super.writeData();
         tag.putInt("energy", this.energy);
         return tag;
     }
 
     @Override
-    protected void readData(CompoundNBT tag){
+    protected void readData(CompoundTag tag){
         super.readData(tag);
         this.energy = tag.contains("energy") ? tag.getInt("energy") : 0;
     }

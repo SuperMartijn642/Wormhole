@@ -1,12 +1,12 @@
 package com.supermartijn642.wormhole.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 /**
  * Created 10/15/2020 by SuperMartijn642
@@ -27,17 +27,17 @@ public class WormholeButton extends AbstractButtonWidget {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks){
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks){
         ScreenUtils.bindTexture(this.getButtonTexture());
         drawBackground(matrixStack, this.x, this.y, this.width, this.height, (this.active ? this.isHovered() ? 5 : 0 : 10) / 15f);
-        ScreenUtils.drawCenteredString(matrixStack, Minecraft.getInstance().font, new TranslationTextComponent(this.textKey), this.x + this.width / 2f, this.y + this.height / 2f - 4, this.active ? 0xFFFFFFFF : Integer.MAX_VALUE);
+        ScreenUtils.drawCenteredString(matrixStack, Minecraft.getInstance().font, new TranslatableComponent(this.textKey), this.x + this.width / 2f, this.y + this.height / 2f - 4, this.active ? 0xFFFFFFFF : Integer.MAX_VALUE);
     }
 
     protected ResourceLocation getButtonTexture(){
         return BUTTONS;
     }
 
-    protected void drawBackground(MatrixStack matrixStack, float x, float y, float width, float height, float yOffset){
+    protected void drawBackground(PoseStack matrixStack, float x, float y, float width, float height, float yOffset){
         // corners
         ScreenUtils.drawTexture(matrixStack, x, y, 2, 2, 0, yOffset, 2 / 5f, 2 / 15f);
         ScreenUtils.drawTexture(matrixStack, x + width - 2, y, 2, 2, 3 / 5f, yOffset, 2 / 5f, 2 / 15f);
@@ -53,7 +53,7 @@ public class WormholeButton extends AbstractButtonWidget {
     }
 
     @Override
-    protected ITextComponent getNarrationMessage(){
-        return new TranslationTextComponent(this.textKey);
+    protected Component getNarrationMessage(){
+        return new TranslatableComponent(this.textKey);
     }
 }

@@ -4,17 +4,17 @@ import com.google.common.collect.Lists;
 import com.supermartijn642.wormhole.ClientProxy;
 import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.portal.PortalTarget;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -36,26 +36,26 @@ public class TargetDeviceItem extends Item {
     }
 
     @Override
-    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn){
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn){
         if(worldIn.isClientSide)
-            ClientProxy.openTargetDeviceScreen(handIn, playerIn.blockPosition(), Math.round(playerIn.yRot / 90) * 90);
-        return ActionResult.consume(playerIn.getItemInHand(handIn));
+            ClientProxy.openTargetDeviceScreen(handIn, playerIn.blockPosition(), Math.round(playerIn.getYRot() / 90) * 90);
+        return InteractionResultHolder.consume(playerIn.getItemInHand(handIn));
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
-        tooltip.add(new TranslationTextComponent("wormhole.target_device.info").withStyle(TextFormatting.AQUA));
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn){
+        tooltip.add(new TranslatableComponent("wormhole.target_device.info").withStyle(ChatFormatting.AQUA));
 
         List<PortalTarget> targets = getTargets(stack);
         int capacity = getMaxTargetCount(stack);
         tooltip.add(
-            new TranslationTextComponent("wormhole.target_device.info.targets", targets.size(), capacity)
-                .withStyle(TextFormatting.YELLOW)
+            new TranslatableComponent("wormhole.target_device.info.targets", targets.size(), capacity)
+                .withStyle(ChatFormatting.YELLOW)
         );
     }
 
     public static List<PortalTarget> getTargets(ItemStack stack){
-        CompoundNBT tag = stack.getOrCreateTag();
+        CompoundTag tag = stack.getOrCreateTag();
 
         if(tag.contains("target")){
             stack.setTag(null);
@@ -77,7 +77,7 @@ public class TargetDeviceItem extends Item {
         if(targets == null || targets.size() == 0)
             stack.setTag(null);
 
-        CompoundNBT tag = stack.getOrCreateTag();
+        CompoundTag tag = stack.getOrCreateTag();
         tag.putInt("targetCount", targets.size());
         for(int i = 0; i < targets.size(); i++)
             tag.put("target" + i, targets.get(i).write());

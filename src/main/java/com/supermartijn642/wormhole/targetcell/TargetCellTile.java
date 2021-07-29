@@ -3,7 +3,9 @@ package com.supermartijn642.wormhole.targetcell;
 import com.supermartijn642.wormhole.portal.ITargetCellTile;
 import com.supermartijn642.wormhole.portal.PortalGroupTile;
 import com.supermartijn642.wormhole.portal.PortalTarget;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,22 +16,24 @@ import java.util.List;
 public class TargetCellTile extends PortalGroupTile implements ITargetCellTile {
 
     public static class BasicTargetCellTile extends TargetCellTile {
-        public BasicTargetCellTile(){
-            super(TargetCellType.BASIC);
+
+        public BasicTargetCellTile(BlockPos pos, BlockState state){
+            super(TargetCellType.BASIC, pos, state);
         }
     }
 
     public static class AdvancedTargetCellTile extends TargetCellTile {
-        public AdvancedTargetCellTile(){
-            super(TargetCellType.ADVANCED);
+
+        public AdvancedTargetCellTile(BlockPos pos, BlockState state){
+            super(TargetCellType.ADVANCED, pos, state);
         }
     }
 
     public final TargetCellType type;
     private final List<PortalTarget> targets = new ArrayList<>();
 
-    public TargetCellTile(TargetCellType type){
-        super(type.getTileEntityType());
+    public TargetCellTile(TargetCellType type, BlockPos pos, BlockState state){
+        super(type.getTileEntityType(), pos, state);
         this.type = type;
 
         for(int i = 0; i < type.getCapacity(); i++)
@@ -67,9 +71,9 @@ public class TargetCellTile extends PortalGroupTile implements ITargetCellTile {
     }
 
     @Override
-    protected CompoundNBT writeData(){
-        CompoundNBT tag = super.writeData();
-        CompoundNBT targetsTag = new CompoundNBT();
+    protected CompoundTag writeData(){
+        CompoundTag tag = super.writeData();
+        CompoundTag targetsTag = new CompoundTag();
         int count = 0;
         for(int i = 0; i < this.targets.size(); i++){
             targetsTag.putBoolean("has" + i, this.targets.get(i) != null);
@@ -84,11 +88,11 @@ public class TargetCellTile extends PortalGroupTile implements ITargetCellTile {
     }
 
     @Override
-    protected void readData(CompoundNBT tag){
+    protected void readData(CompoundTag tag){
         super.readData(tag);
         this.targets.clear();
         int count = tag.contains("targetCount") ? tag.getInt("targetCount") : 0;
-        CompoundNBT targetsTag = tag.getCompound("targets");
+        CompoundTag targetsTag = tag.getCompound("targets");
         for(int i = 0; i < this.getTargetCapacity(); i++){
             if(i < count && targetsTag.contains("has" + i) && targetsTag.getBoolean("has" + i) && targetsTag.contains("target" + i))
                 this.targets.add(new PortalTarget(targetsTag.getCompound("target" + i)));

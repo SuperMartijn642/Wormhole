@@ -2,7 +2,9 @@ package com.supermartijn642.wormhole.targetcell;
 
 import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.WormholeConfig;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Locale;
 
@@ -27,12 +29,12 @@ public enum TargetCellType {
         return 0;
     }
 
-    public TargetCellTile createTile(){
+    public TargetCellTile createTile(BlockPos pos, BlockState state){
         switch(this){
             case BASIC:
-                return new TargetCellTile.BasicTargetCellTile();
+                return new TargetCellTile.BasicTargetCellTile(pos, state);
             case ADVANCED:
-                return new TargetCellTile.AdvancedTargetCellTile();
+                return new TargetCellTile.AdvancedTargetCellTile(pos, state);
         }
         return null;
     }
@@ -47,7 +49,7 @@ public enum TargetCellType {
         return null;
     }
 
-    public TileEntityType<TargetCellTile> getTileEntityType(){
+    public BlockEntityType<TargetCellTile> getTileEntityType(){
         switch(this){
             case BASIC:
                 return Wormhole.basic_target_cell_tile;

@@ -1,9 +1,13 @@
 package com.supermartijn642.wormhole.portal.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
+import com.supermartijn642.core.ClientUtils;
 import com.supermartijn642.wormhole.ClientProxy;
 import com.supermartijn642.wormhole.PortalBlock;
 import com.supermartijn642.wormhole.energycell.EnergyCellBlock;
@@ -13,23 +17,19 @@ import com.supermartijn642.wormhole.portal.PortalShape;
 import com.supermartijn642.wormhole.targetcell.TargetCellBlock;
 import com.supermartijn642.wormhole.targetcell.TargetCellTile;
 import com.supermartijn642.wormhole.targetcell.TargetCellTileRenderer;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Quaternion;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.world.World;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 
@@ -43,28 +43,22 @@ public class PortalRendererHelper {
 
     private static final int ROTATE_TIME = 20000;
 
-    public static void drawPortal(PortalShape shape, float x, float y, float width, float height){
-        World world = ClientProxy.getWorld();
-        double scale = Math.min(width, height) / (shape.span + 1);
+    public static void drawPortal(PortalShape shape, float x, float y, float width, float height){ // TODO fix transparency
+        Level world = ClientProxy.getWorld();
+        float scale = Math.min(width, height) / ((float)shape.span + 1);
         Vector3f center = new Vector3f(
             (shape.maxCorner.getX() + shape.minCorner.getX()) / 2f,
             (shape.maxCorner.getY() + shape.minCorner.getY()) / 2f,
             (shape.maxCorner.getZ() + shape.minCorner.getZ()) / 2f
         );
 
-        RenderSystem.pushMatrix();
-        RenderSystem.enableRescaleNormal();
-        RenderSystem.enableAlphaTest();
-        RenderSystem.defaultAlphaFunc();
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        RenderSystem.translatef(x + width / 2, y + height / 2, 350);
-        RenderSystem.scalef(1.0F, -1.0F, 1.0F);
-        RenderSystem.scaled(scale, scale, scale);
-        IRenderTypeBuffer.Impl renderTypeBuffer = Minecraft.getInstance().renderBuffers().bufferSource();
-        RenderHelper.setupForFlatItems();
+        PoseStack matrixstack = new PoseStack();
+        matrixstack.translate(x + width / 2, y + height / 2, 350);
+        matrixstack.scale(1, -1, 1);
+        matrixstack.scale(scale, scale, scale);
+        MultiBufferSource.BufferSource renderTypeBuffer = Minecraft.getInstance().renderBuffers().bufferSource();
+        Lighting.setupForFlatItems();
 
-        MatrixStack matrixstack = new MatrixStack();
         matrixstack.mulPose(new Quaternion(45, (float)(System.currentTimeMillis() % ROTATE_TIME) / ROTATE_TIME * 360, 0, true));
         matrixstack.translate(-center.x(), -center.y(), -center.z());
 
@@ -79,21 +73,18 @@ public class PortalRendererHelper {
 
         renderTypeBuffer.endBatch();
         RenderSystem.enableDepthTest();
-        RenderHelper.setupFor3DItems();
-        RenderSystem.disableAlphaTest();
-        RenderSystem.disableRescaleNormal();
-        RenderSystem.popMatrix();
+        Lighting.setupFor3DItems();
     }
 
-    private static void renderBlock(World world, BlockPos pos, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, boolean valid){
+    private static void renderBlock(Level world, BlockPos pos, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, boolean valid){
         BlockState state = world.getBlockState(pos);
 
-        if(!(state.getBlock() instanceof EnergyCellBlock) && !(state.getBlock() instanceof TargetCellBlock) && state.getRenderShape() != BlockRenderType.MODEL)
+        if(!(state.getBlock() instanceof EnergyCellBlock) && !(state.getBlock() instanceof TargetCellBlock) && state.getRenderShape() != RenderShape.MODEL)
             return;
 
-        TileEntity tile = world.getBlockEntity(pos);
+        BlockEntity tile = world.getBlockEntity(pos);
 
-        IBakedModel model =
+        BakedModel model =
             tile instanceof TargetCellTile ? TargetCellTileRenderer.getModelForTile((TargetCellTile)tile) :
                 tile instanceof EnergyCellTile ? EnergyCellTileRenderer.getModelForTile((EnergyCellTile)tile) :
                     Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
@@ -108,7 +99,7 @@ public class PortalRendererHelper {
         matrixStack.popPose();
     }
 
-    private static void translateAndRenderModel(BlockState state, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn, IBakedModel modelIn, IModelData modelData, boolean valid){
+    private static void translateAndRenderModel(BlockState state, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, BakedModel modelIn, IModelData modelData, boolean valid){
         matrixStackIn.pushPose();
 
         matrixStackIn.translate(-0.5D, -0.5D, -0.5D);
@@ -118,7 +109,7 @@ public class PortalRendererHelper {
         matrixStackIn.popPose();
     }
 
-    private static void renderModel(IBakedModel modelIn, BlockState state, int combinedLightIn, int combinedOverlayIn, MatrixStack matrixStackIn, IVertexBuilder bufferIn, IModelData modelData, boolean valid){
+    private static void renderModel(BakedModel modelIn, BlockState state, int combinedLightIn, int combinedOverlayIn, PoseStack matrixStackIn, VertexConsumer bufferIn, IModelData modelData, boolean valid){
         Random random = new Random();
 
         for(Direction direction : Direction.values()){
@@ -130,18 +121,18 @@ public class PortalRendererHelper {
         renderQuads(matrixStackIn, bufferIn, modelIn.getQuads(state, null, random, modelData), combinedLightIn, combinedOverlayIn, valid);
     }
 
-    private static void renderQuads(MatrixStack matrixStackIn, IVertexBuilder bufferIn, List<BakedQuad> quadsIn, int combinedLightIn, int combinedOverlayIn, boolean valid){
-        MatrixStack.Entry matrix = matrixStackIn.last();
+    private static void renderQuads(PoseStack matrixStackIn, VertexConsumer bufferIn, List<BakedQuad> quadsIn, int combinedLightIn, int combinedOverlayIn, boolean valid){
+        PoseStack.Pose matrix = matrixStackIn.last();
 
         for(BakedQuad bakedquad : quadsIn)
-            bufferIn.addVertexData(matrix, bakedquad, 1, valid ? 1 : 0.5f, valid ? 1 : 0.5f, valid ? 1 : 0.8f, combinedLightIn, combinedOverlayIn, false);
+            bufferIn.putBulkData(matrix, bakedquad, 1, valid ? 1 : 0.5f, valid ? 1 : 0.5f, valid ? 1 : 0.8f, combinedLightIn, combinedOverlayIn, false);
     }
 
-    private static void renderTileEntity(World world, BlockPos pos, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer){
-        TileEntity tile = world.getBlockEntity(pos);
+    private static void renderTileEntity(Level world, BlockPos pos, PoseStack matrixStack, MultiBufferSource renderTypeBuffer){
+        BlockEntity tile = world.getBlockEntity(pos);
 
         if(tile != null){
-            TileEntityRenderer<TileEntity> tileRenderer = TileEntityRendererDispatcher.instance.getRenderer(tile);
+            BlockEntityRenderer<BlockEntity> tileRenderer = ClientUtils.getMinecraft().getBlockEntityRenderDispatcher().getRenderer(tile);
 
             if(tileRenderer != null){
                 matrixStack.pushPose();

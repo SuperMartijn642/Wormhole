@@ -2,11 +2,11 @@ package com.supermartijn642.wormhole.packet;
 
 import com.supermartijn642.wormhole.PortalGroupCapability;
 import com.supermartijn642.wormhole.portal.PortalGroup;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -21,25 +21,25 @@ public abstract class PortalGroupPacket {
         this.pos = group.shape.frame.get(0);
     }
 
-    public PortalGroupPacket(PacketBuffer buffer){
+    public PortalGroupPacket(FriendlyByteBuf buffer){
         this.decode(buffer);
     }
 
-    public void encode(PacketBuffer buffer){
+    public void encode(FriendlyByteBuf buffer){
         buffer.writeBlockPos(this.pos);
     }
 
-    protected void decode(PacketBuffer buffer){
+    protected void decode(FriendlyByteBuf buffer){
         this.pos = buffer.readBlockPos();
     }
 
     public void handle(Supplier<NetworkEvent.Context> contextSupplier){
         contextSupplier.get().setPacketHandled(true);
 
-        PlayerEntity player = contextSupplier.get().getSender();
+        Player player = contextSupplier.get().getSender();
         if(player == null || player.position().distanceToSqr(this.pos.getX(), this.pos.getY(), this.pos.getZ()) > 100 * 100)
             return;
-        World world = player.level;
+        Level world = player.level;
         if(world == null)
             return;
         PortalGroupCapability groups = world.getCapability(PortalGroupCapability.CAPABILITY).orElse(null);
@@ -51,6 +51,6 @@ public abstract class PortalGroupPacket {
         contextSupplier.get().enqueueWork(() -> this.handle(player, world, group));
     }
 
-    protected abstract void handle(PlayerEntity player, World world, PortalGroup group);
+    protected abstract void handle(Player player, Level world, PortalGroup group);
 
 }

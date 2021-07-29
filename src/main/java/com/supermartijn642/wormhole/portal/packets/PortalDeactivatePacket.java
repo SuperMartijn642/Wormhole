@@ -2,9 +2,9 @@ package com.supermartijn642.wormhole.portal.packets;
 
 import com.supermartijn642.wormhole.packet.PortalGroupPacket;
 import com.supermartijn642.wormhole.portal.PortalGroup;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.Level;
 
 /**
  * Created 11/17/2020 by SuperMartijn642
@@ -14,12 +14,12 @@ public class PortalDeactivatePacket extends PortalGroupPacket {
         super(group);
     }
 
-    public PortalDeactivatePacket(PacketBuffer buffer){
+    public PortalDeactivatePacket(FriendlyByteBuf buffer){
         super(buffer);
     }
 
     @Override
-    protected void handle(PlayerEntity player, World world, PortalGroup group){
+    protected void handle(Player player, Level world, PortalGroup group){
         group.deactivate();
     }
 }

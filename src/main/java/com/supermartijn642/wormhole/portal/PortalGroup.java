@@ -3,11 +3,11 @@ package com.supermartijn642.wormhole.portal;
 import com.supermartijn642.wormhole.PortalGroupCapability;
 import com.supermartijn642.wormhole.TeleportHelper;
 import com.supermartijn642.wormhole.WormholeConfig;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.energy.IEnergyStorage;
 
 /**
@@ -16,18 +16,18 @@ import net.minecraftforge.energy.IEnergyStorage;
 public class PortalGroup {
 
     public final PortalShape shape;
-    public final World world;
+    public final Level world;
     public boolean canTick = false;
 
     private int activeTarget = 0;
     private boolean activated;
 
-    public PortalGroup(World world, PortalShape shape){
+    public PortalGroup(Level world, PortalShape shape){
         this.world = world;
         this.shape = shape;
     }
 
-    public PortalGroup(World world, CompoundNBT tag){
+    public PortalGroup(Level world, CompoundTag tag){
         this.world = world;
         this.shape = PortalShape.read(tag.getCompound("shape"));
         this.activeTarget = tag.contains("activeTarget") ? tag.getInt("activeTarget") : 0;
@@ -50,7 +50,7 @@ public class PortalGroup {
     public void setTarget(int index, PortalTarget target){
         int total = 0;
         for(BlockPos pos : this.shape.targetCells){
-            TileEntity tile = this.world.getBlockEntity(pos);
+            BlockEntity tile = this.world.getBlockEntity(pos);
             if(tile instanceof ITargetCellTile){
                 int capacity = ((ITargetCellTile)tile).getTargetCapacity();
                 if(total + capacity > index){
@@ -86,7 +86,7 @@ public class PortalGroup {
 
         int total = 0;
         for(BlockPos pos : this.shape.targetCells){
-            TileEntity tile = this.world.getBlockEntity(pos);
+            BlockEntity tile = this.world.getBlockEntity(pos);
             if(tile instanceof ITargetCellTile){
                 int capacity = ((ITargetCellTile)tile).getTargetCapacity();
                 if(lowTile == null && total + capacity > lowIndex){
@@ -142,7 +142,7 @@ public class PortalGroup {
     public int getTotalTargetCapacity(){
         int total = 0;
         for(BlockPos pos : this.shape.targetCells){
-            TileEntity tile = this.world.getBlockEntity(pos);
+            BlockEntity tile = this.world.getBlockEntity(pos);
             if(tile instanceof ITargetCellTile)
                 total += ((ITargetCellTile)tile).getTargetCapacity();
         }
@@ -155,7 +155,7 @@ public class PortalGroup {
 
         int total = 0;
         for(BlockPos pos : this.shape.targetCells){
-            TileEntity tile = this.world.getBlockEntity(pos);
+            BlockEntity tile = this.world.getBlockEntity(pos);
             if(tile instanceof ITargetCellTile){
                 int capacity = ((ITargetCellTile)tile).getTargetCapacity();
                 if(total + capacity > index)
@@ -186,7 +186,7 @@ public class PortalGroup {
     public int getEnergyCapacity(){
         int total = 0;
         for(BlockPos pos : this.shape.energyCells){
-            TileEntity tile = this.world.getBlockEntity(pos);
+            BlockEntity tile = this.world.getBlockEntity(pos);
             if(tile instanceof IEnergyStorage)
                 total += ((IEnergyCellTile)tile).getMaxEnergyStored(true);
         }
@@ -196,7 +196,7 @@ public class PortalGroup {
     public int getStoredEnergy(){
         int total = 0;
         for(BlockPos pos : this.shape.energyCells){
-            TileEntity tile = this.world.getBlockEntity(pos);
+            BlockEntity tile = this.world.getBlockEntity(pos);
             if(tile instanceof IEnergyStorage)
                 total += ((IEnergyCellTile)tile).getEnergyStored(true);
         }
@@ -205,7 +205,7 @@ public class PortalGroup {
 
     public void drainEnergy(int energy){
         for(BlockPos pos : this.shape.energyCells){
-            TileEntity tile = this.world.getBlockEntity(pos);
+            BlockEntity tile = this.world.getBlockEntity(pos);
             if(tile instanceof IEnergyStorage)
                 energy -= ((IEnergyCellTile)tile).extractEnergy(energy, false, true);
         }
@@ -214,7 +214,7 @@ public class PortalGroup {
     public int receiveEnergy(int energy, boolean simulate){
         int received = 0;
         for(BlockPos pos : this.shape.energyCells){
-            TileEntity tile = this.world.getBlockEntity(pos);
+            BlockEntity tile = this.world.getBlockEntity(pos);
             if(tile instanceof IEnergyStorage){
                 received += ((IEnergyCellTile)tile).receiveEnergy(energy - received, simulate, true);
                 if(received >= energy)
@@ -279,8 +279,8 @@ public class PortalGroup {
         this.world.getCapability(PortalGroupCapability.CAPABILITY).ifPresent(groups -> groups.remove(this));
     }
 
-    public CompoundNBT write(){
-        CompoundNBT tag = new CompoundNBT();
+    public CompoundTag write(){
+        CompoundTag tag = new CompoundTag();
         tag.put("shape", this.shape.write());
         tag.putInt("activeTarget", this.activeTarget);
         tag.putBoolean("activated", this.activated);
@@ -299,7 +299,7 @@ public class PortalGroup {
         );
     }
 
-    public static int getTeleportCostToTarget(World world, BlockPos portalCenter, PortalTarget target){
+    public static int getTeleportCostToTarget(Level world, BlockPos portalCenter, PortalTarget target){
         return WormholeConfig.travelPowerDrain.get() +
             (target.dimension.equals(world.dimension().location().toString()) ?
                 (int)Math.round(Math.pow(portalCenter.distSqr(target.getPos()), 1 / 4d) * WormholeConfig.distancePowerDrain.get()) :

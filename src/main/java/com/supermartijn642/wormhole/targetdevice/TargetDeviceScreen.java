@@ -1,7 +1,6 @@
 package com.supermartijn642.wormhole.targetdevice;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.gui.BaseScreen;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.widget.AbstractButtonWidget;
@@ -13,17 +12,17 @@ import com.supermartijn642.wormhole.screen.WormholeColoredButton;
 import com.supermartijn642.wormhole.screen.WormholeLabel;
 import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceAddPacket;
 import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceRemovePacket;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -49,8 +48,8 @@ public class TargetDeviceScreen extends BaseScreen {
 
     private static final int WIDTH = 324, HEIGHT = 185;
 
-    private final PlayerEntity player;
-    public final Hand hand;
+    private final Player player;
+    public final InteractionHand hand;
     private final BlockPos currentPos;
     private final float currentYaw;
     private int selectedTarget;
@@ -59,8 +58,8 @@ public class TargetDeviceScreen extends BaseScreen {
     private final List<WormholeLabel> targetNameLabels = new LinkedList<>();
     private WormholeColoredButton removeButton;
 
-    public TargetDeviceScreen(PlayerEntity player, Hand hand, BlockPos pos, float yaw){
-        super(new TranslationTextComponent("wormhole.target_device.gui.title"));
+    public TargetDeviceScreen(Player player, InteractionHand hand, BlockPos pos, float yaw){
+        super(new TranslatableComponent("wormhole.target_device.gui.title"));
         this.player = player;
         this.hand = hand;
         this.currentPos = pos;
@@ -111,7 +110,7 @@ public class TargetDeviceScreen extends BaseScreen {
     }
 
     @Override
-    protected void render(MatrixStack matrixStack, int mouseX, int mouseY){
+    protected void render(PoseStack matrixStack, int mouseX, int mouseY){
         ScreenUtils.bindTexture(BACKGROUND);
         ScreenUtils.drawTexture(matrixStack, 0, 0, this.sizeX(), this.sizeY());
 
@@ -119,7 +118,6 @@ public class TargetDeviceScreen extends BaseScreen {
         ScreenUtils.drawCenteredString(matrixStack, this.font, this.title, 58, 3, Integer.MAX_VALUE);
         ScreenUtils.drawCenteredString(matrixStack, this.font, I18n.get("wormhole.target_device.gui.current_location"), 266, 3, Integer.MAX_VALUE);
 
-        GlStateManager._enableAlphaTest();
         // draw target select highlight
         if(this.selectedTarget >= 0){
             ScreenUtils.bindTexture(SELECT_HIGHLIGHT);
@@ -159,24 +157,23 @@ public class TargetDeviceScreen extends BaseScreen {
         this.updateAddRemoveButton();
     }
 
-    private void renderTargetInfo(MatrixStack matrixStack, String name, BlockPos pos, String dimension, String dimensionName, float yaw){
+    private void renderTargetInfo(PoseStack matrixStack, String name, BlockPos pos, String dimension, String dimensionName, float yaw){
         ScreenUtils.drawCenteredString(matrixStack, this.font, name, 162, 31, Integer.MAX_VALUE);
 
         ScreenUtils.bindTexture(SEPARATOR);
         ScreenUtils.drawTexture(matrixStack, 124, 41, 77, 1);
 
         // location
-        GlStateManager._enableAlphaTest();
         ScreenUtils.bindTexture(LOCATION_ICON);
         ScreenUtils.drawTexture(matrixStack, 121, 47, 9, 9);
         ScreenUtils.drawString(matrixStack, this.font, "(" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")", 132, 48, Integer.MAX_VALUE);
         // dimension
         Block block = null;
-        if(dimension.equals(World.OVERWORLD.location().toString()))
-            block = Blocks.GRASS_PATH;
-        else if(dimension.equals(World.NETHER.location().toString()))
+        if(dimension.equals(Level.OVERWORLD.location().toString()))
+            block = Blocks.DIRT_PATH;
+        else if(dimension.equals(Level.NETHER.location().toString()))
             block = Blocks.NETHERRACK;
-        else if(dimension.equals(World.END.location().toString()))
+        else if(dimension.equals(Level.END.location().toString()))
             block = Blocks.END_STONE;
         if(block == null){
             ScreenUtils.bindTexture(DIMENSION_ICON);
@@ -186,23 +183,22 @@ public class TargetDeviceScreen extends BaseScreen {
         }
         ScreenUtils.drawString(matrixStack, this.font, dimensionName, 132, 60, Integer.MAX_VALUE);
         // direction
-        GlStateManager._enableAlphaTest();
         ScreenUtils.bindTexture(DIRECTION_ICON);
         ScreenUtils.drawTexture(matrixStack, 119, 69, 13, 13);
         ScreenUtils.drawString(matrixStack, this.font, I18n.get("wormhole.direction." + Direction.fromYRot(yaw).toString()), 132, 72, Integer.MAX_VALUE);
     }
 
     @Override
-    protected void renderTooltips(MatrixStack matrixStack, int mouseX, int mouseY){
+    protected void renderTooltips(PoseStack matrixStack, int mouseX, int mouseY){
         // location
         if(mouseX >= 120 && mouseX <= 131 && mouseY >= 46 && mouseY <= 57)
-            this.renderTooltip(matrixStack, new TranslationTextComponent("wormhole.target.location"), mouseX, mouseY);
+            this.renderTooltip(matrixStack, new TranslatableComponent("wormhole.target.location"), mouseX, mouseY);
             // dimension
         else if(mouseX >= 120 && mouseX <= 131 && mouseY >= 58 && mouseY <= 69)
-            this.renderTooltip(matrixStack, new TranslationTextComponent("wormhole.target.dimension"), mouseX, mouseY);
+            this.renderTooltip(matrixStack, new TranslatableComponent("wormhole.target.dimension"), mouseX, mouseY);
             // direction
         else if(mouseX >= 120 && mouseX <= 131 && mouseY >= 70 && mouseY <= 81)
-            this.renderTooltip(matrixStack, new TranslationTextComponent("wormhole.target.direction"), mouseX, mouseY);
+            this.renderTooltip(matrixStack, new TranslatableComponent("wormhole.target.direction"), mouseX, mouseY);
     }
 
     private void updateAddRemoveButton(){

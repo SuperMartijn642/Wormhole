@@ -2,7 +2,9 @@ package com.supermartijn642.wormhole.energycell;
 
 import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.WormholeConfig;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Locale;
 
@@ -29,14 +31,14 @@ public enum EnergyCellType {
         return 0;
     }
 
-    public EnergyCellTile createTile(){
+    public EnergyCellTile createTile(BlockPos pos, BlockState state){
         switch(this){
             case BASIC:
-                return new EnergyCellTile.BasicEnergyCellTile();
+                return new EnergyCellTile.BasicEnergyCellTile(pos, state);
             case ADVANCED:
-                return new EnergyCellTile.AdvancedEnergyCellTile();
+                return new EnergyCellTile.AdvancedEnergyCellTile(pos, state);
             case CREATIVE:
-                return new EnergyCellTile.CreativeEnergyCellTile();
+                return new EnergyCellTile.CreativeEnergyCellTile(pos, state);
         }
         return null;
     }
@@ -53,7 +55,7 @@ public enum EnergyCellType {
         return null;
     }
 
-    public TileEntityType<EnergyCellTile> getTileEntityType(){
+    public BlockEntityType<EnergyCellTile> getTileEntityType(){
         switch(this){
             case BASIC:
                 return Wormhole.basic_energy_cell_tile;

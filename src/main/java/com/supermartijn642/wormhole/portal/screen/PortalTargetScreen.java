@@ -1,7 +1,6 @@
 package com.supermartijn642.wormhole.portal.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.widget.AbstractButtonWidget;
 import com.supermartijn642.wormhole.ClientProxy;
@@ -18,18 +17,18 @@ import com.supermartijn642.wormhole.screen.WormholeButton;
 import com.supermartijn642.wormhole.screen.WormholeColoredButton;
 import com.supermartijn642.wormhole.screen.WormholeLabel;
 import com.supermartijn642.wormhole.targetdevice.TargetDeviceItem;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -58,9 +57,9 @@ public class PortalTargetScreen extends PortalGroupScreen {
     private static final int WIDTH = 240, HEIGHT = 185;
     private static final int WIDTH_WITH_DEVICE = 353, HEIGHT_WITH_DEVICE = 185;
 
-    private final PlayerEntity player;
+    private final Player player;
     private final boolean hasTargetDevice;
-    public final Hand hand;
+    public final InteractionHand hand;
 
     private int scrollOffset = 0;
     private int selectedPortalTarget;
@@ -72,7 +71,7 @@ public class PortalTargetScreen extends PortalGroupScreen {
     private WormholeColoredButton selectButton, removeButton;
     private PortalTargetEditColorButton colorButton;
 
-    public PortalTargetScreen(BlockPos pos, PlayerEntity player){
+    public PortalTargetScreen(BlockPos pos, Player player){
         super("wormhole.portal.targets.gui.title", pos);
         this.player = player;
 
@@ -80,17 +79,17 @@ public class PortalTargetScreen extends PortalGroupScreen {
         this.selectedPortalTarget = this.getFromPortalGroup(PortalGroup::getActiveTarget, null) == null ? -1 : this.getFromPortalGroup(PortalGroup::getActiveTargetIndex, -1);
 
         // check for a target device
-        Hand hand = Hand.MAIN_HAND;
-        ItemStack stack = player.getItemInHand(Hand.MAIN_HAND);
+        InteractionHand hand = InteractionHand.MAIN_HAND;
+        ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
         if(!(stack.getItem() instanceof TargetDeviceItem)){
-            stack = player.getItemInHand(Hand.OFF_HAND);
-            hand = Hand.OFF_HAND;
+            stack = player.getItemInHand(InteractionHand.OFF_HAND);
+            hand = InteractionHand.OFF_HAND;
         }
         this.hasTargetDevice = stack.getItem() instanceof TargetDeviceItem;
         this.hand = hand;
     }
 
-    public PortalTargetScreen(BlockPos pos, PlayerEntity player, int scrollOffset, int selectedPortalTarget, int selectedDeviceTarget){
+    public PortalTargetScreen(BlockPos pos, Player player, int scrollOffset, int selectedPortalTarget, int selectedDeviceTarget){
         this(pos, player);
         this.scrollOffset = Math.min(scrollOffset, Math.max(0, this.getFromPortalGroup(PortalGroup::getTotalTargetCapacity, 0) - 10));
         this.selectedPortalTarget = selectedPortalTarget;
@@ -133,7 +132,7 @@ public class PortalTargetScreen extends PortalGroupScreen {
     }
 
     @Override
-    protected void render(MatrixStack matrixStack, int mouseX, int mouseY, PortalGroup group){
+    protected void render(PoseStack matrixStack, int mouseX, int mouseY, PortalGroup group){
         ScreenUtils.bindTexture(this.hasTargetDevice ? BACKGROUND_WITH_DEVICE : BACKGROUND);
         ScreenUtils.drawTexture(matrixStack, 0, 0, this.sizeX(), this.sizeY());
 
@@ -142,7 +141,6 @@ public class PortalTargetScreen extends PortalGroupScreen {
         if(this.hasTargetDevice)
             ScreenUtils.drawCenteredString(matrixStack, this.font, I18n.get("wormhole.target_device.gui.title"), 296, 3, Integer.MAX_VALUE);
 
-        GlStateManager._enableAlphaTest();
         // draw target select highlight
         if(this.selectedPortalTarget >= this.scrollOffset && this.selectedPortalTarget < this.scrollOffset + 10){
             ScreenUtils.bindTexture(SELECT_HIGHLIGHT);
@@ -173,7 +171,6 @@ public class PortalTargetScreen extends PortalGroupScreen {
             if(count + this.scrollOffset != activeTarget)
                 ScreenUtils.drawCenteredString(matrixStack, this.scrollOffset + count + 1 + ".", 14, 21 + count * 16);
             else{
-                GlStateManager._enableAlphaTest();
                 ScreenUtils.bindTexture(STAR_ICON);
                 ScreenUtils.drawTexture(matrixStack, 8, 19 + 16 * count, 10, 10);
             }
@@ -193,24 +190,23 @@ public class PortalTargetScreen extends PortalGroupScreen {
         this.updateSelectRemoveColorButtons();
     }
 
-    private void renderTargetInfo(MatrixStack matrixStack, PortalTarget target, boolean showColor){
+    private void renderTargetInfo(PoseStack matrixStack, PortalTarget target, boolean showColor){
         ScreenUtils.drawCenteredString(matrixStack, this.font, target.name, 191, 31, Integer.MAX_VALUE);
 
         ScreenUtils.bindTexture(SEPARATOR);
         ScreenUtils.drawTexture(matrixStack, 153, 41, 77, 1);
 
         // location
-        GlStateManager._enableAlphaTest();
         ScreenUtils.bindTexture(LOCATION_ICON);
         ScreenUtils.drawTexture(matrixStack, 150, 47, 9, 9);
         ScreenUtils.drawString(matrixStack, this.font, "(" + target.x + ", " + target.y + ", " + target.z + ")", 161, 48, Integer.MAX_VALUE);
         // dimension
         Block block = null;
-        if(target.dimension.equals(World.OVERWORLD.location().toString()))
-            block = Blocks.GRASS_PATH;
-        else if(target.dimension.equals(World.NETHER.location().toString()))
+        if(target.dimension.equals(Level.OVERWORLD.location().toString()))
+            block = Blocks.DIRT_PATH;
+        else if(target.dimension.equals(Level.NETHER.location().toString()))
             block = Blocks.NETHERRACK;
-        else if(target.dimension.equals(World.END.location().toString()))
+        else if(target.dimension.equals(Level.END.location().toString()))
             block = Blocks.END_STONE;
         if(block == null){
             ScreenUtils.bindTexture(DIMENSION_ICON);
@@ -220,7 +216,6 @@ public class PortalTargetScreen extends PortalGroupScreen {
         }
         ScreenUtils.drawString(matrixStack, this.font, target.getDimensionDisplayName(), 161, 60, Integer.MAX_VALUE);
         // direction
-        GlStateManager._enableAlphaTest();
         ScreenUtils.bindTexture(DIRECTION_ICON);
         ScreenUtils.drawTexture(matrixStack, 148, 69, 13, 13);
         ScreenUtils.drawString(matrixStack, this.font, I18n.get("wormhole.direction." + Direction.fromYRot(target.yaw).toString()), 161, 72, Integer.MAX_VALUE);
@@ -237,7 +232,6 @@ public class PortalTargetScreen extends PortalGroupScreen {
         }
 
         // energy cost
-        GlStateManager._enableAlphaTest();
         ScreenUtils.bindTexture(ENERGY_ICON);
         ScreenUtils.drawTexture(matrixStack, 150, showColor ? 111 : 91, 9, 9);
         int cost = PortalGroup.getTeleportCostToTarget(this.player.level, this.getFromPortalGroup(PortalGroup::getCenterPos, BlockPos.ZERO), target);
@@ -338,19 +332,19 @@ public class PortalTargetScreen extends PortalGroupScreen {
     }
 
     @Override
-    protected void renderTooltips(MatrixStack matrixStack, int mouseX, int mouseY, PortalGroup group){
+    protected void renderTooltips(PoseStack matrixStack, int mouseX, int mouseY, PortalGroup group){
         // location
         if(mouseX >= 149 && mouseX <= 160 && mouseY >= 46 && mouseY <= 57)
-            this.renderTooltip(matrixStack, new TranslationTextComponent("wormhole.target.location"), mouseX, mouseY);
+            this.renderTooltip(matrixStack, new TranslatableComponent("wormhole.target.location"), mouseX, mouseY);
             // dimension
         else if(mouseX >= 149 && mouseX <= 160 && mouseY >= 58 && mouseY <= 69)
-            this.renderTooltip(matrixStack, new TranslationTextComponent("wormhole.target.dimension"), mouseX, mouseY);
+            this.renderTooltip(matrixStack, new TranslatableComponent("wormhole.target.dimension"), mouseX, mouseY);
             // direction
         else if(mouseX >= 149 && mouseX <= 160 && mouseY >= 70 && mouseY <= 81)
-            this.renderTooltip(matrixStack, new TranslationTextComponent("wormhole.target.direction"), mouseX, mouseY);
+            this.renderTooltip(matrixStack, new TranslatableComponent("wormhole.target.direction"), mouseX, mouseY);
             // energy
         else if(mouseX >= 149 && mouseX <= 160 && (this.selectedPortalTarget >= 0 ? mouseY >= 110 && mouseY <= 121 : mouseY >= 90 && mouseY <= 101))
-            this.renderTooltip(matrixStack, new TranslationTextComponent("wormhole.target.teleport_cost"), mouseX, mouseY);
+            this.renderTooltip(matrixStack, new TranslatableComponent("wormhole.target.teleport_cost"), mouseX, mouseY);
     }
 
     public <T> T getFromDeviceTargets(Function<List<PortalTarget>,T> function, T other){

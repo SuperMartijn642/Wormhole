@@ -1,57 +1,62 @@
 package com.supermartijn642.wormhole.generator;
 
 import com.supermartijn642.wormhole.EnergyFormat;
+import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.WormholeBlock;
 import com.supermartijn642.wormhole.WormholeConfig;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.HorizontalBlock;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.EnumProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.ToolType;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
  * Created 12/18/2020 by SuperMartijn642
  */
-public class CoalGeneratorBlock extends WormholeBlock {
+public class CoalGeneratorBlock extends WormholeBlock implements EntityBlock {
 
-    private static final VoxelShape SHAPE = VoxelShapes.or(
-        VoxelShapes.box(2 / 16d, 0, 1 / 16d, 14 / 16d, 12 / 16d, 13 / 16d),
-        VoxelShapes.box(3 / 16d, 0, 13 / 16d, 7 / 16d, 7 / 16d, 15 / 16d),
-        VoxelShapes.box(4 / 16d, 7 / 16d, 13 / 16d, 6 / 16d, 10 / 16d, 14 / 16d),
-        VoxelShapes.box(9 / 16d, 0, 13 / 16d, 13 / 16d, 7 / 16d, 15 / 16d),
-        VoxelShapes.box(10 / 16d, 7 / 16d, 13 / 16d, 12 / 16d, 10 / 16d, 14 / 16d)
+    private static final VoxelShape SHAPE = Shapes.or(
+        Shapes.box(2 / 16d, 0, 1 / 16d, 14 / 16d, 12 / 16d, 13 / 16d),
+        Shapes.box(3 / 16d, 0, 13 / 16d, 7 / 16d, 7 / 16d, 15 / 16d),
+        Shapes.box(4 / 16d, 7 / 16d, 13 / 16d, 6 / 16d, 10 / 16d, 14 / 16d),
+        Shapes.box(9 / 16d, 0, 13 / 16d, 13 / 16d, 7 / 16d, 15 / 16d),
+        Shapes.box(10 / 16d, 7 / 16d, 13 / 16d, 12 / 16d, 10 / 16d, 14 / 16d)
     );
     private static final VoxelShape[] SHAPES = new VoxelShape[4];
 
@@ -67,20 +72,20 @@ public class CoalGeneratorBlock extends WormholeBlock {
      * @see <a href="https://forums.minecraftforge.net/topic/74979-1144-rotate-voxel-shapes/?do=findComment&comment=391969">Minecraft Forge forum post</a>
      */
     public static VoxelShape rotateShape(Direction from, Direction to, VoxelShape shape){
-        VoxelShape[] buffer = new VoxelShape[]{shape, VoxelShapes.empty()};
+        VoxelShape[] buffer = new VoxelShape[]{shape, Shapes.empty()};
 
         int times = (to.get2DDataValue() - from.get2DDataValue() + 4) % 4;
         for(int i = 0; i < times; i++){
-            buffer[0].forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ) -> buffer[1] = VoxelShapes.or(buffer[1], VoxelShapes.box(1 - maxZ, minY, minX, 1 - minZ, maxY, maxX)));
+            buffer[0].forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ) -> buffer[1] = Shapes.or(buffer[1], Shapes.box(1 - maxZ, minY, minX, 1 - minZ, maxY, maxX)));
             buffer[0] = buffer[1];
-            buffer[1] = VoxelShapes.empty();
+            buffer[1] = Shapes.empty();
         }
 
         return buffer[0];
     }
 
     public static final BooleanProperty LIT = BooleanProperty.create("lit");
-    public static final EnumProperty<Direction> FACING = HorizontalBlock.FACING;
+    public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
 
     public CoalGeneratorBlock(){
         super("coal_generator", true, Properties.of(Material.METAL, MaterialColor.COLOR_GRAY).sound(SoundType.METAL).harvestLevel(1).harvestTool(ToolType.PICKAXE).strength(1.5f, 6));
@@ -88,59 +93,62 @@ public class CoalGeneratorBlock extends WormholeBlock {
     }
 
     @Override
-    public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit){
+    public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit){
         if(!worldIn.isClientSide)
-            NetworkHooks.openGui((ServerPlayerEntity)player, new INamedContainerProvider() {
+            NetworkHooks.openGui((ServerPlayer)player, new MenuProvider() {
                 @Override
-                public ITextComponent getDisplayName(){
+                public Component getDisplayName(){
                     return null;
                 }
 
                 @Override
-                public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity player){
+                public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player){
                     return new CoalGeneratorContainer(windowId, player, pos);
                 }
             }, pos);
-        return ActionResultType.CONSUME;
+        return InteractionResult.CONSUME;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
+    public void appendHoverText(ItemStack stack, BlockGetter worldIn, List<Component> tooltip, TooltipFlag flagIn){
         int range = 2 * WormholeConfig.coalGeneratorRange.get() + 1;
-        tooltip.add(new TranslationTextComponent("wormhole.coal_generator.info", range, EnergyFormat.formatEnergyPerTick(WormholeConfig.coalGeneratorPower.get())).withStyle(TextFormatting.AQUA));
+        tooltip.add(new TranslatableComponent("wormhole.coal_generator.info", range, EnergyFormat.formatEnergyPerTick(WormholeConfig.coalGeneratorPower.get())).withStyle(ChatFormatting.AQUA));
 
-        CompoundNBT tag = stack.getOrCreateTag().contains("tileData") ? stack.getOrCreateTag().getCompound("tileData") : null;
+        CompoundTag tag = stack.getOrCreateTag().contains("tileData") ? stack.getOrCreateTag().getCompound("tileData") : null;
         int energy = tag == null || tag.isEmpty() || !tag.contains("energy") ? 0 : tag.getInt("energy");
-        tooltip.add(new StringTextComponent(EnergyFormat.formatCapacity(energy, WormholeConfig.coalGeneratorCapacity.get())).withStyle(TextFormatting.YELLOW));
+        tooltip.add(new TextComponent(EnergyFormat.formatCapacity(energy, WormholeConfig.coalGeneratorCapacity.get())).withStyle(ChatFormatting.YELLOW));
     }
 
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext context){
+    public BlockState getStateForPlacement(BlockPlaceContext context){
         return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context){
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context){
         return SHAPES[state.getValue(FACING).get2DDataValue()];
     }
 
     @Override
-    public int getLightValue(BlockState state, IBlockReader world, BlockPos pos){
+    public int getLightEmission(BlockState state, BlockGetter world, BlockPos pos){
         return state.getValue(LIT) ? 8 : 0;
     }
 
+    @Nullable
     @Override
-    public boolean hasTileEntity(BlockState state){
-        return true;
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state){
+        return new CoalGeneratorTile(pos, state);
     }
 
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world){
-        return new CoalGeneratorTile();
-    }
-
-    @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block,BlockState> builder){
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block,BlockState> builder){
         builder.add(LIT, FACING);
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> blockEntityType){
+        return blockEntityType == Wormhole.coal_generator_tile ?
+            (world2, pos, state2, entity) -> ((GeneratorTile)entity).tick() : null;
     }
 }
