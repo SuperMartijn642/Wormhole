@@ -40,7 +40,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fmllegacy.network.NetworkHooks;
 
 import javax.annotation.Nullable;
@@ -88,7 +87,7 @@ public class CoalGeneratorBlock extends WormholeBlock implements EntityBlock {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
 
     public CoalGeneratorBlock(){
-        super("coal_generator", true, Properties.of(Material.METAL, MaterialColor.COLOR_GRAY).sound(SoundType.METAL).harvestLevel(1).harvestTool(ToolType.PICKAXE).strength(1.5f, 6));
+        super("coal_generator", true, Properties.of(Material.METAL, MaterialColor.COLOR_GRAY).sound(SoundType.METAL).requiresCorrectToolForDrops());
         this.registerDefaultState(this.defaultBlockState().setValue(LIT, false).setValue(FACING, Direction.NORTH));
     }
 

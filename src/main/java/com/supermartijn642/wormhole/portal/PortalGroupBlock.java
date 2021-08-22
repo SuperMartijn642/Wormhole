@@ -11,7 +11,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
-import net.minecraftforge.common.ToolType;
 
 import javax.annotation.Nullable;
 import java.util.function.BiFunction;
@@ -29,7 +28,7 @@ public class PortalGroupBlock extends WormholeBlock implements EntityBlock {
     }
 
     public PortalGroupBlock(String registryName, BiFunction<BlockPos,BlockState,? extends BlockEntity> tileSupplier){
-        this(Properties.of(Material.METAL, MaterialColor.COLOR_GRAY).sound(SoundType.METAL).harvestLevel(1).harvestTool(ToolType.PICKAXE).strength(1.5f, 6).noOcclusion(), registryName, tileSupplier);
+        this(Properties.of(Material.METAL, MaterialColor.COLOR_GRAY).sound(SoundType.METAL).requiresCorrectToolForDrops().strength(1.5f, 6).noOcclusion(), registryName, tileSupplier);
     }
 
     @Nullable
