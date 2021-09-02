@@ -100,6 +100,14 @@ public class PortalGroupCapability {
     }
 
     @SubscribeEvent
+    public static void onRespawn(PlayerEvent.PlayerRespawnEvent e){
+        EntityPlayerMP player = (EntityPlayerMP)e.player;
+        PortalGroupCapability groups = player.world.getCapability(CAPABILITY, null);
+        if(groups != null)
+            Wormhole.channel.sendTo(new UpdateGroupsPacket(groups.write()), player);
+    }
+
+    @SubscribeEvent
     public static void onJoin(PlayerEvent.PlayerLoggedInEvent e){
         EntityPlayerMP player = (EntityPlayerMP)e.player;
         PortalGroupCapability groups = player.world.getCapability(CAPABILITY, null);
