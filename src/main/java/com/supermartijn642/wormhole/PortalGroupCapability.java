@@ -96,6 +96,14 @@ public class PortalGroupCapability {
     }
 
     @SubscribeEvent
+    public static void onRespawn(PlayerEvent.PlayerRespawnEvent e){
+        ServerPlayerEntity player = (ServerPlayerEntity)e.getPlayer();
+        player.level.getCapability(CAPABILITY).ifPresent(groups ->
+            Wormhole.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateGroupsPacket(groups.write()))
+        );
+    }
+
+    @SubscribeEvent
     public static void onJoin(PlayerEvent.PlayerLoggedInEvent e){
         ServerPlayerEntity player = (ServerPlayerEntity)e.getPlayer();
         player.level.getCapability(CAPABILITY).ifPresent(groups ->
