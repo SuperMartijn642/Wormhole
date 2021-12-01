@@ -29,14 +29,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.common.extensions.IForgeContainerType;
+import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fmllegacy.network.NetworkRegistry;
-import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.registries.ObjectHolder;
 
 import java.util.Comparator;
@@ -120,8 +118,6 @@ public class Wormhole {
     public static MenuType<CoalGeneratorContainer> coal_generator_container;
 
     public Wormhole(){
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
-
         CHANNEL.registerMessage(0, TargetDeviceAddPacket.class, TargetDeviceAddPacket::encode, TargetDeviceAddPacket::new, TargetDeviceAddPacket::handle);
         CHANNEL.registerMessage(1, TargetDeviceMovePacket.class, TargetDeviceMovePacket::encode, TargetDeviceMovePacket::new, TargetDeviceMovePacket::handle);
         CHANNEL.registerMessage(2, TargetDeviceRemovePacket.class, TargetDeviceRemovePacket::encode, TargetDeviceRemovePacket::new, TargetDeviceRemovePacket::handle);
@@ -136,10 +132,6 @@ public class Wormhole {
         CHANNEL.registerMessage(11, PortalColorTargetPacket.class, PortalColorTargetPacket::encode, PortalColorTargetPacket::new, PortalColorTargetPacket::handle);
         CHANNEL.registerMessage(12, PortalActivatePacket.class, PortalActivatePacket::encode, PortalActivatePacket::new, PortalActivatePacket::handle);
         CHANNEL.registerMessage(13, PortalDeactivatePacket.class, PortalDeactivatePacket::encode, PortalDeactivatePacket::new, PortalDeactivatePacket::handle);
-    }
-
-    public void init(FMLCommonSetupEvent e){
-        PortalGroupCapability.register();
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -187,7 +179,7 @@ public class Wormhole {
 
         @SubscribeEvent
         public static void onContainerRegistry(final RegistryEvent.Register<MenuType<?>> e){
-            e.getRegistry().register(IForgeContainerType.create((windowId, inv, data) -> new CoalGeneratorContainer(windowId, inv.player, data.readBlockPos())).setRegistryName("coal_generator_container"));
+            e.getRegistry().register(IForgeMenuType.create((windowId, inv, data) -> new CoalGeneratorContainer(windowId, inv.player, data.readBlockPos())).setRegistryName("coal_generator_container"));
         }
 
         @SubscribeEvent

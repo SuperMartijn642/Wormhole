@@ -65,7 +65,7 @@ public abstract class WormholeTile extends BlockEntity {
     public ClientboundBlockEntityDataPacket getUpdatePacket(){
         if(this.dataChanged){
             this.dataChanged = false;
-            return new ClientboundBlockEntityDataPacket(this.worldPosition, 0, this.writeClientData());
+            return ClientboundBlockEntityDataPacket.create(this, entity -> ((WormholeTile)entity).writeClientData());
         }
         return null;
     }

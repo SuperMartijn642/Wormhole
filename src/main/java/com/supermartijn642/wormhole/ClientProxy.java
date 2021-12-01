@@ -28,7 +28,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.DrawSelectionEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.model.ForgeModelBakery;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -56,11 +56,11 @@ public class ClientProxy {
     @SubscribeEvent
     public static void modelRegistry(ModelRegistryEvent e){
         for(ResourceLocation model : EnergyCellTileRenderer.ENERGY_CELL_MODELS)
-            ModelLoader.addSpecialModel(model);
+            ForgeModelBakery.addSpecialModel(model);
         for(ResourceLocation model : TargetCellTileRenderer.BASIC_TARGET_CELL_MODELS)
-            ModelLoader.addSpecialModel(model);
+            ForgeModelBakery.addSpecialModel(model);
         for(ResourceLocation model : TargetCellTileRenderer.ADVANCED_TARGET_CELL_MODELS)
-            ModelLoader.addSpecialModel(model);
+            ForgeModelBakery.addSpecialModel(model);
     }
 
     public static void registerScreen(){
@@ -103,18 +103,18 @@ public class ClientProxy {
             Level world = getWorld();
             BlockEntity tile = world.getBlockEntity(e.getTarget().getBlockPos());
             if(tile instanceof GeneratorTile){
-                PoseStack matrixStack = e.getMatrix();
+                PoseStack matrixStack = e.getPoseStack();
                 matrixStack.pushPose();
                 Vec3 playerPos = Minecraft.getInstance().player.getEyePosition(e.getPartialTicks());
                 matrixStack.translate(-playerPos.x, -playerPos.y, -playerPos.z);
-                VertexConsumer builder = e.getBuffers().getBuffer(RenderType.lines());
+                VertexConsumer builder = e.getMultiBufferSource().getBuffer(RenderType.lines());
                 for(BlockPos pos : ((GeneratorTile)tile).getChargingPortalBlocks()){
                     VoxelShape shape = world.getBlockState(pos).getBlockSupportShape(world, pos);
-                    drawShape(e.getMatrix(), builder, shape, pos.getX(), pos.getY(), pos.getZ(), 66 / 255f, 108 / 255f, 245 / 255f, 1);
+                    drawShape(e.getPoseStack(), builder, shape, pos.getX(), pos.getY(), pos.getZ(), 66 / 255f, 108 / 255f, 245 / 255f, 1);
                 }
                 for(BlockPos pos : ((GeneratorTile)tile).getChargingEnergyBlocks()){
                     VoxelShape shape = world.getBlockState(pos).getBlockSupportShape(world, pos);
-                    drawShape(e.getMatrix(), builder, shape, pos.getX(), pos.getY(), pos.getZ(), 242 / 255f, 34 / 255f, 34 / 255f, 1);
+                    drawShape(e.getPoseStack(), builder, shape, pos.getX(), pos.getY(), pos.getZ(), 242 / 255f, 34 / 255f, 34 / 255f, 1);
                 }
                 matrixStack.popPose();
             }

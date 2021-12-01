@@ -12,17 +12,14 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.capabilities.*;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fmllegacy.network.PacketDistributor;
+import net.minecraftforge.network.PacketDistributor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -34,11 +31,12 @@ import java.util.*;
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class PortalGroupCapability {
 
-    @CapabilityInject(PortalGroupCapability.class)
-    public static Capability<PortalGroupCapability> CAPABILITY;
+    public static Capability<PortalGroupCapability> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
+    });
 
-    public static void register(){
-        CapabilityManager.INSTANCE.register(PortalGroupCapability.class);
+    @SubscribeEvent
+    public static void register(RegisterCapabilitiesEvent e){
+        e.register(PortalGroupCapability.class);
     }
 
     @SubscribeEvent
