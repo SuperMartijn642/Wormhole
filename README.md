@@ -1,8 +1,12 @@
 ![Wormhole Logo](https://imgur.com/IahF6MC.png)
 **Wormhole** allows you to construct **portals** with the use of **wormhole stabilizer technology!** Constructed portals can **teleport** you to **any defined location!** Portals can be of **any shape and size!** Portals can also be **colored using dyes!**
 
+---
+
 ### CurseForge
 For more info and downloads, check out the project on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/wormhole-portals)
+
+---
 
 ### Content:
 
@@ -44,6 +48,8 @@ For more info and downloads, check out the project on [CurseForge](https://www.c
 - Right-click the Portal Stabilizer to set its target
 - Can hold up to 5 targets
 
+---
+
 ### Step-by-step Guide:
 
 #### Constructing a portal
@@ -65,6 +71,8 @@ For more info and downloads, check out the project on [CurseForge](https://www.c
 2. Grab the dye corresponding to the desired color
 3. Right-Click a portal with the dye
 
+---
+
 ### FAQ
 Is there a maximum portal size?  
 Yes, the inner area of the portal can be 400 blocks at most  
@@ -79,6 +87,8 @@ Yes, portals can also be placed horizontally
 Can I use your mod in my modpack?  
 Yes, feel free to use my mod in your modpack
 
+---
+
 ### Discord
 For future content, upcoming mods, and discussion, feel free to join the SuperMartijn642 discord server!  
-[<img width='200' src='https://snrclan.com/wp-content/uploads/2020/02/join-discord-png-13.png'>](https://discord.gg/QEbGyUYB2e)
+[<img width='400' src='https://discord.com/assets/cb48d2a8d4991281d7a6a95d2f58195e.svg'>](https://discord.gg/QEbGyUYB2e)
