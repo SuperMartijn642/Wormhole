@@ -34,11 +34,11 @@ public abstract class WormholeTile extends BlockEntity {
     protected abstract void readData(CompoundTag tag);
 
     @Override
-    public void saveAdditional(CompoundTag compound){
-        super.save(compound);
+    protected void saveAdditional(CompoundTag compound){
+        super.saveAdditional(compound);
         CompoundTag data = this.writeData();
         if(data != null && !data.isEmpty())
-            compound.put("data", this.writeData());
+            compound.put("data", data);
     }
 
     @Override
@@ -49,8 +49,11 @@ public abstract class WormholeTile extends BlockEntity {
 
     @Override
     public CompoundTag getUpdateTag(){
-        CompoundTag tag = super.save(new CompoundTag());
-        tag.put("data", this.writeClientData());
+        CompoundTag tag = new CompoundTag();
+        super.saveAdditional(tag);
+        CompoundTag data = this.writeClientData();
+        if(data != null && !data.isEmpty())
+            tag.put("data", data);
         return tag;
     }
 
