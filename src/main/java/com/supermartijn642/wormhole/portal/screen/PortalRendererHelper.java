@@ -51,8 +51,8 @@ public class PortalRendererHelper {
         );
 
         GlStateManager.pushMatrix();
-        Minecraft.getInstance().textureManager.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
-        Minecraft.getInstance().textureManager.getTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, false);
+        Minecraft.getInstance().textureManager.bind(AtlasTexture.LOCATION_BLOCKS);
+        Minecraft.getInstance().textureManager.getTexture(AtlasTexture.LOCATION_BLOCKS).pushFilter(false, false);
         GlStateManager.pushLightingAttributes();
         GlStateManager.enableRescaleNormal();
         GlStateManager.enableAlphaTest();
@@ -64,23 +64,23 @@ public class PortalRendererHelper {
         GlStateManager.scalef(1.0F, -1.0F, 1.0F);
         GlStateManager.scaled(scale, scale, scale);
 
-        RenderHelper.disableStandardItemLighting();
+        RenderHelper.turnOff();
 
         GlStateManager.rotated(45, 1, 0, 0);
         GlStateManager.rotated((float)(System.currentTimeMillis() % ROTATE_TIME) / ROTATE_TIME * 360, 0, 1, 0);
-        GlStateManager.translated(-center.getX(), -center.getY(), -center.getZ());
+        GlStateManager.translated(-center.x(), -center.y(), -center.z());
 
         for(BlockPos pos : shape.frame)
             renderBlock(world, pos, true);
         for(BlockPos pos : shape.area){
-            if(!world.isAirBlock(pos)){
+            if(!world.isEmptyBlock(pos)){
                 renderBlock(world, pos, world.getBlockState(pos).getBlock() instanceof PortalBlock);
                 renderTileEntity(world, pos);
             }
         }
 
         GlStateManager.enableDepthTest();
-        RenderHelper.enableGUIStandardItemLighting();
+        RenderHelper.turnOnGui();
         GlStateManager.disableAlphaTest();
         GlStateManager.disableRescaleNormal();
         GlStateManager.popMatrix();
@@ -90,15 +90,15 @@ public class PortalRendererHelper {
     private static void renderBlock(World world, BlockPos pos, boolean valid){
         BlockState state = world.getBlockState(pos);
 
-        if(!(state.getBlock() instanceof EnergyCellBlock) && !(state.getBlock() instanceof TargetCellBlock) && state.getRenderType() != BlockRenderType.MODEL)
+        if(!(state.getBlock() instanceof EnergyCellBlock) && !(state.getBlock() instanceof TargetCellBlock) && state.getRenderShape() != BlockRenderType.MODEL)
             return;
 
-        TileEntity tile = world.getTileEntity(pos);
+        TileEntity tile = world.getBlockEntity(pos);
 
         IBakedModel model =
             tile instanceof TargetCellTile ? TargetCellTileRenderer.getModelForTile((TargetCellTile)tile) :
                 tile instanceof EnergyCellTile ? EnergyCellTileRenderer.getModelForTile((EnergyCellTile)tile) :
-                    Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(state);
+                    Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
         IModelData modelData = tile == null ? EmptyModelData.INSTANCE : tile.getModelData();
         modelData = model.getModelData(world, pos, state, modelData);
 
@@ -123,7 +123,7 @@ public class PortalRendererHelper {
         Random random = new Random();
 
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        BufferBuilder bufferbuilder = tessellator.getBuilder();
         bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
         for(Direction direction : Direction.values()){
@@ -134,24 +134,24 @@ public class PortalRendererHelper {
         random.setSeed(42L);
         renderQuads(bufferbuilder, modelIn.getQuads(state, null, random, modelData), valid);
 
-        tessellator.draw();
+        tessellator.end();
     }
 
     private static void renderQuads(BufferBuilder bufferIn, List<BakedQuad> quadsIn, boolean valid){
         GlStateManager.color4f(valid ? 1 : 0.5f, valid ? 1 : 0.5f, valid ? 1 : 0.8f, 0.5f);
 
         for(BakedQuad bakedquad : quadsIn){
-            bufferIn.addVertexData(bakedquad.getVertexData());
+            bufferIn.putBulkData(bakedquad.getVertices());
 
             if(!valid){
                 for(int i = 0; i < 4; i++)
-                    bufferIn.putColorRGBA(bufferIn.getColorIndex(4 - i), 255, 128, 128, 200);
+                    bufferIn.putColorRGBA(bufferIn.getStartingColorIndex(4 - i), 255, 128, 128, 200);
             }
         }
     }
 
     private static void renderTileEntity(World world, BlockPos pos){
-        TileEntity tile = world.getTileEntity(pos);
+        TileEntity tile = world.getBlockEntity(pos);
 
         if(tile != null){
             TileEntityRenderer<TileEntity> tileRenderer = TileEntityRendererDispatcher.instance.getRenderer(tile);
@@ -160,7 +160,7 @@ public class PortalRendererHelper {
                 GlStateManager.pushMatrix();
                 GlStateManager.translated(pos.getX() - 0.5, pos.getY() - 0.5, pos.getZ() - 0.5);
 
-                tileRenderer.render(tile, 0, 0, 0, Minecraft.getInstance().getRenderPartialTicks(), -1);
+                tileRenderer.render(tile, 0, 0, 0, Minecraft.getInstance().getFrameTime(), -1);
 
                 GlStateManager.popMatrix();
             }

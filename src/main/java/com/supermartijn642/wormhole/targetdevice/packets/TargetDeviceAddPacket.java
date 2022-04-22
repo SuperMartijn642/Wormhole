@@ -35,7 +35,7 @@ public class TargetDeviceAddPacket extends TargetDevicePacket {
     @Override
     public void encode(PacketBuffer buffer){
         super.encode(buffer);
-        buffer.writeString(this.name);
+        buffer.writeUtf(this.name);
         buffer.writeBlockPos(this.pos);
         buffer.writeFloat(this.yaw);
     }
@@ -43,7 +43,7 @@ public class TargetDeviceAddPacket extends TargetDevicePacket {
     @Override
     protected void decodeBuffer(PacketBuffer buffer){
         super.decodeBuffer(buffer);
-        this.name = buffer.readString(32767).trim();
+        this.name = buffer.readUtf(32767).trim();
         this.pos = buffer.readBlockPos();
         this.yaw = buffer.readFloat();
     }

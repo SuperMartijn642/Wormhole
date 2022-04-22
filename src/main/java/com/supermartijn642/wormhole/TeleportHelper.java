@@ -30,65 +30,65 @@ public class TeleportHelper {
     public static boolean queTeleport(Entity entity, PortalTarget target){
         if(!canTeleport(entity, target))
             return false;
-        for(Entity passenger : entity.getRecursivePassengers())
+        for(Entity passenger : entity.getIndirectPassengers())
             if(passenger instanceof PlayerEntity)
                 return false;
 
-        Entity lowestEntity = entity.getLowestRidingEntity();
-        if(!entity.world.isRemote){
-            lowestEntity.world.getServer().enqueue(new TickDelayedTask(0, () -> teleportEntityAndPassengers(lowestEntity, null, target)));
+        Entity lowestEntity = entity.getRootVehicle();
+        if(!entity.level.isClientSide){
+            lowestEntity.level.getServer().tell(new TickDelayedTask(0, () -> teleportEntityAndPassengers(lowestEntity, null, target)));
             markEntityAndPassengers(lowestEntity);
         }
         return true;
     }
 
     public static boolean canTeleport(Entity entity, PortalTarget target){
-        if(entity.world.isRemote || !target.getWorld(entity.getServer()).isPresent())
+        if(entity.level.isClientSide || !target.getWorld(entity.getServer()).isPresent())
             return false;
         if(entity.isPassenger())
-            return canTeleport(entity.getLowestRidingEntity(), target);
+            return canTeleport(entity.getRootVehicle(), target);
 
-        for(Entity rider : entity.getRecursivePassengers()){
+        for(Entity rider : entity.getIndirectPassengers()){
             CompoundNBT tag = rider.getPersistentData();
-            if(tag.contains("wormhole:teleported") && rider.ticksExisted - tag.getLong("wormhole:teleported") >= 0 && rider.ticksExisted - tag.getLong("wormhole:teleported") < TELEPORT_COOLDOWN)
+            if(tag.contains("wormhole:teleported") && rider.tickCount - tag.getLong("wormhole:teleported") >= 0 && rider.tickCount - tag.getLong("wormhole:teleported") < TELEPORT_COOLDOWN)
                 return false;
         }
 
         CompoundNBT tag = entity.getPersistentData();
-        return !tag.contains("wormhole:teleported") || entity.ticksExisted - tag.getLong("wormhole:teleported") < 0 || entity.ticksExisted - tag.getLong("wormhole:teleported") >= TELEPORT_COOLDOWN;
+        return !tag.contains("wormhole:teleported") || entity.tickCount - tag.getLong("wormhole:teleported") < 0 || entity.tickCount - tag.getLong("wormhole:teleported") >= TELEPORT_COOLDOWN;
     }
 
     private static void markEntityAndPassengers(Entity entity){
-        entity.getPersistentData().putLong("wormhole:teleported", entity.ticksExisted);
+        entity.getPersistentData().putLong("wormhole:teleported", entity.tickCount);
         entity.getPassengers().forEach(TeleportHelper::markEntityAndPassengers);
     }
 
     private static void teleportEntityAndPassengers(Entity entity, Entity entityBeingRidden, PortalTarget target){
-        if(entity.world.isRemote || !target.getWorld(entity.getServer()).isPresent())
+        if(entity.level.isClientSide || !target.getWorld(entity.getServer()).isPresent())
             return;
         Optional<ServerWorld> targetWorld = target.getWorld(entity.getServer()).filter(ServerWorld.class::isInstance).map(ServerWorld.class::cast);
         if(!targetWorld.isPresent())
             return;
 
         Collection<Entity> passengers = entity.getPassengers();
-        entity.removePassengers();
+        entity.ejectPassengers();
         Entity newEntity = teleportEntity(entity, targetWorld.get(), target);
         if(entityBeingRidden != null){
             newEntity.startRiding(entityBeingRidden);
             if(newEntity instanceof ServerPlayerEntity)
-                ((ServerPlayerEntity)newEntity).connection.sendPacket(new SSetPassengersPacket(entityBeingRidden));
+                ((ServerPlayerEntity)newEntity).connection.send(new SSetPassengersPacket(entityBeingRidden));
         }
         passengers.forEach(e -> teleportEntityAndPassengers(e, newEntity, target));
     }
 
     private static Entity teleportEntity(Entity entity, ServerWorld targetWorld, PortalTarget target){
-        if(targetWorld == entity.world){
+        if(targetWorld == entity.level){
             if(entity instanceof ServerPlayerEntity)
-                ((ServerPlayerEntity)entity).connection.setPlayerLocation(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
+                ((ServerPlayerEntity)entity).connection.teleport(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
             else
-                entity.setPositionAndUpdate(target.x + .5, target.y + .2, target.z + .5);
-            entity.setRotationYawHead(target.yaw);
-            entity.setMotion(Vec3d.ZERO);
+                entity.teleportTo(target.x + .5, target.y + .2, target.z + .5);
+            entity.setYHeadRot(target.yaw);
+            entity.setDeltaMovement(Vec3d.ZERO);
             entity.fallDistance = 0;
             entity.onGround = true;
         }else if(net.minecraftforge.common.ForgeHooks.onTravelToDimension(entity, targetWorld.dimension.getType()) && !entity.removed){
@@ -96,53 +96,53 @@ public class TeleportHelper {
                 ServerPlayerEntity player = (ServerPlayerEntity)entity;
                 DimensionType dimensiontype = entity.dimension;
 
-                ServerWorld oldWorld = player.server.func_71218_a(dimensiontype);
+                ServerWorld oldWorld = player.server.getLevel(dimensiontype);
                 entity.dimension = targetWorld.dimension.getType();
-                WorldInfo worldinfo = entity.world.getWorldInfo();
-                net.minecraftforge.fml.network.NetworkHooks.sendDimensionDataPacket(player.connection.netManager, player);
-                player.connection.sendPacket(new SRespawnPacket(targetWorld.dimension.getType(), worldinfo.getGenerator(), player.interactionManager.getGameType()));
-                player.connection.sendPacket(new SServerDifficultyPacket(worldinfo.getDifficulty(), worldinfo.isDifficultyLocked()));
+                WorldInfo worldinfo = entity.level.getLevelData();
+                net.minecraftforge.fml.network.NetworkHooks.sendDimensionDataPacket(player.connection.connection, player);
+                player.connection.send(new SRespawnPacket(targetWorld.dimension.getType(), worldinfo.getGeneratorType(), player.gameMode.getGameModeForPlayer()));
+                player.connection.send(new SServerDifficultyPacket(worldinfo.getDifficulty(), worldinfo.isDifficultyLocked()));
                 PlayerList playerlist = player.server.getPlayerList();
-                playerlist.updatePermissionLevel(player);
+                playerlist.sendPlayerPermissionLevel(player);
                 oldWorld.removeEntity(player, true); //Forge: the player entity is moved to the new world, NOT cloned. So keep the data alive with no matching invalidate call.
                 player.revive();
 
-                player.setLocationAndAngles(target.x, target.y, target.z, target.yaw, 0);
-                player.setMotion(Vec3d.ZERO);
+                player.moveTo(target.x, target.y, target.z, target.yaw, 0);
+                player.setDeltaMovement(Vec3d.ZERO);
 
-                player.setWorld(targetWorld);
-                targetWorld.func_217447_b(player);
+                player.setLevel(targetWorld);
+                targetWorld.addDuringPortalTeleport(player);
                 CriteriaTriggers.CHANGED_DIMENSION.trigger(player, dimensiontype, targetWorld.dimension.getType());
-                player.connection.setPlayerLocation(player.posX, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
-                player.interactionManager.func_73080_a(targetWorld);
-                player.connection.sendPacket(new SPlayerAbilitiesPacket(player.abilities));
-                playerlist.func_72354_b(player, targetWorld);
-                playerlist.sendInventory(player);
+                player.connection.teleport(player.x, player.y, player.z, player.yRot, player.xRot);
+                player.gameMode.setLevel(targetWorld);
+                player.connection.send(new SPlayerAbilitiesPacket(player.abilities));
+                playerlist.sendLevelInfo(player, targetWorld);
+                playerlist.sendAllPlayerInfo(player);
 
-                for(EffectInstance effectinstance : player.getActivePotionEffects()){
-                    player.connection.sendPacket(new SPlayEntityEffectPacket(player.getEntityId(), effectinstance));
+                for(EffectInstance effectinstance : player.getActiveEffects()){
+                    player.connection.send(new SPlayEntityEffectPacket(player.getId(), effectinstance));
                 }
 
-                player.connection.sendPacket(new SPlaySoundEventPacket(1032, BlockPos.ZERO, 0, false));
-                player.setExperienceLevel(player.experienceLevel);
+                player.connection.send(new SPlaySoundEventPacket(1032, BlockPos.ZERO, 0, false));
+                player.setExperienceLevels(player.experienceLevel);
                 net.minecraftforge.fml.hooks.BasicEventHooks.firePlayerChangedDimensionEvent(player, dimensiontype, targetWorld.dimension.getType());
             }else{
                 MinecraftServer minecraftserver = entity.getServer();
-                ServerWorld oldWorld = minecraftserver.func_71218_a(entity.dimension);
+                ServerWorld oldWorld = minecraftserver.getLevel(entity.dimension);
                 entity.dimension = targetWorld.dimension.getType();
-                entity.detach();
+                entity.unRide();
 
                 Entity newEntity = entity.getType().create(targetWorld);
                 if(newEntity != null){
-                    newEntity.copyDataFromOld(entity);
-                    newEntity.moveToBlockPosAndAngles(target.getPos(), target.yaw, 0);
-                    newEntity.setMotion(Vec3d.ZERO);
-                    targetWorld.func_217460_e(newEntity);
+                    newEntity.restoreFrom(entity);
+                    newEntity.moveTo(target.getPos(), target.yaw, 0);
+                    newEntity.setDeltaMovement(Vec3d.ZERO);
+                    targetWorld.addFromAnotherDimension(newEntity);
                 }
 
                 entity.remove(false);
-                oldWorld.resetUpdateEntityTick();
-                targetWorld.resetUpdateEntityTick();
+                oldWorld.resetEmptyTime();
+                targetWorld.resetEmptyTime();
                 return newEntity;
             }
         }

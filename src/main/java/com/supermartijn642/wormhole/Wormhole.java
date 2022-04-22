@@ -63,13 +63,13 @@ public class Wormhole {
     public static final IRecipeSerializer<NBTRecipe> NBT_RECIPE_SERIALIZER = new NBTRecipe.Serializer();
     public static final ItemGroup ITEM_GROUP = new ItemGroup("wormhole") {
         @Override
-        public ItemStack createIcon(){
+        public ItemStack makeIcon(){
             return new ItemStack(advanced_target_device);
         }
 
         @Override
-        public void fill(NonNullList<ItemStack> items){
-            super.fill(items);
+        public void fillItemList(NonNullList<ItemStack> items){
+            super.fillItemList(items);
             items.sort(Comparator.comparing(a -> a.getDisplayName().getString()));
         }
     };
@@ -159,27 +159,27 @@ public class Wormhole {
 
         @SubscribeEvent
         public static void onTileRegistry(final RegistryEvent.Register<TileEntityType<?>> e){
-            e.getRegistry().register(TileEntityType.Builder.create(() -> new PortalGroupTile(portal_frame_tile), portal_frame).build(null).setRegistryName("portal_frame_tile"));
-            e.getRegistry().register(TileEntityType.Builder.create(PortalTile::new, portal).build(null).setRegistryName("portal_tile"));
-            e.getRegistry().register(TileEntityType.Builder.create(StabilizerTile::new, portal_stabilizer).build(null).setRegistryName("stabilizer_tile"));
+            e.getRegistry().register(TileEntityType.Builder.of(() -> new PortalGroupTile(portal_frame_tile), portal_frame).build(null).setRegistryName("portal_frame_tile"));
+            e.getRegistry().register(TileEntityType.Builder.of(PortalTile::new, portal).build(null).setRegistryName("portal_tile"));
+            e.getRegistry().register(TileEntityType.Builder.of(StabilizerTile::new, portal_stabilizer).build(null).setRegistryName("stabilizer_tile"));
             for(EnergyCellType type : EnergyCellType.values())
-                e.getRegistry().register(TileEntityType.Builder.create(type::createTile, type.getBlock()).build(null).setRegistryName(type.getRegistryName() + "_tile"));
+                e.getRegistry().register(TileEntityType.Builder.of(type::createTile, type.getBlock()).build(null).setRegistryName(type.getRegistryName() + "_tile"));
             for(TargetCellType type : TargetCellType.values())
-                e.getRegistry().register(TileEntityType.Builder.create(type::createTile, type.getBlock()).build(null).setRegistryName(type.getRegistryName() + "_tile"));
-            e.getRegistry().register(TileEntityType.Builder.create(CoalGeneratorTile::new, coal_generator).build(null).setRegistryName("coal_generator_tile"));
+                e.getRegistry().register(TileEntityType.Builder.of(type::createTile, type.getBlock()).build(null).setRegistryName(type.getRegistryName() + "_tile"));
+            e.getRegistry().register(TileEntityType.Builder.of(CoalGeneratorTile::new, coal_generator).build(null).setRegistryName("coal_generator_tile"));
         }
 
         @SubscribeEvent
         public static void onItemRegistry(final RegistryEvent.Register<Item> e){
-            e.getRegistry().register(new BlockItem(portal_frame, new Item.Properties().group(ITEM_GROUP)).setRegistryName(portal_frame.getRegistryName()));
+            e.getRegistry().register(new BlockItem(portal_frame, new Item.Properties().tab(ITEM_GROUP)).setRegistryName(portal_frame.getRegistryName()));
             e.getRegistry().register(new BlockItem(portal, new Item.Properties()).setRegistryName(portal.getRegistryName()));
-            e.getRegistry().register(new BlockItem(portal_stabilizer, new Item.Properties().group(ITEM_GROUP)).setRegistryName(portal_stabilizer.getRegistryName()));
-            e.getRegistry().register(new BlockItem(basic_energy_cell, new Item.Properties().group(ITEM_GROUP)).setRegistryName(basic_energy_cell.getRegistryName()));
-            e.getRegistry().register(new BlockItem(advanced_energy_cell, new Item.Properties().group(ITEM_GROUP)).setRegistryName(advanced_energy_cell.getRegistryName()));
-            e.getRegistry().register(new BlockItem(creative_energy_cell, new Item.Properties().group(ITEM_GROUP)).setRegistryName(creative_energy_cell.getRegistryName()));
-            e.getRegistry().register(new BlockItem(basic_target_cell, new Item.Properties().group(ITEM_GROUP)).setRegistryName(basic_target_cell.getRegistryName()));
-            e.getRegistry().register(new BlockItem(advanced_target_cell, new Item.Properties().group(ITEM_GROUP)).setRegistryName(advanced_target_cell.getRegistryName()));
-            e.getRegistry().register(new BlockItem(coal_generator, new Item.Properties().group(ITEM_GROUP)).setRegistryName(coal_generator.getRegistryName()));
+            e.getRegistry().register(new BlockItem(portal_stabilizer, new Item.Properties().tab(ITEM_GROUP)).setRegistryName(portal_stabilizer.getRegistryName()));
+            e.getRegistry().register(new BlockItem(basic_energy_cell, new Item.Properties().tab(ITEM_GROUP)).setRegistryName(basic_energy_cell.getRegistryName()));
+            e.getRegistry().register(new BlockItem(advanced_energy_cell, new Item.Properties().tab(ITEM_GROUP)).setRegistryName(advanced_energy_cell.getRegistryName()));
+            e.getRegistry().register(new BlockItem(creative_energy_cell, new Item.Properties().tab(ITEM_GROUP)).setRegistryName(creative_energy_cell.getRegistryName()));
+            e.getRegistry().register(new BlockItem(basic_target_cell, new Item.Properties().tab(ITEM_GROUP)).setRegistryName(basic_target_cell.getRegistryName()));
+            e.getRegistry().register(new BlockItem(advanced_target_cell, new Item.Properties().tab(ITEM_GROUP)).setRegistryName(advanced_target_cell.getRegistryName()));
+            e.getRegistry().register(new BlockItem(coal_generator, new Item.Properties().tab(ITEM_GROUP)).setRegistryName(coal_generator.getRegistryName()));
 
             e.getRegistry().register(new TargetDeviceItem("target_device", WormholeConfig.basicDeviceTargetCount::get));
             e.getRegistry().register(new TargetDeviceItem("advanced_target_device", WormholeConfig.advancedDeviceTargetCount::get));

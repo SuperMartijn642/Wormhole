@@ -31,23 +31,23 @@ public class EnergyCellTileRenderer extends TileEntityRenderer<EnergyCellTile> {
         int texture = tile.getMaxEnergyStored(true) > 0 ? (int)Math.ceil((double)tile.getEnergyStored(true) / tile.getMaxEnergyStored(true) * 15) : 0;
 
         GlStateManager.disableLighting();
-        Minecraft.getInstance().textureManager.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
+        Minecraft.getInstance().textureManager.bind(AtlasTexture.LOCATION_BLOCKS);
 
         IBakedModel model = Minecraft.getInstance().getModelManager().getModel(ENERGY_CELL_MODELS[texture]);
 
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        BufferBuilder bufferBuilder = tessellator.getBuilder();
         bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
-        bufferBuilder.setTranslation(x - tile.getPos().getX(), y - tile.getPos().getY(), z - tile.getPos().getZ());
+        bufferBuilder.offset(x - tile.getBlockPos().getX(), y - tile.getBlockPos().getY(), z - tile.getBlockPos().getZ());
 
-        Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelRenderer().renderModelSmooth(
-            tile.getWorld(), model, tile.getBlockState(), tile.getPos(), bufferBuilder, true, new Random(), 42L, EmptyModelData.INSTANCE
+        Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModelSmooth(
+            tile.getLevel(), model, tile.getBlockState(), tile.getBlockPos(), bufferBuilder, true, new Random(), 42L, EmptyModelData.INSTANCE
         );
 
-        bufferBuilder.setTranslation(0, 0, 0);
+        bufferBuilder.offset(0, 0, 0);
 
-        tessellator.draw();
+        tessellator.end();
     }
 
     public static IBakedModel getModelForTile(EnergyCellTile tile){

@@ -97,7 +97,7 @@ public class TargetDeviceScreen extends BaseScreen {
         }
 
         this.currentTargetNameField = this.addWidget(new TextFieldWidget(215, 18, 102, 12, "", PortalTarget.MAX_NAME_LENGTH));
-        this.currentTargetNameField.setSuggestion(I18n.format("wormhole.target_device.gui.target_name"));
+        this.currentTargetNameField.setSuggestion(I18n.get("wormhole.target_device.gui.target_name"));
         if(this.selectedCurrentTarget)
             this.currentTargetNameField.setFocused(true);
 
@@ -116,7 +116,7 @@ public class TargetDeviceScreen extends BaseScreen {
 
         // draw titles
         ScreenUtils.drawCenteredString(this.font, this.title, 58, 3, Integer.MAX_VALUE);
-        ScreenUtils.drawCenteredString(this.font, I18n.format("wormhole.target_device.gui.current_location"), 266, 3, Integer.MAX_VALUE);
+        ScreenUtils.drawCenteredString(this.font, I18n.get("wormhole.target_device.gui.current_location"), 266, 3, Integer.MAX_VALUE);
 
         GlStateManager.enableAlphaTest();
         // draw target select highlight
@@ -146,13 +146,13 @@ public class TargetDeviceScreen extends BaseScreen {
             if(target != null)
                 this.renderTargetInfo(target.name, target.getPos(), target.dimension, target.dimensionDisplayName, target.yaw);
         }else if(this.selectedCurrentTarget){
-            String dimension = this.player.world.getDimension().getType().getRegistryName().toString();
+            String dimension = this.player.level.getDimension().getType().getRegistryName().toString();
             String dimensionName = dimension.substring(Math.min(dimension.length() - 1, Math.max(0, dimension.indexOf(':') + 1))).toLowerCase();
             dimensionName = dimensionName.substring(0, 1).toUpperCase() + dimensionName.substring(1);
             for(int i = 0; i < dimensionName.length() - 1; i++)
                 if(dimensionName.charAt(i) == '_' && Character.isAlphabetic(dimensionName.charAt(i + 1)))
                     dimensionName = dimensionName.substring(0, i) + ' ' + (i + 2 < dimensionName.length() ? dimensionName.substring(i + 1, i + 2).toUpperCase() + dimensionName.substring(i + 2) : dimensionName.substring(i + 1).toUpperCase());
-            this.renderTargetInfo(this.currentTargetNameField.getText().trim(), this.currentPos, this.player.world.getDimension().getType().getId(), dimensionName, this.currentYaw);
+            this.renderTargetInfo(this.currentTargetNameField.getText().trim(), this.currentPos, this.player.level.getDimension().getType().getId(), dimensionName, this.currentYaw);
         }
 
         this.updateAddRemoveButton();
@@ -173,7 +173,7 @@ public class TargetDeviceScreen extends BaseScreen {
         Block block = null;
         if(dimension == DimensionType.OVERWORLD.getId())
             block = Blocks.GRASS_PATH;
-        else if(dimension == DimensionType.THE_NETHER.getId())
+        else if(dimension == DimensionType.NETHER.getId())
             block = Blocks.NETHERRACK;
         else if(dimension == DimensionType.THE_END.getId())
             block = Blocks.END_STONE;
@@ -188,20 +188,20 @@ public class TargetDeviceScreen extends BaseScreen {
         GlStateManager.enableAlphaTest();
         ScreenUtils.bindTexture(DIRECTION_ICON);
         ScreenUtils.drawTexture(119, 69, 13, 13);
-        ScreenUtils.drawString(this.font, I18n.format("wormhole.direction." + Direction.fromAngle(yaw).toString()), 132, 72, Integer.MAX_VALUE);
+        ScreenUtils.drawString(this.font, I18n.get("wormhole.direction." + Direction.fromYRot(yaw).toString()), 132, 72, Integer.MAX_VALUE);
     }
 
     @Override
     protected void renderTooltips(int mouseX, int mouseY){
         // location
         if(mouseX >= 120 && mouseX <= 131 && mouseY >= 46 && mouseY <= 57)
-            this.renderTooltip(new TranslationTextComponent("wormhole.target.location").getFormattedText(), mouseX, mouseY);
+            this.renderTooltip(new TranslationTextComponent("wormhole.target.location").getColoredString(), mouseX, mouseY);
             // dimension
         else if(mouseX >= 120 && mouseX <= 131 && mouseY >= 58 && mouseY <= 69)
-            this.renderTooltip(new TranslationTextComponent("wormhole.target.dimension").getFormattedText(), mouseX, mouseY);
+            this.renderTooltip(new TranslationTextComponent("wormhole.target.dimension").getColoredString(), mouseX, mouseY);
             // direction
         else if(mouseX >= 120 && mouseX <= 131 && mouseY >= 70 && mouseY <= 81)
-            this.renderTooltip(new TranslationTextComponent("wormhole.target.direction").getFormattedText(), mouseX, mouseY);
+            this.renderTooltip(new TranslationTextComponent("wormhole.target.direction").getColoredString(), mouseX, mouseY);
     }
 
     private void updateAddRemoveButton(){
@@ -231,7 +231,7 @@ public class TargetDeviceScreen extends BaseScreen {
     }
 
     public <T> T getOrDefault(Function<List<PortalTarget>,T> function, T other){
-        ItemStack stack = this.player.getHeldItem(this.hand);
+        ItemStack stack = this.player.getItemInHand(this.hand);
         if(!stack.isEmpty() && stack.getItem() instanceof TargetDeviceItem)
             return function.apply(TargetDeviceItem.getTargets(stack));
         this.closeScreen();
@@ -239,7 +239,7 @@ public class TargetDeviceScreen extends BaseScreen {
     }
 
     public <T> T getFromStack(Function<ItemStack,T> function, T other){
-        ItemStack stack = this.player.getHeldItem(this.hand);
+        ItemStack stack = this.player.getItemInHand(this.hand);
         if(!stack.isEmpty() && stack.getItem() instanceof TargetDeviceItem)
             return function.apply(stack);
         this.closeScreen();

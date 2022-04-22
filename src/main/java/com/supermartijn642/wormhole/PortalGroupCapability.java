@@ -90,7 +90,7 @@ public class PortalGroupCapability {
     @SubscribeEvent
     public static void onJoinWorld(PlayerEvent.PlayerChangedDimensionEvent e){
         ServerPlayerEntity player = (ServerPlayerEntity)e.getPlayer();
-        player.world.getCapability(CAPABILITY).ifPresent(groups ->
+        player.level.getCapability(CAPABILITY).ifPresent(groups ->
             Wormhole.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateGroupsPacket(groups.write()))
         );
     }
@@ -98,7 +98,7 @@ public class PortalGroupCapability {
     @SubscribeEvent
     public static void onRespawn(PlayerEvent.PlayerRespawnEvent e){
         ServerPlayerEntity player = (ServerPlayerEntity)e.getPlayer();
-        player.world.getCapability(CAPABILITY).ifPresent(groups ->
+        player.level.getCapability(CAPABILITY).ifPresent(groups ->
             Wormhole.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateGroupsPacket(groups.write()))
         );
     }
@@ -106,7 +106,7 @@ public class PortalGroupCapability {
     @SubscribeEvent
     public static void onJoin(PlayerEvent.PlayerLoggedInEvent e){
         ServerPlayerEntity player = (ServerPlayerEntity)e.getPlayer();
-        player.world.getCapability(CAPABILITY).ifPresent(groups ->
+        player.level.getCapability(CAPABILITY).ifPresent(groups ->
             Wormhole.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateGroupsPacket(groups.write()))
         );
     }
@@ -144,7 +144,7 @@ public class PortalGroupCapability {
     }
 
     public void updateGroup(PortalGroup group){
-        if(!this.world.isRemote && group != null)
+        if(!this.world.isClientSide && group != null)
             Wormhole.CHANNEL.send(PacketDistributor.DIMENSION.with(() -> this.world.getDimension().getType()), new UpdateGroupPacket(this.writeGroup(group)));
     }
 
@@ -153,7 +153,7 @@ public class PortalGroupCapability {
     }
 
     public PortalGroup getGroup(PortalGroupTile tile){
-        return this.groupsByPosition.get(tile.getPos());
+        return this.groupsByPosition.get(tile.getBlockPos());
     }
 
     public PortalGroup getGroup(BlockPos pos){
@@ -177,7 +177,7 @@ public class PortalGroupCapability {
         this.groups.clear();
         this.groupsByPosition.clear();
         CompoundNBT groupsTag = compound.getCompound("groups");
-        for(String key : groupsTag.keySet()){
+        for(String key : groupsTag.getAllKeys()){
             PortalGroup group = new PortalGroup(this.world, groupsTag.getCompound(key));
             this.groups.add(group);
             group.shape.frame.forEach(pos -> this.groupsByPosition.put(pos, group));

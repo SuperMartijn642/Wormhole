@@ -8,6 +8,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
 
+import javax.annotation.Nonnull;
+
 /**
  * Created 12/21/2020 by SuperMartijn642
  */
@@ -22,12 +24,13 @@ public class CoalGeneratorContainer extends TileEntityBaseContainer<CoalGenerato
     protected void addSlots(PlayerEntity player, CoalGeneratorTile tile){
         this.addSlot(new SlotItemHandler(tile, 0, 79, 52) {
             @Override
-            public boolean canTakeStack(PlayerEntity playerIn){
+            public boolean mayPickup(PlayerEntity playerIn){
                 return true;
             }
 
+            @Nonnull
             @Override
-            public ItemStack decrStackSize(int amount){
+            public ItemStack remove(int amount){
                 ItemStack stack = tile.getStackInSlot(0);
                 if(amount >= stack.getCount()){
                     tile.setStackInSlot(0, ItemStack.EMPTY);
@@ -44,23 +47,23 @@ public class CoalGeneratorContainer extends TileEntityBaseContainer<CoalGenerato
     }
 
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index){
+    public ItemStack quickMoveStack(PlayerEntity playerIn, int index){
         ItemStack itemstack = ItemStack.EMPTY;
 
-        Slot slot = this.inventorySlots.get(index);
-        if(slot != null && slot.getHasStack()){
-            ItemStack itemstack1 = slot.getStack();
+        Slot slot = this.slots.get(index);
+        if(slot != null && slot.hasItem()){
+            ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
             if(index == 0){
-                if(!this.mergeItemStack(itemstack1, 1, this.inventorySlots.size(), true))
+                if(!this.moveItemStackTo(itemstack1, 1, this.slots.size(), true))
                     return ItemStack.EMPTY;
-            }else if(!this.mergeItemStack(itemstack1, 0, 1, false))
+            }else if(!this.moveItemStackTo(itemstack1, 0, 1, false))
                 return ItemStack.EMPTY;
 
             if(itemstack1.isEmpty())
-                slot.putStack(ItemStack.EMPTY);
+                slot.set(ItemStack.EMPTY);
             else
-                slot.onSlotChanged();
+                slot.setChanged();
         }
 
         return itemstack;

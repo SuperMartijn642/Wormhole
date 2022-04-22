@@ -31,27 +31,27 @@ public class TargetDeviceItem extends Item {
     private final Supplier<Integer> maxTargetCount;
 
     public TargetDeviceItem(String registryName, Supplier<Integer> maxTargetCount){
-        super(new Properties().maxStackSize(1).group(Wormhole.ITEM_GROUP));
+        super(new Properties().stacksTo(1).tab(Wormhole.ITEM_GROUP));
         this.maxTargetCount = maxTargetCount;
         this.setRegistryName(registryName);
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn){
-        if(worldIn.isRemote)
-            ClientProxy.openTargetDeviceScreen(handIn, playerIn.getPosition(), Math.round(playerIn.rotationYaw / 90) * 90);
-        return ActionResult.newResult(ActionResultType.SUCCESS, playerIn.getHeldItem(handIn));
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn){
+        if(worldIn.isClientSide)
+            ClientProxy.openTargetDeviceScreen(handIn, playerIn.getCommandSenderBlockPosition(), Math.round(playerIn.yRot / 90) * 90);
+        return ActionResult.newResult(ActionResultType.SUCCESS, playerIn.getItemInHand(handIn));
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
-        tooltip.add(new TranslationTextComponent("wormhole.target_device.info").applyTextStyle(TextFormatting.AQUA));
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
+        tooltip.add(new TranslationTextComponent("wormhole.target_device.info").withStyle(TextFormatting.AQUA));
 
         List<PortalTarget> targets = getTargets(stack);
         int capacity = getMaxTargetCount(stack);
         tooltip.add(
             new TranslationTextComponent("wormhole.target_device.info.targets", targets.size(), capacity)
-                .applyTextStyle(TextFormatting.YELLOW)
+                .withStyle(TextFormatting.YELLOW)
         );
     }
 

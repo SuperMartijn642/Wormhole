@@ -40,23 +40,23 @@ public class TargetCellTileRenderer extends TileEntityRenderer<TargetCellTile> {
             modelLocation = ADVANCED_TARGET_CELL_MODELS[(int)Math.ceil(Math.min(percent, 1) * (ADVANCED_TARGET_CELL_MODELS.length - 1))];
 
         GlStateManager.disableLighting();
-        Minecraft.getInstance().textureManager.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
+        Minecraft.getInstance().textureManager.bind(AtlasTexture.LOCATION_BLOCKS);
 
         IBakedModel model = Minecraft.getInstance().getModelManager().getModel(modelLocation);
 
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        BufferBuilder bufferBuilder = tessellator.getBuilder();
         bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
-        bufferBuilder.setTranslation(x - tile.getPos().getX(), y - tile.getPos().getY(), z - tile.getPos().getZ());
+        bufferBuilder.offset(x - tile.getBlockPos().getX(), y - tile.getBlockPos().getY(), z - tile.getBlockPos().getZ());
 
-        Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelRenderer().renderModelSmooth(
-            tile.getWorld(), model, tile.getBlockState(), tile.getPos(), bufferBuilder, true, new Random(), 42L, EmptyModelData.INSTANCE
+        Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModelSmooth(
+            tile.getLevel(), model, tile.getBlockState(), tile.getBlockPos(), bufferBuilder, true, new Random(), 42L, EmptyModelData.INSTANCE
         );
 
-        bufferBuilder.setTranslation(0, 0, 0);
+        bufferBuilder.offset(0, 0, 0);
 
-        tessellator.draw();
+        tessellator.end();
     }
 
     public static IBakedModel getModelForTile(TargetCellTile tile){

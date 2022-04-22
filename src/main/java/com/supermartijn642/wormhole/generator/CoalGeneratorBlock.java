@@ -47,19 +47,19 @@ import java.util.List;
 public class CoalGeneratorBlock extends WormholeBlock {
 
     private static final VoxelShape SHAPE = VoxelShapes.or(
-        VoxelShapes.create(2 / 16d, 0, 1 / 16d, 14 / 16d, 12 / 16d, 13 / 16d),
-        VoxelShapes.create(3 / 16d, 0, 13 / 16d, 7 / 16d, 7 / 16d, 15 / 16d),
-        VoxelShapes.create(4 / 16d, 7 / 16d, 13 / 16d, 6 / 16d, 10 / 16d, 14 / 16d),
-        VoxelShapes.create(9 / 16d, 0, 13 / 16d, 13 / 16d, 7 / 16d, 15 / 16d),
-        VoxelShapes.create(10 / 16d, 7 / 16d, 13 / 16d, 12 / 16d, 10 / 16d, 14 / 16d)
+        VoxelShapes.box(2 / 16d, 0, 1 / 16d, 14 / 16d, 12 / 16d, 13 / 16d),
+        VoxelShapes.box(3 / 16d, 0, 13 / 16d, 7 / 16d, 7 / 16d, 15 / 16d),
+        VoxelShapes.box(4 / 16d, 7 / 16d, 13 / 16d, 6 / 16d, 10 / 16d, 14 / 16d),
+        VoxelShapes.box(9 / 16d, 0, 13 / 16d, 13 / 16d, 7 / 16d, 15 / 16d),
+        VoxelShapes.box(10 / 16d, 7 / 16d, 13 / 16d, 12 / 16d, 10 / 16d, 14 / 16d)
     );
     private static final VoxelShape[] SHAPES = new VoxelShape[4];
 
     static{
-        SHAPES[Direction.NORTH.getHorizontalIndex()] = SHAPE;
-        SHAPES[Direction.EAST.getHorizontalIndex()] = rotateShape(Direction.NORTH, Direction.EAST, SHAPE);
-        SHAPES[Direction.SOUTH.getHorizontalIndex()] = rotateShape(Direction.NORTH, Direction.SOUTH, SHAPE);
-        SHAPES[Direction.WEST.getHorizontalIndex()] = rotateShape(Direction.NORTH, Direction.WEST, SHAPE);
+        SHAPES[Direction.NORTH.get2DDataValue()] = SHAPE;
+        SHAPES[Direction.EAST.get2DDataValue()] = rotateShape(Direction.NORTH, Direction.EAST, SHAPE);
+        SHAPES[Direction.SOUTH.get2DDataValue()] = rotateShape(Direction.NORTH, Direction.SOUTH, SHAPE);
+        SHAPES[Direction.WEST.get2DDataValue()] = rotateShape(Direction.NORTH, Direction.WEST, SHAPE);
     }
 
     /**
@@ -69,9 +69,9 @@ public class CoalGeneratorBlock extends WormholeBlock {
     public static VoxelShape rotateShape(Direction from, Direction to, VoxelShape shape){
         VoxelShape[] buffer = new VoxelShape[]{shape, VoxelShapes.empty()};
 
-        int times = (to.getHorizontalIndex() - from.getHorizontalIndex() + 4) % 4;
+        int times = (to.get2DDataValue() - from.get2DDataValue() + 4) % 4;
         for(int i = 0; i < times; i++){
-            buffer[0].forEachBox((minX, minY, minZ, maxX, maxY, maxZ) -> buffer[1] = VoxelShapes.or(buffer[1], VoxelShapes.create(1 - maxZ, minY, minX, 1 - minZ, maxY, maxX)));
+            buffer[0].forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ) -> buffer[1] = VoxelShapes.or(buffer[1], VoxelShapes.box(1 - maxZ, minY, minX, 1 - minZ, maxY, maxX)));
             buffer[0] = buffer[1];
             buffer[1] = VoxelShapes.empty();
         }
@@ -80,16 +80,16 @@ public class CoalGeneratorBlock extends WormholeBlock {
     }
 
     public static final BooleanProperty LIT = BooleanProperty.create("lit");
-    public static final EnumProperty<Direction> FACING = HorizontalBlock.HORIZONTAL_FACING;
+    public static final EnumProperty<Direction> FACING = HorizontalBlock.FACING;
 
     public CoalGeneratorBlock(){
-        super("coal_generator", true, Properties.create(Material.IRON, MaterialColor.GRAY).sound(SoundType.METAL).harvestLevel(1).harvestTool(ToolType.PICKAXE).hardnessAndResistance(1.5f, 6));
-        this.setDefaultState(this.getDefaultState().with(LIT, false).with(FACING, Direction.NORTH));
+        super("coal_generator", true, Properties.of(Material.METAL, MaterialColor.COLOR_GRAY).sound(SoundType.METAL).harvestLevel(1).harvestTool(ToolType.PICKAXE).strength(1.5f, 6));
+        this.registerDefaultState(this.defaultBlockState().setValue(LIT, false).setValue(FACING, Direction.NORTH));
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit){
-        if(!worldIn.isRemote)
+    public boolean use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit){
+        if(!worldIn.isClientSide)
             NetworkHooks.openGui((ServerPlayerEntity)player, new INamedContainerProvider() {
                 @Override
                 public ITextComponent getDisplayName(){
@@ -105,28 +105,28 @@ public class CoalGeneratorBlock extends WormholeBlock {
     }
 
     @Override
-    public void addInformation(ItemStack stack, IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
+    public void appendHoverText(ItemStack stack, IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
         int range = 2 * WormholeConfig.coalGeneratorRange.get() + 1;
-        tooltip.add(new TranslationTextComponent("wormhole.coal_generator.info", range, EnergyFormat.formatEnergyPerTick(WormholeConfig.coalGeneratorPower.get())).applyTextStyle(TextFormatting.AQUA));
+        tooltip.add(new TranslationTextComponent("wormhole.coal_generator.info", range, EnergyFormat.formatEnergyPerTick(WormholeConfig.coalGeneratorPower.get())).withStyle(TextFormatting.AQUA));
 
         CompoundNBT tag = stack.getOrCreateTag().contains("tileData") ? stack.getOrCreateTag().getCompound("tileData") : null;
         int energy = tag == null || tag.isEmpty() || !tag.contains("energy") ? 0 : tag.getInt("energy");
-        tooltip.add(new StringTextComponent(EnergyFormat.formatCapacity(energy, WormholeConfig.coalGeneratorCapacity.get())).applyTextStyle(TextFormatting.YELLOW));
+        tooltip.add(new StringTextComponent(EnergyFormat.formatCapacity(energy, WormholeConfig.coalGeneratorCapacity.get())).withStyle(TextFormatting.YELLOW));
     }
 
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext context){
-        return this.getDefaultState().with(FACING, context.getPlacementHorizontalFacing().getOpposite());
+        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context){
-        return SHAPES[state.get(FACING).getHorizontalIndex()];
+        return SHAPES[state.getValue(FACING).get2DDataValue()];
     }
 
     @Override
     public int getLightValue(BlockState state, IEnviromentBlockReader world, BlockPos pos){
-        return state.get(LIT) ? 8 : 0;
+        return state.getValue(LIT) ? 8 : 0;
     }
 
     @Override
@@ -140,7 +140,7 @@ public class CoalGeneratorBlock extends WormholeBlock {
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block,BlockState> builder){
+    protected void createBlockStateDefinition(StateContainer.Builder<Block,BlockState> builder){
         builder.add(LIT, FACING);
     }
 }

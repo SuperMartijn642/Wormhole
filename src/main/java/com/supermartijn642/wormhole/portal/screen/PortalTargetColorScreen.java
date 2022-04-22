@@ -37,7 +37,7 @@ public class PortalTargetColorScreen extends PortalGroupScreen {
     protected void addWidgets(PortalGroup group){
         this.addWidget(new PortalTargetNameField(this, () -> this.targetIndex, 20, 20));
         this.addWidget(new PortalTargetLabel(this, () -> this.targetIndex, 84, 19, 102, 12, "wormhole.target_device.gui.coords", target -> "(" + target.x + "," + target.y + "," + target.z + ")", false));
-        this.addWidget(new PortalTargetLabel(this, () -> this.targetIndex, 187, 19, 52, 12, "wormhole.target_device.gui.facing", target -> "wormhole.direction." + Direction.fromAngle(target.yaw).toString(), true));
+        this.addWidget(new PortalTargetLabel(this, () -> this.targetIndex, 187, 19, 52, 12, "wormhole.target_device.gui.facing", target -> "wormhole.direction." + Direction.fromYRot(target.yaw).toString(), true));
 
         this.addWidget(new PortalTargetSelectColorButton(11, 38, this, null));
         this.addWidget(new PortalTargetSelectColorButton(49, 38, this, DyeColor.WHITE));

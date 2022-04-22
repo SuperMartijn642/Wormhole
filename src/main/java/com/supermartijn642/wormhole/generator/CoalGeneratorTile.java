@@ -41,7 +41,7 @@ public class CoalGeneratorTile extends GeneratorTile implements IItemHandlerModi
                     this.totalBurnTime = 0;
                     this.burnItem();
                 }
-                this.markDirty();
+                this.setChanged();
             }else
                 this.burnItem();
         }
@@ -55,10 +55,10 @@ public class CoalGeneratorTile extends GeneratorTile implements IItemHandlerModi
             this.dataChanged();
         }
 
-        BlockState state = this.world.getBlockState(this.pos);
-        boolean lit = this.getBlockState().get(CoalGeneratorBlock.LIT);
+        BlockState state = this.level.getBlockState(this.worldPosition);
+        boolean lit = this.getBlockState().getValue(CoalGeneratorBlock.LIT);
         if(lit != this.burnTime > 0)
-            this.world.setBlockState(this.pos, state.with(CoalGeneratorBlock.LIT, !lit));
+            this.level.setBlockAndUpdate(this.worldPosition, state.setValue(CoalGeneratorBlock.LIT, !lit));
     }
 
     @Override
@@ -73,7 +73,7 @@ public class CoalGeneratorTile extends GeneratorTile implements IItemHandlerModi
         CompoundNBT data = super.writeData();
         data.putInt("burnTime", this.burnTime);
         data.putInt("totalBurnTime", this.totalBurnTime);
-        data.put("stack", this.stack.write(new CompoundNBT()));
+        data.put("stack", this.stack.save(new CompoundNBT()));
         return data;
     }
 
@@ -82,7 +82,7 @@ public class CoalGeneratorTile extends GeneratorTile implements IItemHandlerModi
         super.readData(tag);
         this.burnTime = tag.contains("burnTime") ? tag.getInt("burnTime") : 0;
         this.totalBurnTime = tag.contains("totalBurnTime") ? tag.getInt("totalBurnTime") : 0;
-        this.stack = ItemStack.read(tag.getCompound("stack"));
+        this.stack = ItemStack.of(tag.getCompound("stack"));
     }
 
     public float getProgress(){
@@ -107,8 +107,8 @@ public class CoalGeneratorTile extends GeneratorTile implements IItemHandlerModi
 
     @Override
     public ItemStack insertItem(int slot, ItemStack stack, boolean simulate){
-        if(stack.isEmpty() || (!this.stack.isEmpty() && (!ItemStack.areItemsEqual(this.stack, stack) ||
-            !ItemStack.areItemStackTagsEqual(this.stack, stack))))
+        if(stack.isEmpty() || (!this.stack.isEmpty() && (!ItemStack.isSame(this.stack, stack) ||
+            !ItemStack.tagMatches(this.stack, stack))))
             return stack;
 
         int count = Math.min(stack.getMaxStackSize() - this.stack.getCount(), stack.getCount());

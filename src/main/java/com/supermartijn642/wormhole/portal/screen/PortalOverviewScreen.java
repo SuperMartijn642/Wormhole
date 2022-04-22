@@ -129,7 +129,7 @@ public class PortalOverviewScreen extends PortalGroupScreen {
             Block block = null;
             if(target.dimension == DimensionType.OVERWORLD.getId())
                 block = Blocks.GRASS_PATH;
-            else if(target.dimension == DimensionType.THE_NETHER.getId())
+            else if(target.dimension == DimensionType.NETHER.getId())
                 block = Blocks.NETHERRACK;
             else if(target.dimension == DimensionType.THE_END.getId())
                 block = Blocks.END_STONE;
@@ -147,22 +147,22 @@ public class PortalOverviewScreen extends PortalGroupScreen {
     protected void renderTooltips(int mouseX, int mouseY, PortalGroup group){
         // status
         if(mouseX >= 150 && mouseX <= 161 && mouseY >= 46 && mouseY <= 57)
-            this.renderTooltip(new TranslationTextComponent("wormhole.portal.gui.status").getFormattedText(), mouseX, mouseY);
+            this.renderTooltip(new TranslationTextComponent("wormhole.portal.gui.status").getColoredString(), mouseX, mouseY);
             // idle cost
         else if(mouseX >= 150 && mouseX <= 161 && mouseY >= 58 && mouseY <= 69)
-            this.renderTooltip(new TranslationTextComponent("wormhole.portal.gui.idle_cost").getFormattedText(), mouseX, mouseY);
+            this.renderTooltip(new TranslationTextComponent("wormhole.portal.gui.idle_cost").getColoredString(), mouseX, mouseY);
             // teleport cost
         else if(mouseX >= 150 && mouseX <= 161 && mouseY >= 70 && mouseY <= 81)
-            this.renderTooltip(new TranslationTextComponent("wormhole.portal.gui.teleport_cost").getFormattedText(), mouseX, mouseY);
+            this.renderTooltip(new TranslationTextComponent("wormhole.portal.gui.teleport_cost").getColoredString(), mouseX, mouseY);
             // target
         else if(mouseX >= 150 && mouseX <= 161 && mouseY >= 90 && mouseY <= 101)
-            this.renderTooltip(new TranslationTextComponent("wormhole.portal.gui.target").getFormattedText(), mouseX, mouseY);
+            this.renderTooltip(new TranslationTextComponent("wormhole.portal.gui.target").getColoredString(), mouseX, mouseY);
             // location
         else if(mouseX >= 150 && mouseX <= 161 && mouseY >= 102 && mouseY <= 113)
-            this.renderTooltip(new TranslationTextComponent("wormhole.portal.gui.target_location").getFormattedText(), mouseX, mouseY);
+            this.renderTooltip(new TranslationTextComponent("wormhole.portal.gui.target_location").getColoredString(), mouseX, mouseY);
             // dimension
         else if(mouseX >= 150 && mouseX <= 161 && mouseY >= 114 && mouseY <= 125)
-            this.renderTooltip(new TranslationTextComponent("wormhole.portal.gui.target_dimension").getFormattedText(), mouseX, mouseY);
+            this.renderTooltip(new TranslationTextComponent("wormhole.portal.gui.target_dimension").getColoredString(), mouseX, mouseY);
     }
 
     private enum PortalStatus {
@@ -183,7 +183,7 @@ public class PortalOverviewScreen extends PortalGroupScreen {
         }
 
         public ITextComponent getStatus(){
-            return new TranslationTextComponent("wormhole.portal.gui.status." + this.status).applyTextStyle(this.color);
+            return new TranslationTextComponent("wormhole.portal.gui.status." + this.status).withStyle(this.color);
         }
 
         public ResourceLocation getIcon(){

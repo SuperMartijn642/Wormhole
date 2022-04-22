@@ -46,10 +46,10 @@ public class GeneratorTile extends WormholeTile implements ITickableTileEntity, 
     public void tick(){
         // find blocks with the energy capability
         for(int i = 0; i < BLOCKS_PER_TICK; i++){
-            BlockPos pos = this.pos.add(this.searchX, this.searchY, this.searchZ);
+            BlockPos pos = this.worldPosition.offset(this.searchX, this.searchY, this.searchZ);
 
-            if(!pos.equals(this.pos)){
-                TileEntity tile = this.world.getTileEntity(pos);
+            if(!pos.equals(this.worldPosition)){
+                TileEntity tile = this.level.getBlockEntity(pos);
                 if(tile instanceof IPortalGroupTile && ((IPortalGroupTile)tile).hasGroup()){
                     this.portalBlocks.add(pos);
                     this.energyBlocks.remove(pos);
@@ -84,7 +84,7 @@ public class GeneratorTile extends WormholeTile implements ITickableTileEntity, 
         Iterator<BlockPos> iterator = this.portalBlocks.iterator();
         while(iterator.hasNext()){
             BlockPos pos = iterator.next();
-            TileEntity tile = this.world.getTileEntity(pos);
+            TileEntity tile = this.level.getBlockEntity(pos);
             if(tile instanceof IPortalGroupTile && ((IPortalGroupTile)tile).hasGroup()){
                 PortalGroup group = ((IPortalGroupTile)tile).getGroup();
                 int transferred = group.receiveEnergy(toTransfer, false);
@@ -100,7 +100,7 @@ public class GeneratorTile extends WormholeTile implements ITickableTileEntity, 
         iterator = this.energyBlocks.iterator();
         while(iterator.hasNext()){
             BlockPos pos = iterator.next();
-            TileEntity tile = this.world.getTileEntity(pos);
+            TileEntity tile = this.level.getBlockEntity(pos);
             LazyOptional<IEnergyStorage> optional;
             if(tile != null && (optional = tile.getCapability(CapabilityEnergy.ENERGY)).isPresent()){
                 final int max = toTransfer;

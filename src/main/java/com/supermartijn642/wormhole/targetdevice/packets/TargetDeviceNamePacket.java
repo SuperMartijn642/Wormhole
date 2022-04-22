@@ -33,14 +33,14 @@ public class TargetDeviceNamePacket extends TargetDevicePacket {
     public void encode(PacketBuffer buffer){
         super.encode(buffer);
         buffer.writeInt(this.index);
-        buffer.writeString(this.name);
+        buffer.writeUtf(this.name);
     }
 
     @Override
     protected void decodeBuffer(PacketBuffer buffer){
         super.decodeBuffer(buffer);
         this.index = buffer.readInt();
-        this.name = buffer.readString(32767).trim();
+        this.name = buffer.readUtf(32767).trim();
     }
 
     @Override

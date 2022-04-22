@@ -25,11 +25,11 @@ import java.util.Random;
 public class ScreenBlockRenderer {
 
     public static void drawBlock(Block block, double x, double y, double scale, float yaw, float pitch){
-        BlockState state = block.getDefaultState();
+        BlockState state = block.defaultBlockState();
 
         GlStateManager.pushMatrix();
-        Minecraft.getInstance().textureManager.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
-        Minecraft.getInstance().textureManager.getTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, false);
+        Minecraft.getInstance().textureManager.bind(AtlasTexture.LOCATION_BLOCKS);
+        Minecraft.getInstance().textureManager.getTexture(AtlasTexture.LOCATION_BLOCKS).pushFilter(false, false);
         GlStateManager.pushLightingAttributes();
         GlStateManager.enableRescaleNormal();
         GlStateManager.enableAlphaTest();
@@ -44,16 +44,16 @@ public class ScreenBlockRenderer {
         GlStateManager.rotated(pitch, 1, 0, 0);
         GlStateManager.rotated(yaw, 0, 1, 0);
 
-        RenderHelper.disableStandardItemLighting();
+        RenderHelper.turnOff();
 
-        IBakedModel model = Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(state);
+        IBakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
         IModelData modelData = EmptyModelData.INSTANCE;
 
         GlStateManager.translated(-0.5, -0.5, -0.5);
         renderModel(model, state, modelData);
 
         GlStateManager.enableDepthTest();
-        RenderHelper.enableGUIStandardItemLighting();
+        RenderHelper.turnOnGui();
         GlStateManager.disableAlphaTest();
         GlStateManager.disableRescaleNormal();
         GlStateManager.popMatrix();
@@ -64,7 +64,7 @@ public class ScreenBlockRenderer {
         Random random = new Random();
 
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        BufferBuilder bufferbuilder = tessellator.getBuilder();
         bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
         for(Direction direction : Direction.values()){
@@ -75,12 +75,12 @@ public class ScreenBlockRenderer {
         random.setSeed(42L);
         renderQuads(bufferbuilder, modelIn.getQuads(state, null, random, modelData));
 
-        tessellator.draw();
+        tessellator.end();
     }
 
     private static void renderQuads(BufferBuilder bufferIn, List<BakedQuad> quadsIn){
         for(BakedQuad bakedquad : quadsIn)
-            bufferIn.addVertexData(bakedquad.getVertexData());
+            bufferIn.putBulkData(bakedquad.getVertices());
     }
 
 }
