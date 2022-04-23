@@ -25,80 +25,80 @@ public class TeleportHelper {
     public static boolean queTeleport(Entity entity, PortalTarget target){
         if(!canTeleport(entity, target))
             return false;
-        for(Entity passenger : entity.getRecursivePassengers())
+        for(Entity passenger : entity.getIndirectPassengers())
             if(passenger instanceof PlayerEntity)
                 return false;
 
-        Entity lowestEntity = entity.getLowestRidingEntity();
-        if(!entity.world.isRemote){
-            lowestEntity.world.getServer().enqueue(new TickDelayedTask(0, () -> teleportEntityAndPassengers(lowestEntity, null, target)));
+        Entity lowestEntity = entity.getRootVehicle();
+        if(!entity.level.isClientSide){
+            lowestEntity.level.getServer().tell(new TickDelayedTask(0, () -> teleportEntityAndPassengers(lowestEntity, null, target)));
             markEntityAndPassengers(lowestEntity);
         }
         return true;
     }
 
     public static boolean canTeleport(Entity entity, PortalTarget target){
-        if(entity.world.isRemote || !target.getWorld(entity.getServer()).isPresent())
+        if(entity.level.isClientSide || !target.getWorld(entity.getServer()).isPresent())
             return false;
         if(entity.isPassenger())
-            return canTeleport(entity.getLowestRidingEntity(), target);
+            return canTeleport(entity.getRootVehicle(), target);
 
-        for(Entity rider : entity.getRecursivePassengers()){
+        for(Entity rider : entity.getIndirectPassengers()){
             CompoundNBT tag = rider.getPersistentData();
-            if(tag.contains("wormhole:teleported") && rider.ticksExisted - tag.getLong("wormhole:teleported") >= 0 && rider.ticksExisted - tag.getLong("wormhole:teleported") < TELEPORT_COOLDOWN)
+            if(tag.contains("wormhole:teleported") && rider.tickCount - tag.getLong("wormhole:teleported") >= 0 && rider.tickCount - tag.getLong("wormhole:teleported") < TELEPORT_COOLDOWN)
                 return false;
         }
 
         CompoundNBT tag = entity.getPersistentData();
-        return !tag.contains("wormhole:teleported") || entity.ticksExisted - tag.getLong("wormhole:teleported") < 0 || entity.ticksExisted - tag.getLong("wormhole:teleported") >= TELEPORT_COOLDOWN;
+        return !tag.contains("wormhole:teleported") || entity.tickCount - tag.getLong("wormhole:teleported") < 0 || entity.tickCount - tag.getLong("wormhole:teleported") >= TELEPORT_COOLDOWN;
     }
 
     private static void markEntityAndPassengers(Entity entity){
-        entity.getPersistentData().putLong("wormhole:teleported", entity.ticksExisted);
+        entity.getPersistentData().putLong("wormhole:teleported", entity.tickCount);
         entity.getPassengers().forEach(TeleportHelper::markEntityAndPassengers);
     }
 
     private static void teleportEntityAndPassengers(Entity entity, Entity entityBeingRidden, PortalTarget target){
-        if(entity.world.isRemote || !target.getWorld(entity.getServer()).isPresent())
+        if(entity.level.isClientSide || !target.getWorld(entity.getServer()).isPresent())
             return;
         Optional<ServerWorld> targetWorld = target.getWorld(entity.getServer()).filter(ServerWorld.class::isInstance).map(ServerWorld.class::cast);
         if(!targetWorld.isPresent())
             return;
 
         Collection<Entity> passengers = entity.getPassengers();
-        entity.removePassengers();
+        entity.ejectPassengers();
         Entity newEntity = teleportEntity(entity, targetWorld.get(), target);
         if(entityBeingRidden != null){
             newEntity.startRiding(entityBeingRidden);
             if(newEntity instanceof ServerPlayerEntity)
-                ((ServerPlayerEntity)newEntity).connection.sendPacket(new SSetPassengersPacket(entityBeingRidden));
+                ((ServerPlayerEntity)newEntity).connection.send(new SSetPassengersPacket(entityBeingRidden));
         }
         passengers.forEach(e -> teleportEntityAndPassengers(e, newEntity, target));
     }
 
     private static Entity teleportEntity(Entity entity, ServerWorld targetWorld, PortalTarget target){
-        if(targetWorld == entity.world){
+        if(targetWorld == entity.level){
             if(entity instanceof ServerPlayerEntity)
-                ((ServerPlayerEntity)entity).teleport(targetWorld, target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
+                ((ServerPlayerEntity)entity).teleportTo(targetWorld, target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
             else
-                entity.setPositionAndUpdate(target.x + .5, target.y + .2, target.z + .5);
-            entity.setRotationYawHead(target.yaw);
-            entity.setMotion(Vec3d.ZERO);
+                entity.teleportTo(target.x + .5, target.y + .2, target.z + .5);
+            entity.setYHeadRot(target.yaw);
+            entity.setDeltaMovement(Vec3d.ZERO);
             entity.fallDistance = 0;
             entity.onGround = true;
         }else{
             if(entity instanceof ServerPlayerEntity)
-                ((ServerPlayerEntity)entity).teleport(targetWorld, target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
+                ((ServerPlayerEntity)entity).teleportTo(targetWorld, target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
             else{
                 Entity newEntity = entity.changeDimension(targetWorld.dimension.getType(), new ITeleporter() {
                     @Override
                     public Entity placeEntity(Entity entity, ServerWorld currentWorld, ServerWorld destWorld, float yaw, Function<Boolean,Entity> repositionEntity){
                         Entity newEntity = entity.getType().create(targetWorld);
                         if(newEntity != null){
-                            newEntity.copyDataFromOld(entity);
-                            newEntity.setLocationAndAngles(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
-                            newEntity.setMotion(Vec3d.ZERO);
-                            targetWorld.func_217460_e(newEntity);
+                            newEntity.restoreFrom(entity);
+                            newEntity.moveTo(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
+                            newEntity.setDeltaMovement(Vec3d.ZERO);
+                            targetWorld.addFromAnotherDimension(newEntity);
                         }
                         return newEntity;
                     }

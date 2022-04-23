@@ -26,8 +26,8 @@ public class TargetCellBlock extends PortalGroupBlock {
     }
 
     @Override
-    public void addInformation(ItemStack stack, IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
-        tooltip.add(new TranslationTextComponent("wormhole.target_cell.info").applyTextStyle(TextFormatting.AQUA));
+    public void appendHoverText(ItemStack stack, IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
+        tooltip.add(new TranslationTextComponent("wormhole.target_cell.info").withStyle(TextFormatting.AQUA));
 
         CompoundNBT tag = stack.getOrCreateTag().contains("tileData") ? stack.getOrCreateTag().getCompound("tileData") : null;
 
@@ -35,11 +35,11 @@ public class TargetCellBlock extends PortalGroupBlock {
         int targetCapacity = this.type.getCapacity();
 
         if(targetCapacity > 0)
-            tooltip.add(new TranslationTextComponent("wormhole.portal_stabilizer.info.targets", targets, targetCapacity).applyTextStyle(TextFormatting.YELLOW));
+            tooltip.add(new TranslationTextComponent("wormhole.portal_stabilizer.info.targets", targets, targetCapacity).withStyle(TextFormatting.YELLOW));
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState state){
+    public BlockRenderType getRenderShape(BlockState state){
         return BlockRenderType.INVISIBLE;
     }
 }

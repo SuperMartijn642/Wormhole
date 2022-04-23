@@ -26,11 +26,11 @@ public abstract class TargetDevicePacket {
     }
 
     public void encode(PacketBuffer buffer){
-        buffer.writeEnumValue(this.hand);
+        buffer.writeEnum(this.hand);
     }
 
     protected void decodeBuffer(PacketBuffer buffer){
-        this.hand = buffer.readEnumValue(Hand.class);
+        this.hand = buffer.readEnum(Hand.class);
     }
 
     public void handle(Supplier<NetworkEvent.Context> contextSupplier){
@@ -39,10 +39,10 @@ public abstract class TargetDevicePacket {
         PlayerEntity player = contextSupplier.get().getSender();
         if(player == null)
             return;
-        World world = player.world;
+        World world = player.level;
         if(world == null)
             return;
-        ItemStack stack = player.getHeldItem(this.hand);
+        ItemStack stack = player.getItemInHand(this.hand);
         if(stack.isEmpty() || !(stack.getItem() instanceof TargetDeviceItem))
             return;
         contextSupplier.get().enqueueWork(() -> this.handle(player, world, stack));

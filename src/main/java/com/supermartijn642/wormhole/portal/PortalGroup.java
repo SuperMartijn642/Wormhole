@@ -50,7 +50,7 @@ public class PortalGroup {
     public void setTarget(int index, PortalTarget target){
         int total = 0;
         for(BlockPos pos : this.shape.targetCells){
-            TileEntity tile = this.world.getTileEntity(pos);
+            TileEntity tile = this.world.getBlockEntity(pos);
             if(tile instanceof ITargetCellTile){
                 int capacity = ((ITargetCellTile)tile).getTargetCapacity();
                 if(total + capacity > index){
@@ -86,7 +86,7 @@ public class PortalGroup {
 
         int total = 0;
         for(BlockPos pos : this.shape.targetCells){
-            TileEntity tile = this.world.getTileEntity(pos);
+            TileEntity tile = this.world.getBlockEntity(pos);
             if(tile instanceof ITargetCellTile){
                 int capacity = ((ITargetCellTile)tile).getTargetCapacity();
                 if(lowTile == null && total + capacity > lowIndex){
@@ -142,7 +142,7 @@ public class PortalGroup {
     public int getTotalTargetCapacity(){
         int total = 0;
         for(BlockPos pos : this.shape.targetCells){
-            TileEntity tile = this.world.getTileEntity(pos);
+            TileEntity tile = this.world.getBlockEntity(pos);
             if(tile instanceof ITargetCellTile)
                 total += ((ITargetCellTile)tile).getTargetCapacity();
         }
@@ -155,7 +155,7 @@ public class PortalGroup {
 
         int total = 0;
         for(BlockPos pos : this.shape.targetCells){
-            TileEntity tile = this.world.getTileEntity(pos);
+            TileEntity tile = this.world.getBlockEntity(pos);
             if(tile instanceof ITargetCellTile){
                 int capacity = ((ITargetCellTile)tile).getTargetCapacity();
                 if(total + capacity > index)
@@ -186,7 +186,7 @@ public class PortalGroup {
     public int getEnergyCapacity(){
         int total = 0;
         for(BlockPos pos : this.shape.energyCells){
-            TileEntity tile = this.world.getTileEntity(pos);
+            TileEntity tile = this.world.getBlockEntity(pos);
             if(tile instanceof IEnergyStorage)
                 total += ((IEnergyCellTile)tile).getMaxEnergyStored(true);
         }
@@ -196,7 +196,7 @@ public class PortalGroup {
     public int getStoredEnergy(){
         int total = 0;
         for(BlockPos pos : this.shape.energyCells){
-            TileEntity tile = this.world.getTileEntity(pos);
+            TileEntity tile = this.world.getBlockEntity(pos);
             if(tile instanceof IEnergyStorage)
                 total += ((IEnergyCellTile)tile).getEnergyStored(true);
         }
@@ -205,7 +205,7 @@ public class PortalGroup {
 
     public void drainEnergy(int energy){
         for(BlockPos pos : this.shape.energyCells){
-            TileEntity tile = this.world.getTileEntity(pos);
+            TileEntity tile = this.world.getBlockEntity(pos);
             if(tile instanceof IEnergyStorage)
                 energy -= ((IEnergyCellTile)tile).extractEnergy(energy, false, true);
         }
@@ -214,7 +214,7 @@ public class PortalGroup {
     public int receiveEnergy(int energy, boolean simulate){
         int received = 0;
         for(BlockPos pos : this.shape.energyCells){
-            TileEntity tile = this.world.getTileEntity(pos);
+            TileEntity tile = this.world.getBlockEntity(pos);
             if(tile instanceof IEnergyStorage){
                 received += ((IEnergyCellTile)tile).receiveEnergy(energy - received, simulate, true);
                 if(received >= energy)
@@ -302,7 +302,7 @@ public class PortalGroup {
     public static int getTeleportCostToTarget(World world, BlockPos portalCenter, PortalTarget target){
         return WormholeConfig.travelPowerDrain.get() +
             (target.dimension == world.getDimension().getType().getId() ?
-                (int)Math.round(Math.pow(portalCenter.distanceSq(target.getPos()), 1 / 4d) * WormholeConfig.distancePowerDrain.get()) :
+                (int)Math.round(Math.pow(portalCenter.distSqr(target.getPos()), 1 / 4d) * WormholeConfig.distancePowerDrain.get()) :
                 WormholeConfig.dimensionPowerDrain.get());
     }
 

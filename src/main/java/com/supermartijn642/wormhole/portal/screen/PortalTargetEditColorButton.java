@@ -40,7 +40,7 @@ public class PortalTargetEditColorButton extends AbstractButtonWidget implements
             return;
 
         PortalTarget target = this.target.get();
-        Minecraft.getInstance().getTextureManager().bindTexture(BUTTONS);
+        Minecraft.getInstance().getTextureManager().bind(BUTTONS);
         DyeColor color = this.color.get();
         float x = color == null ? 0 : (color.getId() + 1) * 8f / 136f;
         float y = target != null && this.isHovered() ? 0.5f : 0;

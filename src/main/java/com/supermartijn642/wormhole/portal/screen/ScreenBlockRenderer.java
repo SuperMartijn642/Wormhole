@@ -27,7 +27,7 @@ import java.util.Random;
 public class ScreenBlockRenderer {
 
     public static void drawBlock(Block block, double x, double y, double scale, float yaw, float pitch){
-        BlockState state = block.getDefaultState();
+        BlockState state = block.defaultBlockState();
 
         RenderSystem.pushMatrix();
         RenderSystem.enableRescaleNormal();
@@ -38,22 +38,22 @@ public class ScreenBlockRenderer {
         RenderSystem.translated(x, y, 350);
         RenderSystem.scalef(1.0F, -1.0F, 1.0F);
         RenderSystem.scaled(scale, scale, scale);
-        IRenderTypeBuffer.Impl renderTypeBuffer = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
-        RenderHelper.setupGuiFlatDiffuseLighting();
+        IRenderTypeBuffer.Impl renderTypeBuffer = Minecraft.getInstance().renderBuffers().bufferSource();
+        RenderHelper.setupForFlatItems();
 
         MatrixStack matrixstack = new MatrixStack();
-        matrixstack.rotate(new Quaternion(pitch, yaw, 0, true));
+        matrixstack.mulPose(new Quaternion(pitch, yaw, 0, true));
 
-        IBakedModel model = Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(state);
+        IBakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
         IModelData modelData = EmptyModelData.INSTANCE;
 
         matrixstack.translate(-0.5, -0.5, -0.5);
-        RenderType rendertype = RenderType.getTranslucent();
+        RenderType rendertype = RenderType.translucent();
         renderModel(model, state, matrixstack, renderTypeBuffer.getBuffer(rendertype), modelData);
 
-        renderTypeBuffer.finish();
+        renderTypeBuffer.endBatch();
         RenderSystem.enableDepthTest();
-        RenderHelper.setupGui3DDiffuseLighting();
+        RenderHelper.setupFor3DItems();
         RenderSystem.disableAlphaTest();
         RenderSystem.disableRescaleNormal();
         RenderSystem.popMatrix();
@@ -72,7 +72,7 @@ public class ScreenBlockRenderer {
     }
 
     private static void renderQuads(MatrixStack matrixStackIn, IVertexBuilder bufferIn, List<BakedQuad> quadsIn){
-        MatrixStack.Entry matrix = matrixStackIn.getLast();
+        MatrixStack.Entry matrix = matrixStackIn.last();
 
         for(BakedQuad bakedquad : quadsIn)
             bufferIn.addVertexData(matrix, bakedquad, 1, 1, 1, 1, 15728880, OverlayTexture.NO_OVERLAY, false);

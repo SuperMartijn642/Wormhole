@@ -33,20 +33,20 @@ public class PortalAddTargetPacket extends PortalGroupPacket {
     @Override
     public void encode(PacketBuffer buffer){
         super.encode(buffer);
-        buffer.writeEnumValue(this.hand);
+        buffer.writeEnum(this.hand);
         buffer.writeInt(this.index);
     }
 
     @Override
     protected void decode(PacketBuffer buffer){
         super.decode(buffer);
-        this.hand = buffer.readEnumValue(Hand.class);
+        this.hand = buffer.readEnum(Hand.class);
         this.index = buffer.readInt();
     }
 
     @Override
     protected void handle(PlayerEntity player, World world, PortalGroup group){
-        ItemStack stack = player.getHeldItem(this.hand);
+        ItemStack stack = player.getItemInHand(this.hand);
         if(stack.isEmpty() || !(stack.getItem() instanceof TargetDeviceItem))
             return;
         List<PortalTarget> targets = TargetDeviceItem.getTargets(stack);

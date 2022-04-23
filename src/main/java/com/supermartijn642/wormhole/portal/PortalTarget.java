@@ -80,7 +80,7 @@ public class PortalTarget {
 
     public Optional<World> getWorld(MinecraftServer server){
         DimensionType type = DimensionType.getById(this.dimension);
-        return type == null ? Optional.empty() : Optional.of(server.getWorld(type));
+        return type == null ? Optional.empty() : Optional.of(server.getLevel(type));
     }
 
     public BlockPos getPos(){

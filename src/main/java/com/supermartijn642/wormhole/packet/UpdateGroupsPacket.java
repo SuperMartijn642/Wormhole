@@ -24,11 +24,11 @@ public class UpdateGroupsPacket {
     }
 
     public void encode(PacketBuffer buffer){
-        buffer.writeCompoundTag(this.groupsData);
+        buffer.writeNbt(this.groupsData);
     }
 
     protected void decode(PacketBuffer buffer){
-        this.groupsData = buffer.readCompoundTag();
+        this.groupsData = buffer.readNbt();
     }
 
     public void handle(Supplier<NetworkEvent.Context> contextSupplier){

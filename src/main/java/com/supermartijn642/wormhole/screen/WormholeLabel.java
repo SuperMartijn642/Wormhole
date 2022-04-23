@@ -38,9 +38,9 @@ public class WormholeLabel extends Widget {
             int enabledTextColor = 14737632;
 //            int disabledTextColor = 7368816;
             String text = this.text.get();
-            FontRenderer font = Minecraft.getInstance().fontRenderer;
-            String s = this.translate ? I18n.format(text) : text;
-            int width = font.getStringWidth(s);
+            FontRenderer font = Minecraft.getInstance().font;
+            String s = this.translate ? I18n.get(text) : text;
+            int width = font.width(s);
             ScreenUtils.drawString(s, this.x + (this.width - width) / 2f, this.y + 2, enabledTextColor);
         }
     }

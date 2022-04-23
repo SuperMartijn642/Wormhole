@@ -24,7 +24,7 @@ public class FlameProgressWidget extends Widget {
 
     @Override
     public void render(int mouseX, int mouseY, float partialTicks){
-        Minecraft.getInstance().getTextureManager().bindTexture(FLAME);
+        Minecraft.getInstance().getTextureManager().bind(FLAME);
         float progress = Math.max(Math.min(this.progress.get(), 1), 0);
         if(progress != 1)
             ScreenUtils.drawTexture(this.x, this.y, this.width, this.height * (1 - progress), 0, 0, 0.5f, (1 - progress));

@@ -17,13 +17,13 @@ public class PortalGroupTile extends WormholeTile implements IPortalGroupTile, I
 
     @Override
     public boolean hasGroup(){
-        PortalGroupCapability groups = this.world.getCapability(PortalGroupCapability.CAPABILITY).orElse(null);
+        PortalGroupCapability groups = this.level.getCapability(PortalGroupCapability.CAPABILITY).orElse(null);
         return groups != null && groups.getGroup(this) != null;
     }
 
     @Override
     public PortalGroup getGroup(){
-        PortalGroupCapability groups = this.world.getCapability(PortalGroupCapability.CAPABILITY).orElse(null);
+        PortalGroupCapability groups = this.level.getCapability(PortalGroupCapability.CAPABILITY).orElse(null);
         return groups == null ? null : groups.getGroup(this);
     }
 

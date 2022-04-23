@@ -37,9 +37,9 @@ public abstract class PortalGroupPacket {
         contextSupplier.get().setPacketHandled(true);
 
         PlayerEntity player = contextSupplier.get().getSender();
-        if(player == null || player.getPositionVec().squareDistanceTo(this.pos.getX(), this.pos.getY(), this.pos.getZ()) > 100 * 100)
+        if(player == null || player.position().distanceToSqr(this.pos.getX(), this.pos.getY(), this.pos.getZ()) > 100 * 100)
             return;
-        World world = player.world;
+        World world = player.level;
         if(world == null)
             return;
         PortalGroupCapability groups = world.getCapability(PortalGroupCapability.CAPABILITY).orElse(null);

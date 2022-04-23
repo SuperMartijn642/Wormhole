@@ -27,7 +27,7 @@ public class PortalGroupBlock extends WormholeBlock {
     }
 
     public PortalGroupBlock(String registryName, Supplier<? extends TileEntity> tileSupplier){
-        this(Properties.create(Material.IRON, MaterialColor.GRAY).sound(SoundType.METAL).harvestLevel(1).harvestTool(ToolType.PICKAXE).hardnessAndResistance(1.5f, 6), registryName, tileSupplier);
+        this(Properties.of(Material.METAL, MaterialColor.COLOR_GRAY).sound(SoundType.METAL).harvestLevel(1).harvestTool(ToolType.PICKAXE).strength(1.5f, 6), registryName, tileSupplier);
     }
 
     @Override
@@ -42,12 +42,12 @@ public class PortalGroupBlock extends WormholeBlock {
     }
 
     @Override
-    public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving){
+    public void onRemove(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving){
         if(state.getBlock() != newState.getBlock()){
-            TileEntity tile = worldIn.getTileEntity(pos);
+            TileEntity tile = worldIn.getBlockEntity(pos);
             if(tile instanceof IPortalGroupTile)
                 ((IPortalGroupTile)tile).onBreak();
-            worldIn.removeTileEntity(pos);
+            worldIn.removeBlockEntity(pos);
         }
     }
 }

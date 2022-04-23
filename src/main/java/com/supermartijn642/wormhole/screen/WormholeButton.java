@@ -29,7 +29,7 @@ public class WormholeButton extends AbstractButtonWidget {
     public void render(int mouseX, int mouseY, float partialTicks){
         ScreenUtils.bindTexture(this.getButtonTexture());
         drawBackground(this.x, this.y, this.width, this.height, (this.active ? this.isHovered() ? 5 : 0 : 10) / 15f);
-        ScreenUtils.drawCenteredString(Minecraft.getInstance().fontRenderer, new TranslationTextComponent(this.textKey), this.x + this.width / 2f, this.y + this.height / 2f - 4, this.active ? 0xFFFFFFFF : Integer.MAX_VALUE);
+        ScreenUtils.drawCenteredString(Minecraft.getInstance().font, new TranslationTextComponent(this.textKey), this.x + this.width / 2f, this.y + this.height / 2f - 4, this.active ? 0xFFFFFFFF : Integer.MAX_VALUE);
     }
 
     protected ResourceLocation getButtonTexture(){
