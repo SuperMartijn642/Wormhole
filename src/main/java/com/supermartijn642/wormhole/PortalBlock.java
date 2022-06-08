@@ -40,7 +40,7 @@ public class PortalBlock extends PortalGroupBlock {
     public static final EnumProperty<DyeColor> COLOR_PROPERTY = EnumProperty.create("color", DyeColor.class, DyeColor.values());
 
     public PortalBlock(){
-        super(Properties.of(Material.PORTAL).noCollission().strength(-1.0F).sound(SoundType.GLASS).lightLevel(o -> 11).noDrops(), "portal", PortalTile::new);
+        super(Properties.of(Material.PORTAL).noCollission().strength(-1.0F).sound(SoundType.GLASS).lightLevel(o -> 11), "portal", PortalTile::new);
         this.registerDefaultState(this.defaultBlockState().setValue(AXIS_PROPERTY, Direction.Axis.X).setValue(COLOR_PROPERTY, DyeColor.WHITE));
     }
 

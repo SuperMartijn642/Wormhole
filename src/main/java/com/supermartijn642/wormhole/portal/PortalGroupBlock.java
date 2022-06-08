@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.function.BiFunction;
@@ -50,7 +51,7 @@ public class PortalGroupBlock extends WormholeBlock implements EntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> blockEntityType){
-        return blockEntityType.getRegistryName().getNamespace().equals("wormhole") ?
+        return ForgeRegistries.BLOCK_ENTITIES.getKey(blockEntityType).getNamespace().equals("wormhole") ?
             (world2, pos, state2, entity) -> {
                 if(entity instanceof PortalGroupTile)
                     ((PortalGroupTile)entity).tick();

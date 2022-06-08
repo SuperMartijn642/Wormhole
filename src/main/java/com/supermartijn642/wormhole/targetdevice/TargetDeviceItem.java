@@ -7,7 +7,6 @@ import com.supermartijn642.wormhole.portal.PortalTarget;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -32,7 +31,7 @@ public class TargetDeviceItem extends Item {
     public TargetDeviceItem(String registryName, Supplier<Integer> maxTargetCount){
         super(new Properties().stacksTo(1).tab(Wormhole.ITEM_GROUP));
         this.maxTargetCount = maxTargetCount;
-        this.setRegistryName(registryName);
+//        this.setRegistryName(registryName); TODO
     }
 
     @Override
@@ -44,12 +43,12 @@ public class TargetDeviceItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn){
-        tooltip.add(new TranslatableComponent("wormhole.target_device.info").withStyle(ChatFormatting.AQUA));
+        tooltip.add(Component.translatable("wormhole.target_device.info").withStyle(ChatFormatting.AQUA));
 
         List<PortalTarget> targets = getTargets(stack);
         int capacity = getMaxTargetCount(stack);
         tooltip.add(
-            new TranslatableComponent("wormhole.target_device.info.targets", targets.size(), capacity)
+            Component.translatable("wormhole.target_device.info.targets", targets.size(), capacity)
                 .withStyle(ChatFormatting.YELLOW)
         );
     }

@@ -6,9 +6,6 @@ import com.supermartijn642.core.gui.widget.Widget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.BaseComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.function.Supplier;
 
@@ -40,7 +37,7 @@ public class WormholeLabel extends Widget {
 //            int disabledTextColor = 7368816;
             String text = this.text.get();
             Font font = Minecraft.getInstance().font;
-            BaseComponent textComponent = this.translate ? new TranslatableComponent(text) : new TextComponent(text);
+            Component textComponent = this.translate ? Component.translatable(text) : Component.literal(text);
             int width = font.width(textComponent);
             font.draw(matrixStack, textComponent, this.x + (this.width - width) / 2f, this.y + 2, enabledTextColor);
         }
@@ -48,6 +45,6 @@ public class WormholeLabel extends Widget {
 
     @Override
     protected Component getNarrationMessage(){
-        return this.translate ? new TranslatableComponent(this.text.get()) : new TextComponent(this.text.get());
+        return this.translate ? Component.translatable(this.text.get()) : Component.literal(this.text.get());
     }
 }

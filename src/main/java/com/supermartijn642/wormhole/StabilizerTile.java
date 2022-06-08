@@ -6,7 +6,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -53,10 +53,10 @@ public class StabilizerTile extends PortalGroupTile implements ITargetCellTile, 
         }else if(!this.level.isClientSide){
             PortalShape shape = PortalShape.find(this.level, this.worldPosition);
             if(shape == null)
-                player.sendMessage(new TranslatableComponent("wormhole.portal_stabilizer.error").withStyle(ChatFormatting.RED), player.getUUID());
+                player.displayClientMessage(Component.translatable("wormhole.portal_stabilizer.error").withStyle(ChatFormatting.RED), true);
             else{
                 this.level.getCapability(PortalGroupCapability.CAPABILITY).ifPresent(groups -> groups.add(shape));
-                player.sendMessage(new TranslatableComponent("wormhole.portal_stabilizer.success").withStyle(ChatFormatting.YELLOW), player.getUUID());
+                player.displayClientMessage(Component.translatable("wormhole.portal_stabilizer.success").withStyle(ChatFormatting.YELLOW), true);
             }
         }
         return true;

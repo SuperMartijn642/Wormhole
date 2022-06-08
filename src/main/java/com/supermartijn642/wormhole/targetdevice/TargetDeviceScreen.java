@@ -15,7 +15,7 @@ import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceRemovePacke
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -59,7 +59,7 @@ public class TargetDeviceScreen extends BaseScreen {
     private WormholeColoredButton removeButton;
 
     public TargetDeviceScreen(Player player, InteractionHand hand, BlockPos pos, float yaw){
-        super(new TranslatableComponent("wormhole.target_device.gui.title"));
+        super(Component.translatable("wormhole.target_device.gui.title"));
         this.player = player;
         this.hand = hand;
         this.currentPos = pos;
@@ -192,13 +192,13 @@ public class TargetDeviceScreen extends BaseScreen {
     protected void renderTooltips(PoseStack matrixStack, int mouseX, int mouseY){
         // location
         if(mouseX >= 120 && mouseX <= 131 && mouseY >= 46 && mouseY <= 57)
-            this.renderTooltip(matrixStack, new TranslatableComponent("wormhole.target.location"), mouseX, mouseY);
+            this.renderTooltip(matrixStack, Component.translatable("wormhole.target.location"), mouseX, mouseY);
             // dimension
         else if(mouseX >= 120 && mouseX <= 131 && mouseY >= 58 && mouseY <= 69)
-            this.renderTooltip(matrixStack, new TranslatableComponent("wormhole.target.dimension"), mouseX, mouseY);
+            this.renderTooltip(matrixStack, Component.translatable("wormhole.target.dimension"), mouseX, mouseY);
             // direction
         else if(mouseX >= 120 && mouseX <= 131 && mouseY >= 70 && mouseY <= 81)
-            this.renderTooltip(matrixStack, new TranslatableComponent("wormhole.target.direction"), mouseX, mouseY);
+            this.renderTooltip(matrixStack, Component.translatable("wormhole.target.direction"), mouseX, mouseY);
     }
 
     private void updateAddRemoveButton(){

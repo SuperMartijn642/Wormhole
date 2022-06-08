@@ -15,7 +15,6 @@ import com.supermartijn642.wormhole.screen.WormholeColoredButton;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -90,7 +89,7 @@ public class PortalOverviewScreen extends PortalGroupScreen {
         PortalStatus status = target == null ? PortalStatus.NO_TARGET : storedEnergy == 0 ? PortalStatus.NO_ENERGY :
             storedEnergy < idleCost ? PortalStatus.NOT_ENOUGH_ENERGY : PortalStatus.OK;
 
-        ScreenUtils.drawCenteredString(matrixStack, new TranslatableComponent("wormhole.portal.gui.information"), 192, 31, Integer.MAX_VALUE);
+        ScreenUtils.drawCenteredString(matrixStack, Component.translatable("wormhole.portal.gui.information"), 192, 31, Integer.MAX_VALUE);
 
         ScreenUtils.bindTexture(SEPARATOR);
         ScreenUtils.drawTexture(matrixStack, 154, 41, 77, 1);
@@ -142,22 +141,22 @@ public class PortalOverviewScreen extends PortalGroupScreen {
     protected void renderTooltips(PoseStack matrixStack, int mouseX, int mouseY, PortalGroup group){
         // status
         if(mouseX >= 150 && mouseX <= 161 && mouseY >= 46 && mouseY <= 57)
-            this.renderTooltip(matrixStack, new TranslatableComponent("wormhole.portal.gui.status"), mouseX, mouseY);
+            this.renderTooltip(matrixStack, Component.translatable("wormhole.portal.gui.status"), mouseX, mouseY);
             // idle cost
         else if(mouseX >= 150 && mouseX <= 161 && mouseY >= 58 && mouseY <= 69)
-            this.renderTooltip(matrixStack, new TranslatableComponent("wormhole.portal.gui.idle_cost"), mouseX, mouseY);
+            this.renderTooltip(matrixStack, Component.translatable("wormhole.portal.gui.idle_cost"), mouseX, mouseY);
             // teleport cost
         else if(mouseX >= 150 && mouseX <= 161 && mouseY >= 70 && mouseY <= 81)
-            this.renderTooltip(matrixStack, new TranslatableComponent("wormhole.portal.gui.teleport_cost"), mouseX, mouseY);
+            this.renderTooltip(matrixStack, Component.translatable("wormhole.portal.gui.teleport_cost"), mouseX, mouseY);
             // target
         else if(mouseX >= 150 && mouseX <= 161 && mouseY >= 90 && mouseY <= 101)
-            this.renderTooltip(matrixStack, new TranslatableComponent("wormhole.portal.gui.target"), mouseX, mouseY);
+            this.renderTooltip(matrixStack, Component.translatable("wormhole.portal.gui.target"), mouseX, mouseY);
             // location
         else if(mouseX >= 150 && mouseX <= 161 && mouseY >= 102 && mouseY <= 113)
-            this.renderTooltip(matrixStack, new TranslatableComponent("wormhole.portal.gui.target_location"), mouseX, mouseY);
+            this.renderTooltip(matrixStack, Component.translatable("wormhole.portal.gui.target_location"), mouseX, mouseY);
             // dimension
         else if(mouseX >= 150 && mouseX <= 161 && mouseY >= 114 && mouseY <= 125)
-            this.renderTooltip(matrixStack, new TranslatableComponent("wormhole.portal.gui.target_dimension"), mouseX, mouseY);
+            this.renderTooltip(matrixStack, Component.translatable("wormhole.portal.gui.target_dimension"), mouseX, mouseY);
     }
 
     private enum PortalStatus {
@@ -178,7 +177,7 @@ public class PortalOverviewScreen extends PortalGroupScreen {
         }
 
         public Component getStatus(){
-            return new TranslatableComponent("wormhole.portal.gui.status." + this.status).withStyle(this.color);
+            return Component.translatable("wormhole.portal.gui.status." + this.status).withStyle(this.color);
         }
 
         public ResourceLocation getIcon(){

@@ -7,7 +7,6 @@ import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.portal.PortalTarget;
 import com.supermartijn642.wormhole.portal.packets.PortalColorTargetPacket;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 
@@ -45,6 +44,6 @@ public class PortalTargetSelectColorButton extends AbstractButtonWidget {
 
     @Override
     protected Component getNarrationMessage(){
-        return new TranslatableComponent("wormhole.color." + (this.color == null ? "random" : this.color.getName()));
+        return Component.translatable("wormhole.color." + (this.color == null ? "random" : this.color.getName()));
     }
 }

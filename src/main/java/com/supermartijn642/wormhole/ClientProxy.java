@@ -105,7 +105,7 @@ public class ClientProxy {
             if(tile instanceof GeneratorTile){
                 PoseStack matrixStack = e.getPoseStack();
                 matrixStack.pushPose();
-                Vec3 playerPos = Minecraft.getInstance().player.getEyePosition(e.getPartialTicks());
+                Vec3 playerPos = Minecraft.getInstance().player.getEyePosition(e.getPartialTick());
                 matrixStack.translate(-playerPos.x, -playerPos.y, -playerPos.z);
                 VertexConsumer builder = e.getMultiBufferSource().getBuffer(RenderType.lines());
                 for(BlockPos pos : ((GeneratorTile)tile).getChargingPortalBlocks()){

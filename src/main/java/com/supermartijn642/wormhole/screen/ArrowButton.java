@@ -5,7 +5,6 @@ import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.widget.AbstractButtonWidget;
 import com.supermartijn642.core.gui.widget.IHoverTextWidget;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 
 /**
@@ -29,12 +28,12 @@ public class ArrowButton extends AbstractButtonWidget implements IHoverTextWidge
 
     @Override
     public Component getHoverText(){
-        return this.active ? new TranslatableComponent("wormhole.gui.arrow_button." + (this.up ? "up" : "down")) : null;
+        return this.active ? Component.translatable("wormhole.gui.arrow_button." + (this.up ? "up" : "down")) : null;
     }
 
     @Override
     protected Component getNarrationMessage(){
-        return new TranslatableComponent("wormhole.gui.arrow_button." + (up ? "up" : "down"));
+        return Component.translatable("wormhole.gui.arrow_button." + (up ? "up" : "down"));
     }
 
     @Override

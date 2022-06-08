@@ -2,16 +2,14 @@ package com.supermartijn642.wormhole.energycell;
 
 import com.supermartijn642.wormhole.EnergyFormat;
 import com.supermartijn642.wormhole.portal.PortalGroupBlock;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 
@@ -29,7 +27,7 @@ public class EnergyCellBlock extends PortalGroupBlock {
 
     @Override
     public void appendHoverText(ItemStack stack, BlockGetter worldIn, List<Component> tooltip, TooltipFlag flagIn){
-        tooltip.add(new TranslatableComponent("wormhole.energy_cell.info").withStyle(ChatFormatting.AQUA));
+        tooltip.add(Component.translatable("wormhole.energy_cell.info").withStyle(ChatFormatting.AQUA));
 
         CompoundTag tag = stack.getOrCreateTag().contains("tileData") ? stack.getOrCreateTag().getCompound("tileData") : null;
 
@@ -38,7 +36,7 @@ public class EnergyCellBlock extends PortalGroupBlock {
         int capacity = this.type.getCapacity();
 
         if(capacity > 0)
-            tooltip.add(new TextComponent(EnergyFormat.formatCapacity(energy, capacity)).withStyle(ChatFormatting.YELLOW));
+            tooltip.add(Component.literal(EnergyFormat.formatCapacity(energy, capacity)).withStyle(ChatFormatting.YELLOW));
     }
 
     @Override

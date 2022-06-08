@@ -6,11 +6,9 @@ import com.supermartijn642.core.gui.widget.AbstractButtonWidget;
 import com.supermartijn642.core.gui.widget.IHoverTextWidget;
 import com.supermartijn642.wormhole.ClientProxy;
 import com.supermartijn642.wormhole.portal.PortalTarget;
-import net.minecraft.client.Minecraft;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.DyeColor;
 
 import java.util.function.Supplier;
 
@@ -56,12 +54,12 @@ public class PortalTargetEditColorButton extends AbstractButtonWidget implements
 
     @Override
     public Component getHoverText(){
-        return this.visible ? new TranslatableComponent("wormhole.portal.gui.target_color") : null;
+        return this.visible ? Component.translatable("wormhole.portal.gui.target_color") : null;
     }
 
     @Override
     protected Component getNarrationMessage(){
-        return this.visible ? new TranslatableComponent("wormhole.portal.gui.target_color") : null;
+        return this.visible ? Component.translatable("wormhole.portal.gui.target_color") : null;
     }
 }
 

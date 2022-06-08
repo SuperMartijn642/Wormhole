@@ -26,7 +26,7 @@ public class WormholeBlock extends Block {
 
     public WormholeBlock(String registryName, boolean saveTileData, Properties properties){
         super(properties);
-        this.setRegistryName(registryName);
+//        this.setRegistryName(registryName); TODO
         this.saveTileData = saveTileData;
     }
 

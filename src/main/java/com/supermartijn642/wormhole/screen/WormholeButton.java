@@ -4,9 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Created 10/15/2020 by SuperMartijn642
@@ -30,7 +29,7 @@ public class WormholeButton extends AbstractButtonWidget {
     public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks){
         ScreenUtils.bindTexture(this.getButtonTexture());
         drawBackground(matrixStack, this.x, this.y, this.width, this.height, (this.active ? this.isHovered() ? 5 : 0 : 10) / 15f);
-        ScreenUtils.drawCenteredString(matrixStack, Minecraft.getInstance().font, new TranslatableComponent(this.textKey), this.x + this.width / 2f, this.y + this.height / 2f - 4, this.active ? 0xFFFFFFFF : Integer.MAX_VALUE);
+        ScreenUtils.drawCenteredString(matrixStack, Minecraft.getInstance().font, Component.translatable(this.textKey), this.x + this.width / 2f, this.y + this.height / 2f - 4, this.active ? 0xFFFFFFFF : Integer.MAX_VALUE);
     }
 
     protected ResourceLocation getButtonTexture(){
@@ -54,6 +53,6 @@ public class WormholeButton extends AbstractButtonWidget {
 
     @Override
     protected Component getNarrationMessage(){
-        return new TranslatableComponent(this.textKey);
+        return Component.translatable(this.textKey);
     }
 }

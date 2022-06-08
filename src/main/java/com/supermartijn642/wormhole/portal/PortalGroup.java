@@ -3,11 +3,11 @@ package com.supermartijn642.wormhole.portal;
 import com.supermartijn642.wormhole.PortalGroupCapability;
 import com.supermartijn642.wormhole.TeleportHelper;
 import com.supermartijn642.wormhole.WormholeConfig;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.energy.IEnergyStorage;
 
 /**

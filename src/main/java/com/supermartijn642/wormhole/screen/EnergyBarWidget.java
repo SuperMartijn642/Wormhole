@@ -1,16 +1,13 @@
 package com.supermartijn642.wormhole.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.widget.AbstractButtonWidget;
 import com.supermartijn642.core.gui.widget.IHoverTextWidget;
 import com.supermartijn642.wormhole.EnergyFormat;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.function.Supplier;
 
@@ -44,7 +41,7 @@ public class EnergyBarWidget extends AbstractButtonWidget implements IHoverTextW
     public Component getHoverText(){
         int energy = this.energy.get();
         int capacity = this.capacity.get();
-        return new TextComponent(EnergyFormat.formatCapacity(energy, capacity));
+        return Component.literal(EnergyFormat.formatCapacity(energy, capacity));
     }
 
     @Override

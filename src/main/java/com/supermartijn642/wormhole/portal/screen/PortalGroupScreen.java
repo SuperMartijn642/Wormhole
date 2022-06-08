@@ -4,9 +4,9 @@ import com.supermartijn642.core.gui.ObjectBaseScreen;
 import com.supermartijn642.wormhole.portal.PortalGroup;
 import com.supermartijn642.wormhole.portal.PortalGroupTile;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.function.Function;
 
@@ -18,7 +18,7 @@ public abstract class PortalGroupScreen extends ObjectBaseScreen<PortalGroup> {
     public final BlockPos pos;
 
     public PortalGroupScreen(String titleKey, BlockPos pos){
-        super(new TranslatableComponent(titleKey));
+        super(Component.translatable(titleKey));
         this.pos = pos;
     }
 

@@ -3,9 +3,9 @@ package com.supermartijn642.wormhole.portal.packets;
 import com.supermartijn642.wormhole.packet.PortalGroupPacket;
 import com.supermartijn642.wormhole.portal.PortalGroup;
 import com.supermartijn642.wormhole.portal.PortalTarget;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.Level;
 
 /**

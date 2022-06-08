@@ -5,8 +5,8 @@ import com.supermartijn642.core.gui.TileEntityBaseContainerScreen;
 import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.screen.EnergyBarWidget;
 import com.supermartijn642.wormhole.screen.FlameProgressWidget;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.network.chat.TranslatableComponent;
 
 /**
  * Created 12/21/2020 by SuperMartijn642
@@ -16,7 +16,7 @@ public class CoalGeneratorScreen extends TileEntityBaseContainerScreen<CoalGener
     private final int WIDTH = 176, HEIGHT = 166;
 
     public CoalGeneratorScreen(CoalGeneratorContainer screenContainer, Inventory inv){
-        super(screenContainer, new TranslatableComponent(Wormhole.coal_generator.getDescriptionId()));
+        super(screenContainer, Component.translatable(Wormhole.coal_generator.getDescriptionId()));
     }
 
     @Override

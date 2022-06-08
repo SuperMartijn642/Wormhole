@@ -20,7 +20,7 @@ import com.supermartijn642.wormhole.targetdevice.TargetDeviceItem;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -335,16 +335,16 @@ public class PortalTargetScreen extends PortalGroupScreen {
     protected void renderTooltips(PoseStack matrixStack, int mouseX, int mouseY, PortalGroup group){
         // location
         if(mouseX >= 149 && mouseX <= 160 && mouseY >= 46 && mouseY <= 57)
-            this.renderTooltip(matrixStack, new TranslatableComponent("wormhole.target.location"), mouseX, mouseY);
+            this.renderTooltip(matrixStack, Component.translatable("wormhole.target.location"), mouseX, mouseY);
             // dimension
         else if(mouseX >= 149 && mouseX <= 160 && mouseY >= 58 && mouseY <= 69)
-            this.renderTooltip(matrixStack, new TranslatableComponent("wormhole.target.dimension"), mouseX, mouseY);
+            this.renderTooltip(matrixStack, Component.translatable("wormhole.target.dimension"), mouseX, mouseY);
             // direction
         else if(mouseX >= 149 && mouseX <= 160 && mouseY >= 70 && mouseY <= 81)
-            this.renderTooltip(matrixStack, new TranslatableComponent("wormhole.target.direction"), mouseX, mouseY);
+            this.renderTooltip(matrixStack, Component.translatable("wormhole.target.direction"), mouseX, mouseY);
             // energy
         else if(mouseX >= 149 && mouseX <= 160 && (this.selectedPortalTarget >= 0 ? mouseY >= 110 && mouseY <= 121 : mouseY >= 90 && mouseY <= 101))
-            this.renderTooltip(matrixStack, new TranslatableComponent("wormhole.target.teleport_cost"), mouseX, mouseY);
+            this.renderTooltip(matrixStack, Component.translatable("wormhole.target.teleport_cost"), mouseX, mouseY);
     }
 
     public <T> T getFromDeviceTargets(Function<List<PortalTarget>,T> function, T other){

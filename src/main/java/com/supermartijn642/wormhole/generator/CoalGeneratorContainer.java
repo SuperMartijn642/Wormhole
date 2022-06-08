@@ -2,10 +2,10 @@ package com.supermartijn642.wormhole.generator;
 
 import com.supermartijn642.core.gui.TileEntityBaseContainer;
 import com.supermartijn642.wormhole.Wormhole;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
 
 /**

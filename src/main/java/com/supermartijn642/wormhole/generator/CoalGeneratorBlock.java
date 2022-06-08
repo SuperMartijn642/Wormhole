@@ -9,8 +9,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -97,7 +95,7 @@ public class CoalGeneratorBlock extends WormholeBlock implements EntityBlock {
             NetworkHooks.openGui((ServerPlayer)player, new MenuProvider() {
                 @Override
                 public Component getDisplayName(){
-                    return null;
+                    return Component.empty();
                 }
 
                 @Override
@@ -111,11 +109,11 @@ public class CoalGeneratorBlock extends WormholeBlock implements EntityBlock {
     @Override
     public void appendHoverText(ItemStack stack, BlockGetter worldIn, List<Component> tooltip, TooltipFlag flagIn){
         int range = 2 * WormholeConfig.coalGeneratorRange.get() + 1;
-        tooltip.add(new TranslatableComponent("wormhole.coal_generator.info", range, EnergyFormat.formatEnergyPerTick(WormholeConfig.coalGeneratorPower.get())).withStyle(ChatFormatting.AQUA));
+        tooltip.add(Component.translatable("wormhole.coal_generator.info", range, EnergyFormat.formatEnergyPerTick(WormholeConfig.coalGeneratorPower.get())).withStyle(ChatFormatting.AQUA));
 
         CompoundTag tag = stack.getOrCreateTag().contains("tileData") ? stack.getOrCreateTag().getCompound("tileData") : null;
         int energy = tag == null || tag.isEmpty() || !tag.contains("energy") ? 0 : tag.getInt("energy");
-        tooltip.add(new TextComponent(EnergyFormat.formatCapacity(energy, WormholeConfig.coalGeneratorCapacity.get())).withStyle(ChatFormatting.YELLOW));
+        tooltip.add(Component.literal(EnergyFormat.formatCapacity(energy, WormholeConfig.coalGeneratorCapacity.get())).withStyle(ChatFormatting.YELLOW));
     }
 
     @Override
