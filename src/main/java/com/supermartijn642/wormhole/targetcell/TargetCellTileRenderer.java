@@ -8,7 +8,8 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraft.util.RandomSource;
+import net.minecraftforge.client.model.data.ModelData;
 
 /**
  * Created 12/7/2020 by SuperMartijn642
@@ -36,9 +37,10 @@ public class TargetCellTileRenderer implements BlockEntityRenderer<TargetCellTil
             modelLocation = ADVANCED_TARGET_CELL_MODELS[(int)Math.ceil(Math.min(percent, 1) * (ADVANCED_TARGET_CELL_MODELS.length - 1))];
 
         BakedModel model = Minecraft.getInstance().getModelManager().getModel(modelLocation);
-        ClientUtils.getBlockRenderer().getModelRenderer().renderModel(
-            matrixStack.last(), buffer.getBuffer(RenderType.solid()), tile.getBlockState(), model, 1, 1, 1, combinedLight, combinedOverlay, EmptyModelData.INSTANCE
-        );
+        for(RenderType renderType : model.getRenderTypes(tile.getBlockState(), RandomSource.create(42), ModelData.EMPTY))
+            ClientUtils.getBlockRenderer().getModelRenderer().renderModel(
+                matrixStack.last(), buffer.getBuffer(renderType), tile.getBlockState(), model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, renderType
+            );
     }
 
     public static BakedModel getModelForTile(TargetCellTile tile){

@@ -30,8 +30,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.data.EmptyModelData;
-import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelData;
 
 import java.util.List;
 
@@ -87,7 +86,7 @@ public class PortalRendererHelper {
             tile instanceof TargetCellTile ? TargetCellTileRenderer.getModelForTile((TargetCellTile)tile) :
                 tile instanceof EnergyCellTile ? EnergyCellTileRenderer.getModelForTile((EnergyCellTile)tile) :
                     Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
-        IModelData modelData = tile == null ? EmptyModelData.INSTANCE : tile.getModelData();
+        ModelData modelData = tile == null ? ModelData.EMPTY : tile.getModelData();
         modelData = model.getModelData(world, pos, state, modelData);
 
         matrixStack.pushPose();
@@ -98,26 +97,26 @@ public class PortalRendererHelper {
         matrixStack.popPose();
     }
 
-    private static void translateAndRenderModel(BlockState state, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, BakedModel modelIn, IModelData modelData, boolean valid){
+    private static void translateAndRenderModel(BlockState state, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, BakedModel modelIn, ModelData modelData, boolean valid){
         matrixStackIn.pushPose();
 
         matrixStackIn.translate(-0.5D, -0.5D, -0.5D);
-        RenderType rendertype = RenderType.translucent();
-        renderModel(modelIn, state, combinedLightIn, combinedOverlayIn, matrixStackIn, bufferIn.getBuffer(rendertype), modelData, valid);
+        for(RenderType renderType : modelIn.getRenderTypes(state, RandomSource.create(42), modelData))
+            renderModel(modelIn, state, combinedLightIn, combinedOverlayIn, matrixStackIn, bufferIn.getBuffer(renderType), modelData, renderType, valid);
 
         matrixStackIn.popPose();
     }
 
-    private static void renderModel(BakedModel modelIn, BlockState state, int combinedLightIn, int combinedOverlayIn, PoseStack matrixStackIn, VertexConsumer bufferIn, IModelData modelData, boolean valid){
+    private static void renderModel(BakedModel modelIn, BlockState state, int combinedLightIn, int combinedOverlayIn, PoseStack matrixStackIn, VertexConsumer bufferIn, ModelData modelData, RenderType renderType, boolean valid){
         RandomSource random = RandomSource.create();
 
         for(Direction direction : Direction.values()){
             random.setSeed(42L);
-            renderQuads(matrixStackIn, bufferIn, modelIn.getQuads(state, direction, random, modelData), combinedLightIn, combinedOverlayIn, valid);
+            renderQuads(matrixStackIn, bufferIn, modelIn.getQuads(state, direction, random, modelData, renderType), combinedLightIn, combinedOverlayIn, valid);
         }
 
         random.setSeed(42L);
-        renderQuads(matrixStackIn, bufferIn, modelIn.getQuads(state, null, random, modelData), combinedLightIn, combinedOverlayIn, valid);
+        renderQuads(matrixStackIn, bufferIn, modelIn.getQuads(state, null, random, modelData, renderType), combinedLightIn, combinedOverlayIn, valid);
     }
 
     private static void renderQuads(PoseStack matrixStackIn, VertexConsumer bufferIn, List<BakedQuad> quadsIn, int combinedLightIn, int combinedOverlayIn, boolean valid){

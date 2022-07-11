@@ -16,7 +16,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
@@ -26,9 +25,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.DrawSelectionEvent;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.model.ForgeModelBakery;
+import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.ModelEvent;
+import net.minecraftforge.client.event.RenderHighlightEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -43,24 +42,27 @@ public class ClientProxy {
     public static void clientSetupEvent(FMLClientSetupEvent e){
         ItemBlockRenderTypes.setRenderLayer(Wormhole.portal, RenderType.translucent());
 
-        BlockEntityRenderers.register(Wormhole.basic_energy_cell_tile, context -> new EnergyCellTileRenderer());
-        BlockEntityRenderers.register(Wormhole.advanced_energy_cell_tile, context -> new EnergyCellTileRenderer());
-        BlockEntityRenderers.register(Wormhole.basic_target_cell_tile, context -> new TargetCellTileRenderer());
-        BlockEntityRenderers.register(Wormhole.advanced_target_cell_tile, context -> new TargetCellTileRenderer());
-
-//        ClientRegistry.bindTileEntityRenderer(Wormhole.coal_generator_tile, r -> new GeneratorTileRenderer<>(r, Color.BLUE));
-
         registerScreen();
     }
 
     @SubscribeEvent
-    public static void modelRegistry(ModelRegistryEvent e){
+    public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers e){
+        e.registerBlockEntityRenderer(Wormhole.basic_energy_cell_tile, context -> new EnergyCellTileRenderer());
+        e.registerBlockEntityRenderer(Wormhole.advanced_energy_cell_tile, context -> new EnergyCellTileRenderer());
+        e.registerBlockEntityRenderer(Wormhole.basic_target_cell_tile, context -> new TargetCellTileRenderer());
+        e.registerBlockEntityRenderer(Wormhole.advanced_target_cell_tile, context -> new TargetCellTileRenderer());
+
+//        e.registerBlockEntityRenderer(Wormhole.coal_generator_tile, r -> new GeneratorTileRenderer<>(r, Color.BLUE));
+    }
+
+    @SubscribeEvent
+    public static void modelRegistry(ModelEvent.RegisterAdditional e){
         for(ResourceLocation model : EnergyCellTileRenderer.ENERGY_CELL_MODELS)
-            ForgeModelBakery.addSpecialModel(model);
+            e.register(model);
         for(ResourceLocation model : TargetCellTileRenderer.BASIC_TARGET_CELL_MODELS)
-            ForgeModelBakery.addSpecialModel(model);
+            e.register(model);
         for(ResourceLocation model : TargetCellTileRenderer.ADVANCED_TARGET_CELL_MODELS)
-            ForgeModelBakery.addSpecialModel(model);
+            e.register(model);
     }
 
     public static void registerScreen(){
@@ -99,7 +101,7 @@ public class ClientProxy {
     public static class Events {
 
         @SubscribeEvent
-        public static void onBlockHighlight(DrawSelectionEvent.HighlightBlock e){
+        public static void onBlockHighlight(RenderHighlightEvent.Block e){
             Level world = getWorld();
             BlockEntity tile = world.getBlockEntity(e.getTarget().getBlockPos());
             if(tile instanceof GeneratorTile){

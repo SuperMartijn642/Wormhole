@@ -33,6 +33,6 @@ public class UpdateGroupsPacket {
 
     public void handle(Supplier<NetworkEvent.Context> contextSupplier){
         contextSupplier.get().setPacketHandled(true);
-        ClientProxy.getWorld().getCapability(PortalGroupCapability.CAPABILITY).ifPresent(groups -> groups.read(this.groupsData));
+        contextSupplier.get().enqueueWork(() -> ClientProxy.getWorld().getCapability(PortalGroupCapability.CAPABILITY).ifPresent(groups -> groups.read(this.groupsData)));
     }
 }

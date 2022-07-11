@@ -8,7 +8,8 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraft.util.RandomSource;
+import net.minecraftforge.client.model.data.ModelData;
 
 /**
  * Created 12/7/2020 by SuperMartijn642
@@ -26,9 +27,11 @@ public class EnergyCellTileRenderer implements BlockEntityRenderer<EnergyCellTil
     public void render(EnergyCellTile tile, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay){
         int texture = tile.getMaxEnergyStored(true) > 0 ? (int)Math.ceil((double)tile.getEnergyStored(true) / tile.getMaxEnergyStored(true) * 15) : 0;
         BakedModel model = Minecraft.getInstance().getModelManager().getModel(ENERGY_CELL_MODELS[texture]);
-        ClientUtils.getBlockRenderer().getModelRenderer().renderModel(
-            matrixStack.last(), buffer.getBuffer(RenderType.solid()), tile.getBlockState(), model, 1, 1, 1, combinedLight, combinedOverlay, EmptyModelData.INSTANCE
-        );
+        for(RenderType renderType : model.getRenderTypes(tile.getBlockState(), RandomSource.create(42), ModelData.EMPTY)){
+            ClientUtils.getBlockRenderer().getModelRenderer().renderModel(
+                matrixStack.last(), buffer.getBuffer(renderType), tile.getBlockState(), model, 1, 1, 1, combinedLight, combinedOverlay, ModelData.EMPTY, renderType
+            );
+        }
     }
 
     public static BakedModel getModelForTile(EnergyCellTile tile){
