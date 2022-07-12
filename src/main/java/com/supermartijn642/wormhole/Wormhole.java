@@ -148,7 +148,7 @@ public class Wormhole {
                 onTileRegistry(Objects.requireNonNull(e.getForgeRegistry()));
             else if(e.getRegistryKey().equals(ForgeRegistries.Keys.ITEMS))
                 onItemRegistry(Objects.requireNonNull(e.getForgeRegistry()));
-            else if(e.getRegistryKey().equals(ForgeRegistries.Keys.CONTAINER_TYPES))
+            else if(e.getRegistryKey().equals(ForgeRegistries.Keys.MENU_TYPES))
                 onContainerRegistry(Objects.requireNonNull(e.getForgeRegistry()));
             else if(e.getRegistryKey().equals(ForgeRegistries.Keys.RECIPE_SERIALIZERS))
                 onRecipeRegistry(Objects.requireNonNull(e.getForgeRegistry()));

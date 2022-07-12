@@ -92,7 +92,7 @@ public class CoalGeneratorBlock extends WormholeBlock implements EntityBlock {
     @Override
     public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit){
         if(!worldIn.isClientSide)
-            NetworkHooks.openGui((ServerPlayer)player, new MenuProvider() {
+            NetworkHooks.openScreen((ServerPlayer)player, new MenuProvider() {
                 @Override
                 public Component getDisplayName(){
                     return Component.empty();

@@ -51,7 +51,7 @@ public class PortalGroupBlock extends WormholeBlock implements EntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> blockEntityType){
-        return ForgeRegistries.BLOCK_ENTITIES.getKey(blockEntityType).getNamespace().equals("wormhole") ?
+        return ForgeRegistries.BLOCK_ENTITY_TYPES.getKey(blockEntityType).getNamespace().equals("wormhole") ?
             (world2, pos, state2, entity) -> {
                 if(entity instanceof PortalGroupTile)
                     ((PortalGroupTile)entity).tick();

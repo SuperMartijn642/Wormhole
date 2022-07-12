@@ -66,11 +66,11 @@ public class PortalGroupCapability {
 
 
     @SubscribeEvent
-    public static void onTick(TickEvent.WorldTickEvent e){
+    public static void onTick(TickEvent.LevelTickEvent e){
         if(e.phase != TickEvent.Phase.END)
             return;
 
-        tickWorldCapability(e.world);
+        tickWorldCapability(e.level);
     }
 
     public static void tickWorldCapability(Level world){
@@ -79,7 +79,7 @@ public class PortalGroupCapability {
 
     @SubscribeEvent
     public static void onJoinWorld(PlayerEvent.PlayerChangedDimensionEvent e){
-        ServerPlayer player = (ServerPlayer)e.getPlayer();
+        ServerPlayer player = (ServerPlayer)e.getEntity();
         player.level.getCapability(CAPABILITY).ifPresent(groups ->
             Wormhole.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateGroupsPacket(groups.write()))
         );
@@ -87,7 +87,7 @@ public class PortalGroupCapability {
 
     @SubscribeEvent
     public static void onRespawn(PlayerEvent.PlayerRespawnEvent e){
-        ServerPlayer player = (ServerPlayer)e.getPlayer();
+        ServerPlayer player = (ServerPlayer)e.getEntity();
         player.level.getCapability(CAPABILITY).ifPresent(groups ->
             Wormhole.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateGroupsPacket(groups.write()))
         );
@@ -95,7 +95,7 @@ public class PortalGroupCapability {
 
     @SubscribeEvent
     public static void onJoin(PlayerEvent.PlayerLoggedInEvent e){
-        ServerPlayer player = (ServerPlayer)e.getPlayer();
+        ServerPlayer player = (ServerPlayer)e.getEntity();
         player.level.getCapability(CAPABILITY).ifPresent(groups ->
             Wormhole.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateGroupsPacket(groups.write()))
         );
