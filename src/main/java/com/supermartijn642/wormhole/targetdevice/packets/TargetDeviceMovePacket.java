@@ -1,13 +1,12 @@
 package com.supermartijn642.wormhole.targetdevice.packets;
 
+import com.supermartijn642.core.network.PacketContext;
 import com.supermartijn642.wormhole.packet.TargetDevicePacket;
 import com.supermartijn642.wormhole.portal.PortalTarget;
 import com.supermartijn642.wormhole.targetdevice.TargetDeviceItem;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 
 import java.util.List;
 
@@ -25,26 +24,25 @@ public class TargetDeviceMovePacket extends TargetDevicePacket {
         this.up = up;
     }
 
-    public TargetDeviceMovePacket(FriendlyByteBuf buffer){
-        super(buffer);
+    public TargetDeviceMovePacket(){
     }
 
     @Override
-    public void encode(FriendlyByteBuf buffer){
-        super.encode(buffer);
+    public void write(FriendlyByteBuf buffer){
+        super.write(buffer);
         buffer.writeInt(this.index);
         buffer.writeBoolean(this.up);
     }
 
     @Override
-    protected void decodeBuffer(FriendlyByteBuf buffer){
-        super.decodeBuffer(buffer);
+    public void read(FriendlyByteBuf buffer){
+        super.read(buffer);
         this.index = buffer.readInt();
         this.up = buffer.readBoolean();
     }
 
     @Override
-    protected void handle(Player player, Level world, ItemStack targetDevice){
+    protected void handle(ItemStack targetDevice, PacketContext context){
         List<PortalTarget> targets = TargetDeviceItem.getTargets(targetDevice);
         if(this.index < 0 || this.index > targets.size() - 1)
             return;

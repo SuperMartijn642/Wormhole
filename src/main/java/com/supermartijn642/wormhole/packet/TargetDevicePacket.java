@@ -1,19 +1,18 @@
 package com.supermartijn642.wormhole.packet;
 
+import com.supermartijn642.core.network.BasePacket;
+import com.supermartijn642.core.network.PacketContext;
 import com.supermartijn642.wormhole.targetdevice.TargetDeviceItem;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
 
 /**
  * Created 10/8/2020 by SuperMartijn642
  */
-public abstract class TargetDevicePacket {
+public abstract class TargetDevicePacket implements BasePacket {
 
     private InteractionHand hand;
 
@@ -21,33 +20,33 @@ public abstract class TargetDevicePacket {
         this.hand = hand;
     }
 
-    public TargetDevicePacket(FriendlyByteBuf buffer){
-        this.decodeBuffer(buffer);
+    public TargetDevicePacket(){
     }
 
-    public void encode(FriendlyByteBuf buffer){
-        buffer.writeEnum(this.hand);
+    @Override
+    public void write(FriendlyByteBuf buffer){
+        buffer.writeBoolean(this.hand == InteractionHand.MAIN_HAND);
     }
 
-    protected void decodeBuffer(FriendlyByteBuf buffer){
-        this.hand = buffer.readEnum(InteractionHand.class);
+    @Override
+    public void read(FriendlyByteBuf buffer){
+        this.hand = buffer.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
     }
 
-    public void handle(Supplier<NetworkEvent.Context> contextSupplier){
-        contextSupplier.get().setPacketHandled(true);
-
-        Player player = contextSupplier.get().getSender();
+    @Override
+    public void handle(PacketContext context){
+        Player player = context.getSendingPlayer();
         if(player == null)
             return;
-        Level world = player.level;
-        if(world == null)
+        Level level = context.getWorld();
+        if(level == null)
             return;
         ItemStack stack = player.getItemInHand(this.hand);
         if(stack.isEmpty() || !(stack.getItem() instanceof TargetDeviceItem))
             return;
-        contextSupplier.get().enqueueWork(() -> this.handle(player, world, stack));
+        this.handle(stack, context);
     }
 
-    protected abstract void handle(Player player, Level world, ItemStack targetDevice);
+    protected abstract void handle(ItemStack targetDevice, PacketContext context);
 
 }

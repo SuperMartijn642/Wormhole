@@ -1,10 +1,9 @@
 package com.supermartijn642.wormhole.portal.packets;
 
+import com.supermartijn642.core.network.PacketContext;
 import com.supermartijn642.wormhole.packet.PortalGroupPacket;
 import com.supermartijn642.wormhole.portal.PortalGroup;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 
 /**
  * Created 11/5/2020 by SuperMartijn642
@@ -18,24 +17,23 @@ public class PortalClearTargetPacket extends PortalGroupPacket {
         this.target = target;
     }
 
-    public PortalClearTargetPacket(FriendlyByteBuf buffer){
-        super(buffer);
+    public PortalClearTargetPacket(){
     }
 
     @Override
-    public void encode(FriendlyByteBuf buffer){
-        super.encode(buffer);
+    public void write(FriendlyByteBuf buffer){
+        super.write(buffer);
         buffer.writeInt(this.target);
     }
 
     @Override
-    protected void decode(FriendlyByteBuf buffer){
-        super.decode(buffer);
+    public void read(FriendlyByteBuf buffer){
+        super.read(buffer);
         this.target = buffer.readInt();
     }
 
     @Override
-    protected void handle(Player player, Level world, PortalGroup group){
+    protected void handle(PortalGroup group, PacketContext context){
         group.clearTarget(this.target);
     }
 }

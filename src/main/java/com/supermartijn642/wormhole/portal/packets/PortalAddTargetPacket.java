@@ -1,14 +1,13 @@
 package com.supermartijn642.wormhole.portal.packets;
 
+import com.supermartijn642.core.network.PacketContext;
 import com.supermartijn642.wormhole.packet.PortalGroupPacket;
 import com.supermartijn642.wormhole.portal.PortalGroup;
 import com.supermartijn642.wormhole.portal.PortalTarget;
 import com.supermartijn642.wormhole.targetdevice.TargetDeviceItem;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 
 import java.util.List;
 
@@ -26,27 +25,26 @@ public class PortalAddTargetPacket extends PortalGroupPacket {
         this.index = index;
     }
 
-    public PortalAddTargetPacket(FriendlyByteBuf buffer){
-        super(buffer);
+    public PortalAddTargetPacket(){
     }
 
     @Override
-    public void encode(FriendlyByteBuf buffer){
-        super.encode(buffer);
+    public void write(FriendlyByteBuf buffer){
+        super.write(buffer);
         buffer.writeEnum(this.hand);
         buffer.writeInt(this.index);
     }
 
     @Override
-    protected void decode(FriendlyByteBuf buffer){
-        super.decode(buffer);
+    public void read(FriendlyByteBuf buffer){
+        super.read(buffer);
         this.hand = buffer.readEnum(InteractionHand.class);
         this.index = buffer.readInt();
     }
 
     @Override
-    protected void handle(Player player, Level world, PortalGroup group){
-        ItemStack stack = player.getItemInHand(this.hand);
+    protected void handle(PortalGroup group, PacketContext context){
+        ItemStack stack = context.getSendingPlayer().getItemInHand(this.hand);
         if(stack.isEmpty() || !(stack.getItem() instanceof TargetDeviceItem))
             return;
         List<PortalTarget> targets = TargetDeviceItem.getTargets(stack);

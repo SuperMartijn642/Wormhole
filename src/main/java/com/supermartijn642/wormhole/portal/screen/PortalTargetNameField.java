@@ -1,6 +1,6 @@
 package com.supermartijn642.wormhole.portal.screen;
 
-import com.supermartijn642.core.gui.widget.TextFieldWidget;
+import com.supermartijn642.core.gui.widget.premade.TextFieldWidget;
 import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.portal.PortalTarget;
 import com.supermartijn642.wormhole.portal.packets.PortalNameTargetPacket;
@@ -24,15 +24,16 @@ public class PortalTargetNameField extends TextFieldWidget {
         this.screen = screen;
         this.targetIndex = targetIndex;
 
-        PortalTarget target = screen.getObject().getTarget(targetIndex.get());
+        PortalTarget target = screen.getPortalGroup().getTarget(targetIndex.get());
         this.setTextSuppressed(target == null ? "" : target.name);
         this.lastTargetText = this.getText();
     }
 
-    public void tick(){
-        super.tick();
+    @Override
+    public void update(){
+        super.update();
 
-        PortalTarget target = screen.getObject().getTarget(targetIndex.get());
+        PortalTarget target = screen.getPortalGroup().getTarget(targetIndex.get());
         String s = target == null ? "" : target.name;
         if(!s.equals(this.lastTargetText)){
             if(s.equals(this.getText()))
@@ -53,6 +54,6 @@ public class PortalTargetNameField extends TextFieldWidget {
     @Override
     protected void onTextChanged(String oldText, String newText){
         this.pastText.add(oldText);
-        Wormhole.CHANNEL.sendToServer(new PortalNameTargetPacket(this.screen.getObject(), this.targetIndex.get(), newText));
+        Wormhole.CHANNEL.sendToServer(new PortalNameTargetPacket(this.screen.getPortalGroup(), this.targetIndex.get(), newText));
     }
 }

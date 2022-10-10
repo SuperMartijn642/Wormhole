@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "energy_level=15": {
+      "model": "wormhole:block/energy_cells/advanced_energy_cell_15"
+    },
+    "energy_level=11": {
+      "model": "wormhole:block/energy_cells/advanced_energy_cell_11"
+    },
+    "energy_level=7": {
+      "model": "wormhole:block/energy_cells/advanced_energy_cell_7"
+    },
+    "energy_level=3": {
+      "model": "wormhole:block/energy_cells/advanced_energy_cell_3"
+    },
+    "energy_level=6": {
+      "model": "wormhole:block/energy_cells/advanced_energy_cell_6"
+    },
+    "energy_level=14": {
+      "model": "wormhole:block/energy_cells/advanced_energy_cell_14"
+    },
+    "energy_level=4": {
+      "model": "wormhole:block/energy_cells/advanced_energy_cell_4"
+    },
+    "energy_level=10": {
+      "model": "wormhole:block/energy_cells/advanced_energy_cell_10"
+    },
+    "energy_level=2": {
+      "model": "wormhole:block/energy_cells/advanced_energy_cell_2"
+    },
+    "energy_level=9": {
+      "model": "wormhole:block/energy_cells/advanced_energy_cell_9"
+    },
+    "energy_level=12": {
+      "model": "wormhole:block/energy_cells/advanced_energy_cell_12"
+    },
+    "energy_level=1": {
+      "model": "wormhole:block/energy_cells/advanced_energy_cell_1"
+    },
+    "energy_level=0": {
+      "model": "wormhole:block/energy_cells/advanced_energy_cell_0"
+    },
+    "energy_level=8": {
+      "model": "wormhole:block/energy_cells/advanced_energy_cell_8"
+    },
+    "energy_level=13": {
+      "model": "wormhole:block/energy_cells/advanced_energy_cell_13"
+    },
+    "energy_level=5": {
+      "model": "wormhole:block/energy_cells/advanced_energy_cell_5"
+    }
+  }
+}

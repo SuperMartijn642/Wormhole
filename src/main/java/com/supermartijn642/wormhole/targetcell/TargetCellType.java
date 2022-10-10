@@ -1,62 +1,55 @@
 package com.supermartijn642.wormhole.targetcell;
 
+import com.supermartijn642.core.block.BaseBlockEntityType;
 import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.WormholeConfig;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Locale;
+import java.util.function.Supplier;
 
 /**
  * Created 12/7/2020 by SuperMartijn642
  */
 public enum TargetCellType {
 
-    BASIC, ADVANCED;
+    BASIC(WormholeConfig.basicTargetCellCapacity, () -> Wormhole.basic_target_cell, () -> Wormhole.basic_target_cell_tile, 4),
+    ADVANCED(WormholeConfig.advancedTargetCellCapacity, () -> Wormhole.advanced_target_cell, () -> Wormhole.advanced_target_cell_tile, 8);
+
+    private final Supplier<Integer> capacity;
+    private final Supplier<TargetCellBlock> block;
+    private final Supplier<BaseBlockEntityType<? extends TargetCellBlockEntity>> entityType;
+    private final int visualCapacity;
+
+    TargetCellType(Supplier<Integer> capacity, Supplier<TargetCellBlock> block, Supplier<BaseBlockEntityType<? extends TargetCellBlockEntity>> entityType, int visualCapacity){
+        this.capacity = capacity;
+        this.block = block;
+        this.entityType = entityType;
+        this.visualCapacity = visualCapacity;
+    }
 
     public String getRegistryName(){
         return this.name().toLowerCase(Locale.ROOT) + "_target_cell";
     }
 
     public int getCapacity(){
-        switch(this){
-            case BASIC:
-                return WormholeConfig.basicTargetCellCapacity.get();
-            case ADVANCED:
-                return WormholeConfig.advancedTargetCellCapacity.get();
-        }
-        return 0;
+        return this.capacity.get();
     }
 
-    public TargetCellTile createTile(BlockPos pos, BlockState state){
-        switch(this){
-            case BASIC:
-                return new TargetCellTile.BasicTargetCellTile(pos, state);
-            case ADVANCED:
-                return new TargetCellTile.AdvancedTargetCellTile(pos, state);
-        }
-        return null;
+    public TargetCellBlockEntity createTile(BlockPos pos, BlockState state){
+        return new TargetCellBlockEntity(this, pos, state);
     }
 
     public TargetCellBlock getBlock(){
-        switch(this){
-            case BASIC:
-                return Wormhole.basic_target_cell;
-            case ADVANCED:
-                return Wormhole.advanced_target_cell;
-        }
-        return null;
+        return this.block.get();
     }
 
-    public BlockEntityType<TargetCellTile> getTileEntityType(){
-        switch(this){
-            case BASIC:
-                return Wormhole.basic_target_cell_tile;
-            case ADVANCED:
-                return Wormhole.advanced_target_cell_tile;
-        }
-        return null;
+    public BaseBlockEntityType<? extends TargetCellBlockEntity> getBlockEntityType(){
+        return this.entityType.get();
     }
 
+    public int getVisualCapacity(){
+        return visualCapacity;
+    }
 }

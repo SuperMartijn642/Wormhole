@@ -1,33 +1,39 @@
 package com.supermartijn642.wormhole.energycell;
 
-import com.supermartijn642.wormhole.EnergyFormat;
+import com.supermartijn642.core.EnergyFormat;
+import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.wormhole.portal.PortalGroupBlock;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Created 11/16/2020 by SuperMartijn642
  */
 public class EnergyCellBlock extends PortalGroupBlock {
 
+    public static final IntegerProperty ENERGY_LEVEL = IntegerProperty.create("energy_level", 0, 15);
+
     private final EnergyCellType type;
 
     public EnergyCellBlock(EnergyCellType type){
-        super(type.getRegistryName(), type::createTile);
+        super(type::getBlockEntityType);
         this.type = type;
+        this.registerDefaultState(this.defaultBlockState().setValue(ENERGY_LEVEL, 0));
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, BlockGetter worldIn, List<Component> tooltip, TooltipFlag flagIn){
-        tooltip.add(Component.translatable("wormhole.energy_cell.info").withStyle(ChatFormatting.AQUA));
+    protected void appendItemInformation(ItemStack stack, @Nullable BlockGetter level, Consumer<Component> info, boolean advanced){
+        info.accept(TextComponents.translation("wormhole.energy_cell.info").color(ChatFormatting.AQUA).get());
 
         CompoundTag tag = stack.getOrCreateTag().contains("tileData") ? stack.getOrCreateTag().getCompound("tileData") : null;
 
@@ -36,11 +42,11 @@ public class EnergyCellBlock extends PortalGroupBlock {
         int capacity = this.type.getCapacity();
 
         if(capacity > 0)
-            tooltip.add(Component.literal(EnergyFormat.formatCapacity(energy, capacity)).withStyle(ChatFormatting.YELLOW));
+            info.accept(TextComponents.string(EnergyFormat.formatCapacityWithUnit(energy, capacity)).color(ChatFormatting.YELLOW).get());
     }
 
     @Override
-    public RenderShape getRenderShape(BlockState state){
-        return this.type == EnergyCellType.CREATIVE ? RenderShape.MODEL : RenderShape.INVISIBLE;
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block,BlockState> builder){
+        builder.add(ENERGY_LEVEL);
     }
 }
