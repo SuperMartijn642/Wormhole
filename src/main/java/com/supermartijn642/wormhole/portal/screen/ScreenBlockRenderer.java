@@ -5,7 +5,10 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Quaternion;
-import net.minecraft.client.Minecraft;
+import com.supermartijn642.core.ClientUtils;
+import com.supermartijn642.core.render.RenderUtils;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -25,47 +28,47 @@ import java.util.Random;
  */
 public class ScreenBlockRenderer {
 
-    public static void drawBlock(Block block, double x, double y, double scale, float yaw, float pitch){
+    public static void drawBlock(PoseStack poseStack, Block block, double x, double y, double scale, float yaw, float pitch){
         BlockState state = block.defaultBlockState();
 
-        PoseStack matrixstack = new PoseStack();
-        matrixstack.translate(x, y, 350);
-        matrixstack.scale(1, -1, 1);
-        matrixstack.scale((float)scale, (float)scale, (float)scale);
-        MultiBufferSource.BufferSource renderTypeBuffer = Minecraft.getInstance().renderBuffers().bufferSource();
+        poseStack.pushPose();
+        poseStack.translate(x, y, 350);
+        poseStack.scale(1, -1, 1);
+        poseStack.scale((float)scale, (float)scale, (float)scale);
+        MultiBufferSource.BufferSource bufferSource = RenderUtils.getMainBufferSource();
         Lighting.setupForFlatItems();
 
-        matrixstack.mulPose(new Quaternion(pitch, yaw, 0, true));
+        poseStack.mulPose(new Quaternion(pitch, yaw, 0, true));
 
-        BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
+        BakedModel model = ClientUtils.getBlockRenderer().getBlockModel(state);
         IModelData modelData = EmptyModelData.INSTANCE;
 
-        matrixstack.translate(-0.5, -0.5, -0.5);
-        RenderType rendertype = RenderType.translucent();
-        renderModel(model, state, matrixstack, renderTypeBuffer.getBuffer(rendertype), modelData);
+        poseStack.translate(-0.5, -0.5, -0.5);
+        RenderType renderType = ItemBlockRenderTypes.getRenderType(state, true);
+        renderModel(model, state, poseStack, bufferSource.getBuffer(renderType), modelData, renderType);
 
-        renderTypeBuffer.endBatch();
+        bufferSource.endBatch();
+        poseStack.popPose();
         RenderSystem.enableDepthTest();
         Lighting.setupFor3DItems();
     }
 
-    private static void renderModel(BakedModel modelIn, BlockState state, PoseStack matrixStackIn, VertexConsumer bufferIn, IModelData modelData){
+    private static void renderModel(BakedModel model, BlockState state, PoseStack poseStack, VertexConsumer buffer, IModelData modelData, RenderType renderType){
         Random random = new Random();
 
         for(Direction direction : Direction.values()){
             random.setSeed(42L);
-            renderQuads(matrixStackIn, bufferIn, modelIn.getQuads(state, direction, random, modelData));
+            renderQuads(poseStack, buffer, model.getQuads(state, direction, random, modelData));
         }
 
         random.setSeed(42L);
-        renderQuads(matrixStackIn, bufferIn, modelIn.getQuads(state, null, random, modelData));
+        renderQuads(poseStack, buffer, model.getQuads(state, null, random, modelData));
     }
 
-    private static void renderQuads(PoseStack matrixStackIn, VertexConsumer bufferIn, List<BakedQuad> quadsIn){
-        PoseStack.Pose matrix = matrixStackIn.last();
+    private static void renderQuads(PoseStack poseStack, VertexConsumer buffer, List<BakedQuad> quads){
+        PoseStack.Pose matrix = poseStack.last();
 
-        for(BakedQuad bakedquad : quadsIn)
-            bufferIn.putBulkData(matrix, bakedquad, 1, 1, 1, 1, 15728880, OverlayTexture.NO_OVERLAY, false);
+        for(BakedQuad bakedquad : quads)
+            buffer.putBulkData(matrix, bakedquad, 1, 1, 1, 1, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, false);
     }
-
 }

@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "BCB",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "tag": "forge:ingots/iron"
+    },
+    "B": {
+      "tag": "forge:cobblestone"
+    },
+    "C": {
+      "tag": "forge:obsidian"
+    }
+  },
+  "result": {
+    "item": "wormhole:portal_frame",
+    "count": 2
+  }
+}

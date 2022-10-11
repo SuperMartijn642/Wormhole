@@ -1,0 +1,25 @@
+{
+  "type": "wormhole:nbtrecipe",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "tag": "forge:ingots/iron"
+    },
+    "B": {
+      "tag": "forge:gems/quartz"
+    },
+    "C": {
+      "item": "minecraft:repeater"
+    },
+    "D": {
+      "item": "wormhole:basic_energy_cell"
+    }
+  },
+  "result": {
+    "item": "wormhole:advanced_energy_cell"
+  }
+}

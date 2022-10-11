@@ -1,17 +1,15 @@
 package com.supermartijn642.wormhole.packet;
 
-import com.supermartijn642.wormhole.ClientProxy;
+import com.supermartijn642.core.network.BasePacket;
+import com.supermartijn642.core.network.PacketContext;
 import com.supermartijn642.wormhole.PortalGroupCapability;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
 
 /**
  * Created 11/9/2020 by SuperMartijn642
  */
-public class UpdateGroupPacket {
+public class UpdateGroupPacket implements BasePacket {
 
     private CompoundTag groupData;
 
@@ -19,20 +17,21 @@ public class UpdateGroupPacket {
         this.groupData = groupData;
     }
 
-    public UpdateGroupPacket(FriendlyByteBuf buffer){
-        this.decode(buffer);
+    public UpdateGroupPacket(){
     }
 
-    public void encode(FriendlyByteBuf buffer){
+    @Override
+    public void write(FriendlyByteBuf buffer){
         buffer.writeNbt(this.groupData);
     }
 
-    protected void decode(FriendlyByteBuf buffer){
+    @Override
+    public void read(FriendlyByteBuf buffer){
         this.groupData = buffer.readNbt();
     }
 
-    public void handle(Supplier<NetworkEvent.Context> contextSupplier){
-        contextSupplier.get().setPacketHandled(true);
-        ClientProxy.getWorld().getCapability(PortalGroupCapability.CAPABILITY).ifPresent(groups -> groups.readGroup(this.groupData));
+    @Override
+    public void handle(PacketContext context){
+        context.getWorld().getCapability(PortalGroupCapability.CAPABILITY).ifPresent(groups -> groups.readGroup(this.groupData));
     }
 }

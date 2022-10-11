@@ -1,6 +1,0 @@
-{
-  "parent": "wormhole:block/portal_x",
-  "textures": {
-    "all": "wormhole:portal/portal_red"
-  }
-}
