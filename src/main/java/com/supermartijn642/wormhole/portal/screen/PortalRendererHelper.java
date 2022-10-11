@@ -52,7 +52,8 @@ public class PortalRendererHelper {
         poseStack.translate(x + width / 2, y + height / 2, 350);
         poseStack.scale(scale, -scale, scale);
         MultiBufferSource.BufferSource bufferSource = RenderUtils.getMainBufferSource();
-        Lighting.setupForFlatItems();
+
+        RenderSystem.setShaderLights(Vector3f.YP, Vector3f.ZP);
 
         poseStack.mulPose(new Quaternion(45, (float)(System.currentTimeMillis() % ROTATE_TIME) / ROTATE_TIME * 360, 0, true));
         poseStack.translate(-center.x(), -center.y(), -center.z());
