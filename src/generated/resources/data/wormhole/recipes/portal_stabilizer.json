@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "tag": "forge:ingots/iron"
+    },
+    "B": {
+      "tag": "forge:storage_blocks/lapis"
+    },
+    "C": {
+      "tag": "forge:dusts/glowstone"
+    },
+    "D": {
+      "tag": "forge:ender_pearls"
+    },
+    "E": {
+      "tag": "forge:storage_blocks/redstone"
+    }
+  },
+  "result": {
+    "item": "wormhole:portal_stabilizer"
+  }
+}

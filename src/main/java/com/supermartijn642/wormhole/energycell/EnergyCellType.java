@@ -1,70 +1,53 @@
 package com.supermartijn642.wormhole.energycell;
 
+import com.supermartijn642.core.block.BaseBlockEntityType;
 import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.WormholeConfig;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Locale;
+import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 /**
  * Created 12/7/2020 by SuperMartijn642
  */
 public enum EnergyCellType {
 
-    BASIC, ADVANCED, CREATIVE;
+    BASIC(WormholeConfig.basicEnergyCellCapacity, () -> Wormhole.basic_energy_cell, () -> Wormhole.basic_energy_cell_tile, EnergyCellBlockEntity.BasicEnergyCellBlockEntity::new),
+    ADVANCED(WormholeConfig.advancedEnergyCellCapacity, () -> Wormhole.advanced_energy_cell, () -> Wormhole.advanced_energy_cell_tile, EnergyCellBlockEntity.AdvancedEnergyCellBlockEntity::new),
+    CREATIVE(() -> 100000000, () -> Wormhole.creative_energy_cell, () -> Wormhole.creative_energy_cell_tile, EnergyCellBlockEntity.CreativeEnergyCellBlockEntity::new);
+
+    private final Supplier<Integer> capacity;
+    private final Supplier<EnergyCellBlock> block;
+    private final Supplier<BaseBlockEntityType<? extends EnergyCellBlockEntity>> entityType;
+    private final BiFunction<BlockPos,BlockState,EnergyCellBlockEntity> entitySupplier;
+
+    EnergyCellType(Supplier<Integer> capacity, Supplier<EnergyCellBlock> block, Supplier<BaseBlockEntityType<? extends EnergyCellBlockEntity>> entityType, BiFunction<BlockPos,BlockState,EnergyCellBlockEntity> entitySupplier){
+        this.capacity = capacity;
+        this.block = block;
+        this.entityType = entityType;
+        this.entitySupplier = entitySupplier;
+    }
 
     public String getRegistryName(){
         return this.name().toLowerCase(Locale.ROOT) + "_energy_cell";
     }
 
     public int getCapacity(){
-        switch(this){
-            case BASIC:
-                return WormholeConfig.basicEnergyCellCapacity.get();
-            case ADVANCED:
-                return WormholeConfig.advancedEnergyCellCapacity.get();
-            case CREATIVE:
-                return 100000000;
-        }
-        return 0;
+        return this.capacity.get();
     }
 
-    public EnergyCellTile createTile(BlockPos pos, BlockState state){
-        switch(this){
-            case BASIC:
-                return new EnergyCellTile.BasicEnergyCellTile(pos, state);
-            case ADVANCED:
-                return new EnergyCellTile.AdvancedEnergyCellTile(pos, state);
-            case CREATIVE:
-                return new EnergyCellTile.CreativeEnergyCellTile(pos, state);
-        }
-        return null;
+    public EnergyCellBlockEntity createTile(BlockPos pos, BlockState state){
+        return this.entitySupplier.apply(pos, state);
     }
 
     public EnergyCellBlock getBlock(){
-        switch(this){
-            case BASIC:
-                return Wormhole.basic_energy_cell;
-            case ADVANCED:
-                return Wormhole.advanced_energy_cell;
-            case CREATIVE:
-                return Wormhole.creative_energy_cell;
-        }
-        return null;
+        return this.block.get();
     }
 
-    public BlockEntityType<EnergyCellTile> getTileEntityType(){
-        switch(this){
-            case BASIC:
-                return Wormhole.basic_energy_cell_tile;
-            case ADVANCED:
-                return Wormhole.advanced_energy_cell_tile;
-            case CREATIVE:
-                return Wormhole.creative_energy_cell_tile;
-        }
-        return null;
+    public BaseBlockEntityType<? extends EnergyCellBlockEntity> getBlockEntityType(){
+        return this.entityType.get();
     }
-
 }

@@ -1,23 +1,22 @@
 package com.supermartijn642.wormhole.portal.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
-import com.supermartijn642.core.gui.widget.AbstractButtonWidget;
-import com.supermartijn642.core.gui.widget.IHoverTextWidget;
-import com.supermartijn642.wormhole.ClientProxy;
+import com.supermartijn642.core.gui.widget.premade.AbstractButtonWidget;
+import com.supermartijn642.wormhole.WormholeClient;
 import com.supermartijn642.wormhole.portal.PortalTarget;
-import net.minecraft.client.Minecraft;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.DyeColor;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
  * Created 11/12/2020 by SuperMartijn642
  */
-public class PortalTargetEditColorButton extends AbstractButtonWidget implements IHoverTextWidget {
+public class PortalTargetEditColorButton extends AbstractButtonWidget {
 
     private static final ResourceLocation BUTTONS = new ResourceLocation("wormhole", "textures/gui/small_color_buttons.png");
 
@@ -27,16 +26,16 @@ public class PortalTargetEditColorButton extends AbstractButtonWidget implements
 
     public PortalTargetEditColorButton(PortalGroupScreen screen, int x, int y, Supplier<Integer> targetIndex, Supplier<DyeColor> color, Runnable returnScreen){
         super(x, y, 10, 10, () -> {
-            PortalTarget target = screen.getFromPortalGroup(group -> group.getTarget(targetIndex.get()), null);
+            PortalTarget target = screen.getPortalGroup().getTarget(targetIndex.get());
             if(target != null)
-                ClientProxy.openPortalTargetColorScreen(screen.pos, targetIndex.get(), returnScreen);
+                WormholeClient.openPortalTargetColorScreen(screen.pos, targetIndex.get(), returnScreen);
         });
-        this.target = () -> screen.getFromPortalGroup(group -> group.getTarget(targetIndex.get()), null);
+        this.target = () -> screen.getPortalGroup().getTarget(targetIndex.get());
         this.color = color;
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks){
+    public void render(PoseStack poseStack, int mouseX, int mouseY){
         if(!this.visible)
             return;
 
@@ -44,8 +43,8 @@ public class PortalTargetEditColorButton extends AbstractButtonWidget implements
         ScreenUtils.bindTexture(BUTTONS);
         DyeColor color = this.color.get();
         float x = color == null ? 0 : (color.getId() + 1) * 8f / 136f;
-        float y = target != null && this.isHovered() ? 0.5f : 0;
-        ScreenUtils.drawTexture(matrixStack, this.x, this.y, this.width, this.height, x, y, 8 / 136f, 0.5f);
+        float y = target != null && this.isFocused() ? 0.5f : 0;
+        ScreenUtils.drawTexture(poseStack, this.x, this.y, this.width, this.height, x, y, 8 / 136f, 0.5f);
     }
 
     @Override
@@ -55,13 +54,14 @@ public class PortalTargetEditColorButton extends AbstractButtonWidget implements
     }
 
     @Override
-    public Component getHoverText(){
-        return this.visible ? new TranslatableComponent("wormhole.portal.gui.target_color") : null;
+    protected void getTooltips(Consumer<Component> tooltips){
+        if(this.visible)
+            tooltips.accept(TextComponents.translation("wormhole.portal.gui.target_color").get());
     }
 
     @Override
-    protected Component getNarrationMessage(){
-        return this.visible ? new TranslatableComponent("wormhole.portal.gui.target_color") : null;
+    public Component getNarrationMessage(){
+        return this.visible ? TextComponents.translation("wormhole.portal.gui.target_color").get() : null;
     }
 }
 

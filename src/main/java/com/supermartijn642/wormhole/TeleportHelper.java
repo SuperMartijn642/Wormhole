@@ -1,15 +1,15 @@
 package com.supermartijn642.wormhole;
 
 import com.supermartijn642.wormhole.portal.PortalTarget;
-import net.minecraft.world.level.portal.PortalInfo;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundSetPassengersPacket;
 import net.minecraft.server.TickTask;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.portal.PortalInfo;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.ITeleporter;
 
 import javax.annotation.Nullable;
@@ -40,7 +40,7 @@ public class TeleportHelper {
     }
 
     public static boolean canTeleport(Entity entity, PortalTarget target){
-        if(entity.level.isClientSide || !target.getWorld(entity.getServer()).isPresent())
+        if(entity.level.isClientSide || !target.getLevel(entity.getServer()).isPresent())
             return false;
         if(entity.isPassenger())
             return canTeleport(entity.getRootVehicle(), target);
@@ -61,15 +61,15 @@ public class TeleportHelper {
     }
 
     private static void teleportEntityAndPassengers(Entity entity, Entity entityBeingRidden, PortalTarget target){
-        if(entity.level.isClientSide || !target.getWorld(entity.getServer()).isPresent())
+        if(entity.level.isClientSide || !target.getLevel(entity.getServer()).isPresent())
             return;
-        Optional<ServerLevel> targetWorld = target.getWorld(entity.getServer()).filter(ServerLevel.class::isInstance).map(ServerLevel.class::cast);
-        if(!targetWorld.isPresent())
+        Optional<ServerLevel> targetLevel = target.getLevel(entity.getServer()).filter(ServerLevel.class::isInstance).map(ServerLevel.class::cast);
+        if(!targetLevel.isPresent())
             return;
 
         Collection<Entity> passengers = entity.getPassengers();
         entity.ejectPassengers();
-        Entity newEntity = teleportEntity(entity, targetWorld.get(), target);
+        Entity newEntity = teleportEntity(entity, targetLevel.get(), target);
         if(entityBeingRidden != null){
             newEntity.startRiding(entityBeingRidden);
             if(newEntity instanceof ServerPlayer)
@@ -78,10 +78,10 @@ public class TeleportHelper {
         passengers.forEach(e -> teleportEntityAndPassengers(e, newEntity, target));
     }
 
-    private static Entity teleportEntity(Entity entity, ServerLevel targetWorld, PortalTarget target){
-        if(targetWorld == entity.level){
+    private static Entity teleportEntity(Entity entity, ServerLevel targetLevel, PortalTarget target){
+        if(targetLevel == entity.level){
             if(entity instanceof ServerPlayer)
-                ((ServerPlayer)entity).teleportTo(targetWorld, target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
+                ((ServerPlayer)entity).teleportTo(targetLevel, target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
             else
                 entity.teleportTo(target.x + .5, target.y + .2, target.z + .5);
             entity.setYHeadRot(target.yaw);
@@ -90,7 +90,7 @@ public class TeleportHelper {
             entity.setOnGround(true);
             return entity;
         }else
-            return entity.changeDimension(targetWorld, new WormholeTeleporter(target));
+            return entity.changeDimension(targetLevel, new WormholeTeleporter(target));
     }
 
     private static class WormholeTeleporter implements ITeleporter {
@@ -101,13 +101,13 @@ public class TeleportHelper {
         }
 
         @Override
-        public Entity placeEntity(Entity entity, ServerLevel currentWorld, ServerLevel destWorld, float yaw, Function<Boolean,Entity> repositionEntity){
+        public Entity placeEntity(Entity entity, ServerLevel currentLevel, ServerLevel destLevel, float yaw, Function<Boolean,Entity> repositionEntity){
             return repositionEntity.apply(false);
         }
 
         @Nullable
         @Override
-        public PortalInfo getPortalInfo(Entity entity, ServerLevel destWorld, Function<ServerLevel,PortalInfo> defaultPortalInfo){
+        public PortalInfo getPortalInfo(Entity entity, ServerLevel destLevel, Function<ServerLevel,PortalInfo> defaultPortalInfo){
             return new PortalInfo(this.target.getCenteredPos(), Vec3.ZERO, this.target.yaw, 0);
         }
     }

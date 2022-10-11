@@ -1,41 +1,44 @@
 package com.supermartijn642.wormhole.generator;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.supermartijn642.core.gui.TileEntityBaseContainerScreen;
+import com.supermartijn642.core.TextComponents;
+import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.widget.BlockEntityBaseContainerWidget;
 import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.screen.EnergyBarWidget;
 import com.supermartijn642.wormhole.screen.FlameProgressWidget;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 
 /**
  * Created 12/21/2020 by SuperMartijn642
  */
-public class CoalGeneratorScreen extends TileEntityBaseContainerScreen<CoalGeneratorTile,CoalGeneratorContainer> {
+public class CoalGeneratorScreen extends BlockEntityBaseContainerWidget<CoalGeneratorBlockEntity,CoalGeneratorContainer> {
 
-    private final int WIDTH = 176, HEIGHT = 166;
+    private static final int WIDTH = 176, HEIGHT = 166;
 
-    public CoalGeneratorScreen(CoalGeneratorContainer screenContainer, Inventory inv){
-        super(screenContainer, new TranslatableComponent(Wormhole.coal_generator.getDescriptionId()));
+    public CoalGeneratorScreen(){
+        super(0, 0, WIDTH, HEIGHT, null, null);
     }
 
     @Override
-    protected int sizeX(CoalGeneratorTile tile){
-        return WIDTH;
+    protected Component getNarrationMessage(CoalGeneratorBlockEntity object){
+        return TextComponents.block(Wormhole.coal_generator).get();
     }
 
     @Override
-    protected int sizeY(CoalGeneratorTile tile){
-        return HEIGHT;
+    protected void addWidgets(CoalGeneratorBlockEntity entity){
+        this.addWidget(new EnergyBarWidget(8, 17, 20, 52, () -> entity.energy, () -> entity.energyCapacity));
+        this.addWidget(new FlameProgressWidget(entity::getProgress, 80, 35, 14, 14));
     }
 
     @Override
-    protected void addWidgets(CoalGeneratorTile tile){
-        this.addWidget(new EnergyBarWidget(8, 17, 20, 52, () -> tile.energy, () -> tile.energyCapacity));
-        this.addWidget(new FlameProgressWidget(tile::getProgress, 80, 35, 14, 14));
+    protected void renderBackground(PoseStack poseStack, int mouseX, int mouseY, CoalGeneratorBlockEntity object){
+        ScreenUtils.drawScreenBackground(poseStack, 0, 0, this.width(), this.height());
+        super.renderBackground(poseStack, mouseX, mouseY, object);
     }
 
     @Override
-    protected void renderTooltips(PoseStack matrixStack, int i, int i1, CoalGeneratorTile coalGeneratorTile){
+    protected CoalGeneratorBlockEntity getObject(CoalGeneratorBlockEntity oldObject){
+        return this.container.getBlockEntity();
     }
 }

@@ -3,7 +3,7 @@ package com.supermartijn642.wormhole;
 import com.supermartijn642.wormhole.packet.UpdateGroupPacket;
 import com.supermartijn642.wormhole.packet.UpdateGroupsPacket;
 import com.supermartijn642.wormhole.portal.PortalGroup;
-import com.supermartijn642.wormhole.portal.PortalGroupTile;
+import com.supermartijn642.wormhole.portal.PortalGroupBlockEntity;
 import com.supermartijn642.wormhole.portal.PortalShape;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -12,17 +12,13 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.capabilities.*;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fmllegacy.network.PacketDistributor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -34,18 +30,19 @@ import java.util.*;
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class PortalGroupCapability {
 
-    @CapabilityInject(PortalGroupCapability.class)
-    public static Capability<PortalGroupCapability> CAPABILITY;
+    public static Capability<PortalGroupCapability> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
+    });
 
-    public static void register(){
-        CapabilityManager.INSTANCE.register(PortalGroupCapability.class);
+    @SubscribeEvent
+    public static void register(RegisterCapabilitiesEvent e){
+        e.register(PortalGroupCapability.class);
     }
 
     @SubscribeEvent
     public static void attachCapabilities(AttachCapabilitiesEvent<Level> e){
-        Level world = e.getObject();
+        Level level = e.getObject();
 
-        LazyOptional<PortalGroupCapability> capability = LazyOptional.of(() -> new PortalGroupCapability(world));
+        LazyOptional<PortalGroupCapability> capability = LazyOptional.of(() -> new PortalGroupCapability(level));
         e.addCapability(new ResourceLocation("wormhole", "portal_groups"), new ICapabilitySerializable<Tag>() {
             @Nonnull
             @Override
@@ -72,51 +69,47 @@ public class PortalGroupCapability {
         if(e.phase != TickEvent.Phase.END)
             return;
 
-        tickWorldCapability(e.world);
+        tickLevelCapability(e.world);
     }
 
-    public static void tickWorldCapability(Level world){
-        world.getCapability(CAPABILITY).ifPresent(PortalGroupCapability::tick);
+    public static void tickLevelCapability(Level level){
+        level.getCapability(CAPABILITY).ifPresent(PortalGroupCapability::tick);
     }
 
     @SubscribeEvent
     public static void onJoinWorld(PlayerEvent.PlayerChangedDimensionEvent e){
-        ServerPlayer player = (ServerPlayer)e.getPlayer();
+        ServerPlayer player = (ServerPlayer)e.getEntity();
         player.level.getCapability(CAPABILITY).ifPresent(groups ->
-            Wormhole.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateGroupsPacket(groups.write()))
+            Wormhole.CHANNEL.sendToPlayer(player, new UpdateGroupsPacket(groups.write()))
         );
     }
 
     @SubscribeEvent
     public static void onRespawn(PlayerEvent.PlayerRespawnEvent e){
-        ServerPlayer player = (ServerPlayer)e.getPlayer();
+        ServerPlayer player = (ServerPlayer)e.getEntity();
         player.level.getCapability(CAPABILITY).ifPresent(groups ->
-            Wormhole.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateGroupsPacket(groups.write()))
+            Wormhole.CHANNEL.sendToPlayer(player, new UpdateGroupsPacket(groups.write()))
         );
     }
 
     @SubscribeEvent
     public static void onJoin(PlayerEvent.PlayerLoggedInEvent e){
-        ServerPlayer player = (ServerPlayer)e.getPlayer();
+        ServerPlayer player = (ServerPlayer)e.getEntity();
         player.level.getCapability(CAPABILITY).ifPresent(groups ->
-            Wormhole.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateGroupsPacket(groups.write()))
+            Wormhole.CHANNEL.sendToPlayer(player, new UpdateGroupsPacket(groups.write()))
         );
     }
 
-    private final Level world;
+    private final Level level;
     private final List<PortalGroup> groups = new LinkedList<>();
     private final Map<BlockPos,PortalGroup> groupsByPosition = new HashMap<>();
 
-    public PortalGroupCapability(Level world){
-        this.world = world;
-    }
-
-    public PortalGroupCapability(){
-        this.world = null;
+    public PortalGroupCapability(Level level){
+        this.level = level;
     }
 
     public void add(PortalShape shape){
-        PortalGroup group = new PortalGroup(this.world, shape);
+        PortalGroup group = new PortalGroup(this.level, shape);
         this.groups.add(group);
         group.shape.frame.forEach(pos -> this.groupsByPosition.put(pos, group));
         group.shape.area.forEach(pos -> this.groupsByPosition.put(pos, group));
@@ -136,16 +129,16 @@ public class PortalGroupCapability {
     }
 
     public void updateGroup(PortalGroup group){
-        if(!this.world.isClientSide && group != null)
-            Wormhole.CHANNEL.send(PacketDistributor.DIMENSION.with(this.world::dimension), new UpdateGroupPacket(this.writeGroup(group)));
+        if(!this.level.isClientSide && group != null)
+            Wormhole.CHANNEL.sendToDimension(this.level, new UpdateGroupPacket(this.writeGroup(group)));
     }
 
     private void update(){
-        Wormhole.CHANNEL.send(PacketDistributor.DIMENSION.with(this.world::dimension), new UpdateGroupsPacket(this.write()));
+        Wormhole.CHANNEL.sendToDimension(this.level, new UpdateGroupsPacket(this.write()));
     }
 
-    public PortalGroup getGroup(PortalGroupTile tile){
-        return this.groupsByPosition.get(tile.getBlockPos());
+    public PortalGroup getGroup(PortalGroupBlockEntity entity){
+        return this.groupsByPosition.get(entity.getBlockPos());
     }
 
     public PortalGroup getGroup(BlockPos pos){
@@ -171,7 +164,7 @@ public class PortalGroupCapability {
             this.groupsByPosition.clear();
             CompoundTag groupsTag = compound.getCompound("groups");
             for(String key : groupsTag.getAllKeys()){
-                PortalGroup group = new PortalGroup(this.world, groupsTag.getCompound(key));
+                PortalGroup group = new PortalGroup(this.level, groupsTag.getCompound(key));
                 this.groups.add(group);
                 group.shape.frame.forEach(pos -> this.groupsByPosition.put(pos, group));
                 group.shape.area.forEach(pos -> this.groupsByPosition.put(pos, group));
@@ -187,11 +180,10 @@ public class PortalGroupCapability {
 
     public void readGroup(CompoundTag tag){
         if(tag.contains("group")){
-            PortalGroup group = new PortalGroup(this.world, tag.getCompound("group"));
+            PortalGroup group = new PortalGroup(this.level, tag.getCompound("group"));
             this.groups.add(group);
             group.shape.frame.forEach(pos -> this.groupsByPosition.put(pos, group));
             group.shape.area.forEach(pos -> this.groupsByPosition.put(pos, group));
         }
     }
-
 }
