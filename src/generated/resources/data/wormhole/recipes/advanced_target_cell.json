@@ -1,0 +1,25 @@
+{
+  "type": "wormhole:nbtrecipe",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "tag": "forge:ingots/iron"
+    },
+    "B": {
+      "tag": "forge:gems/lapis"
+    },
+    "C": {
+      "tag": "forge:dusts/glowstone"
+    },
+    "D": {
+      "item": "wormhole:basic_target_cell"
+    }
+  },
+  "result": {
+    "item": "wormhole:advanced_target_cell"
+  }
+}

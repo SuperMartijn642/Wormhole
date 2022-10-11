@@ -1,57 +1,54 @@
 package com.supermartijn642.wormhole.targetdevice;
 
 import com.google.common.collect.Lists;
-import com.supermartijn642.wormhole.ClientProxy;
+import com.supermartijn642.core.TextComponents;
+import com.supermartijn642.core.item.BaseItem;
+import com.supermartijn642.core.item.ItemProperties;
 import com.supermartijn642.wormhole.Wormhole;
+import com.supermartijn642.wormhole.WormholeClient;
 import com.supermartijn642.wormhole.portal.PortalTarget;
-import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
  * Created 7/21/2020 by SuperMartijn642
  */
-public class TargetDeviceItem extends Item {
+public class TargetDeviceItem extends BaseItem {
 
     private final Supplier<Integer> maxTargetCount;
 
-    public TargetDeviceItem(String registryName, Supplier<Integer> maxTargetCount){
-        super(new Properties().stacksTo(1).tab(Wormhole.ITEM_GROUP));
+    public TargetDeviceItem(Supplier<Integer> maxTargetCount){
+        super(ItemProperties.create().maxStackSize(1).group(Wormhole.ITEM_GROUP));
         this.maxTargetCount = maxTargetCount;
-        this.setRegistryName(registryName);
     }
 
     @Override
-    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn){
-        if(worldIn.isClientSide)
-            ClientProxy.openTargetDeviceScreen(handIn, playerIn.blockPosition(), Math.round(playerIn.yRot / 90) * 90);
-        return ActionResult.consume(playerIn.getItemInHand(handIn));
+    public ItemUseResult interact(ItemStack stack, PlayerEntity player, Hand hand, World level){
+        if(level.isClientSide)
+            WormholeClient.openTargetDeviceScreen(hand, player.blockPosition(), Math.round(player.yRot / 90) * 90);
+        return ItemUseResult.consume(player.getItemInHand(hand));
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn){
-        tooltip.add(new TranslationTextComponent("wormhole.target_device.info").withStyle(TextFormatting.AQUA));
+    protected void appendItemInformation(ItemStack stack, @Nullable IBlockReader level, Consumer<ITextComponent> info, boolean advanced){
+        info.accept(TextComponents.translation("wormhole.target_device.info").color(TextFormatting.AQUA).get());
 
         List<PortalTarget> targets = getTargets(stack);
         int capacity = getMaxTargetCount(stack);
-        tooltip.add(
-            new TranslationTextComponent("wormhole.target_device.info.targets", targets.size(), capacity)
-                .withStyle(TextFormatting.YELLOW)
-        );
+        info.accept(TextComponents.translation("wormhole.target_device.info.targets", targets.size(), capacity).color(TextFormatting.YELLOW).get());
     }
 
     public static List<PortalTarget> getTargets(ItemStack stack){

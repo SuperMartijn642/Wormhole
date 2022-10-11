@@ -2,22 +2,21 @@ package com.supermartijn642.wormhole.screen;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.supermartijn642.core.EnergyFormat;
+import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
-import com.supermartijn642.core.gui.widget.AbstractButtonWidget;
-import com.supermartijn642.core.gui.widget.IHoverTextWidget;
-import com.supermartijn642.wormhole.EnergyFormat;
-import net.minecraft.client.Minecraft;
+import com.supermartijn642.core.gui.widget.premade.AbstractButtonWidget;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
  * Created 11/17/2020 by SuperMartijn642
  */
-public class EnergyBarWidget extends AbstractButtonWidget implements IHoverTextWidget {
+public class EnergyBarWidget extends AbstractButtonWidget {
 
     private static final ResourceLocation BARS = new ResourceLocation("wormhole", "textures/gui/energy_bars.png");
 
@@ -30,26 +29,26 @@ public class EnergyBarWidget extends AbstractButtonWidget implements IHoverTextW
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks){
-        Minecraft.getInstance().getTextureManager().bind(BARS);
+    public void render(MatrixStack poseStack, int mouseX, int mouseY){
+        ScreenUtils.bindTexture(BARS);
         GlStateManager._enableAlphaTest();
-        ScreenUtils.drawTexture(matrixStack, this.x, this.y, this.width, this.height, this.isHovered() ? 1 / 11f : 0, 0, 1 / 11f, 1);
+        ScreenUtils.drawTexture(poseStack, this.x, this.y, this.width, this.height, this.isFocused() ? 1 / 11f : 0, 0, 1 / 11f, 1);
         int energy = this.energy.get();
         int capacity = this.capacity.get();
         float percentage = capacity == 0 ? 1 : Math.max(Math.min(energy / (float)capacity, 1), 0);
         if(percentage != 0)
-            ScreenUtils.drawTexture(matrixStack, this.x, this.y + this.height * (1 - percentage), this.width, this.height * percentage, 3 / 11f, 1 - percentage, 1 / 11f, percentage);
+            ScreenUtils.drawTexture(poseStack, this.x, this.y + this.height * (1 - percentage), this.width, this.height * percentage, 3 / 11f, 1 - percentage, 1 / 11f, percentage);
     }
 
     @Override
-    public ITextComponent getHoverText(){
+    protected void getTooltips(Consumer<ITextComponent> tooltips){
         int energy = this.energy.get();
         int capacity = this.capacity.get();
-        return new StringTextComponent(EnergyFormat.formatCapacity(energy, capacity));
+        tooltips.accept(TextComponents.string(EnergyFormat.formatCapacityWithUnit(energy, capacity)).get());
     }
 
     @Override
-    protected ITextComponent getNarrationMessage(){
-        return this.getHoverText();
+    public ITextComponent getNarrationMessage(){
+        return TextComponents.string(EnergyFormat.formatCapacityWithUnit(this.energy.get(), this.capacity.get())).get();
     }
 }

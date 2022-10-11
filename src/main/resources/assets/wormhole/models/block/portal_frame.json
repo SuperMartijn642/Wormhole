@@ -1,7 +1,0 @@
-{
-  "parent": "block/cube_all",
-  "textures": {
-    "particle": "wormhole:portal_frame",
-    "all": "wormhole:portal_frame"
-  }
-}

@@ -2,8 +2,7 @@ package com.supermartijn642.wormhole.screen;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.supermartijn642.core.gui.ScreenUtils;
-import com.supermartijn642.core.gui.widget.Widget;
-import net.minecraft.client.Minecraft;
+import com.supermartijn642.core.gui.widget.BaseWidget;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
@@ -12,7 +11,7 @@ import java.util.function.Supplier;
 /**
  * Created 12/25/2020 by SuperMartijn642
  */
-public class FlameProgressWidget extends Widget {
+public class FlameProgressWidget extends BaseWidget {
 
     private static final ResourceLocation FLAME = new ResourceLocation("wormhole", "textures/gui/progress_flame.png");
 
@@ -24,17 +23,17 @@ public class FlameProgressWidget extends Widget {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks){
-        Minecraft.getInstance().getTextureManager().bind(FLAME);
+    public void render(MatrixStack poseStack, int mouseX, int mouseY){
+        ScreenUtils.bindTexture(FLAME);
         float progress = Math.max(Math.min(this.progress.get(), 1), 0);
         if(progress != 1)
-            ScreenUtils.drawTexture(matrixStack, this.x, this.y, this.width, this.height * (1 - progress), 0, 0, 0.5f, (1 - progress));
+            ScreenUtils.drawTexture(poseStack, this.x, this.y, this.width, this.height * (1 - progress), 0, 0, 0.5f, (1 - progress));
         if(progress != 0)
-            ScreenUtils.drawTexture(matrixStack, this.x, this.y + this.height * (1 - progress), this.width, this.height * progress, 0.5f, 1 - progress, 0.5f, progress);
+            ScreenUtils.drawTexture(poseStack, this.x, this.y + this.height * (1 - progress), this.width, this.height * progress, 0.5f, 1 - progress, 0.5f, progress);
     }
 
     @Override
-    protected ITextComponent getNarrationMessage(){
+    public ITextComponent getNarrationMessage(){
         return null;
     }
 }

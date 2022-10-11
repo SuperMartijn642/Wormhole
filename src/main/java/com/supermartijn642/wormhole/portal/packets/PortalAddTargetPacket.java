@@ -1,14 +1,13 @@
 package com.supermartijn642.wormhole.portal.packets;
 
+import com.supermartijn642.core.network.PacketContext;
 import com.supermartijn642.wormhole.packet.PortalGroupPacket;
 import com.supermartijn642.wormhole.portal.PortalGroup;
 import com.supermartijn642.wormhole.portal.PortalTarget;
 import com.supermartijn642.wormhole.targetdevice.TargetDeviceItem;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Hand;
-import net.minecraft.world.World;
 
 import java.util.List;
 
@@ -26,27 +25,26 @@ public class PortalAddTargetPacket extends PortalGroupPacket {
         this.index = index;
     }
 
-    public PortalAddTargetPacket(PacketBuffer buffer){
-        super(buffer);
+    public PortalAddTargetPacket(){
     }
 
     @Override
-    public void encode(PacketBuffer buffer){
-        super.encode(buffer);
+    public void write(PacketBuffer buffer){
+        super.write(buffer);
         buffer.writeEnum(this.hand);
         buffer.writeInt(this.index);
     }
 
     @Override
-    protected void decode(PacketBuffer buffer){
-        super.decode(buffer);
+    public void read(PacketBuffer buffer){
+        super.read(buffer);
         this.hand = buffer.readEnum(Hand.class);
         this.index = buffer.readInt();
     }
 
     @Override
-    protected void handle(PlayerEntity player, World world, PortalGroup group){
-        ItemStack stack = player.getItemInHand(this.hand);
+    protected void handle(PortalGroup group, PacketContext context){
+        ItemStack stack = context.getSendingPlayer().getItemInHand(this.hand);
         if(stack.isEmpty() || !(stack.getItem() instanceof TargetDeviceItem))
             return;
         List<PortalTarget> targets = TargetDeviceItem.getTargets(stack);

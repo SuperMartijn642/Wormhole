@@ -40,7 +40,7 @@ public class TeleportHelper {
     }
 
     public static boolean canTeleport(Entity entity, PortalTarget target){
-        if(entity.level.isClientSide || !target.getWorld(entity.getServer()).isPresent())
+        if(entity.level.isClientSide || !target.getLevel(entity.getServer()).isPresent())
             return false;
         if(entity.isPassenger())
             return canTeleport(entity.getRootVehicle(), target);
@@ -61,15 +61,15 @@ public class TeleportHelper {
     }
 
     private static void teleportEntityAndPassengers(Entity entity, Entity entityBeingRidden, PortalTarget target){
-        if(entity.level.isClientSide || !target.getWorld(entity.getServer()).isPresent())
+        if(entity.level.isClientSide || !target.getLevel(entity.getServer()).isPresent())
             return;
-        Optional<ServerWorld> targetWorld = target.getWorld(entity.getServer()).filter(ServerWorld.class::isInstance).map(ServerWorld.class::cast);
-        if(!targetWorld.isPresent())
+        Optional<ServerWorld> targetLevel = target.getLevel(entity.getServer()).filter(ServerWorld.class::isInstance).map(ServerWorld.class::cast);
+        if(!targetLevel.isPresent())
             return;
 
         Collection<Entity> passengers = entity.getPassengers();
         entity.ejectPassengers();
-        Entity newEntity = teleportEntity(entity, targetWorld.get(), target);
+        Entity newEntity = teleportEntity(entity, targetLevel.get(), target);
         if(entityBeingRidden != null){
             newEntity.startRiding(entityBeingRidden);
             if(newEntity instanceof ServerPlayerEntity)
@@ -78,10 +78,10 @@ public class TeleportHelper {
         passengers.forEach(e -> teleportEntityAndPassengers(e, newEntity, target));
     }
 
-    private static Entity teleportEntity(Entity entity, ServerWorld targetWorld, PortalTarget target){
-        if(targetWorld == entity.level){
+    private static Entity teleportEntity(Entity entity, ServerWorld targetLevel, PortalTarget target){
+        if(targetLevel == entity.level){
             if(entity instanceof ServerPlayerEntity)
-                ((ServerPlayerEntity)entity).teleportTo(targetWorld, target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
+                ((ServerPlayerEntity)entity).teleportTo(targetLevel, target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
             else
                 entity.teleportTo(target.x + .5, target.y + .2, target.z + .5);
             entity.setYHeadRot(target.yaw);
@@ -90,10 +90,11 @@ public class TeleportHelper {
             entity.setOnGround(true);
             return entity;
         }else
-            return entity.changeDimension(targetWorld, new WormholeTeleporter(target));
+            return entity.changeDimension(targetLevel, new WormholeTeleporter(target));
     }
 
     private static class WormholeTeleporter implements ITeleporter {
+
         private final PortalTarget target;
 
         public WormholeTeleporter(PortalTarget target){
@@ -101,13 +102,13 @@ public class TeleportHelper {
         }
 
         @Override
-        public Entity placeEntity(Entity entity, ServerWorld currentWorld, ServerWorld destWorld, float yaw, Function<Boolean,Entity> repositionEntity){
+        public Entity placeEntity(Entity entity, ServerWorld currentLevel, ServerWorld destLevel, float yaw, Function<Boolean,Entity> repositionEntity){
             return repositionEntity.apply(false);
         }
 
         @Nullable
         @Override
-        public PortalInfo getPortalInfo(Entity entity, ServerWorld destWorld, Function<ServerWorld,PortalInfo> defaultPortalInfo){
+        public PortalInfo getPortalInfo(Entity entity, ServerWorld destLevel, Function<ServerWorld,PortalInfo> defaultPortalInfo){
             return new PortalInfo(this.target.getCenteredPos(), Vector3d.ZERO, this.target.yaw, 0);
         }
     }

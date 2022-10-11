@@ -1,6 +1,7 @@
 package com.supermartijn642.wormhole;
 
-import com.supermartijn642.configlib.ModConfigBuilder;
+import com.supermartijn642.configlib.api.ConfigBuilders;
+import com.supermartijn642.configlib.api.IConfigBuilder;
 
 import java.util.function.Supplier;
 
@@ -40,7 +41,7 @@ public class WormholeConfig {
     public static final Supplier<Integer> coalGeneratorRange;
 
     static{
-        ModConfigBuilder builder = new ModConfigBuilder("wormhole");
+        IConfigBuilder builder = ConfigBuilders.newTomlConfig("wormhole", null, false);
 
         builder.push("General");
         requireCorners = builder.comment("If true, a portal will require frame blocks at its corners. Previously build portals won't be affected.").define("requireCorners", false);
@@ -86,5 +87,4 @@ public class WormholeConfig {
 
         builder.build();
     }
-
 }

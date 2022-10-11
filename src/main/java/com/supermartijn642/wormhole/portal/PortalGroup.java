@@ -16,19 +16,19 @@ import net.minecraftforge.energy.IEnergyStorage;
 public class PortalGroup {
 
     public final PortalShape shape;
-    public final World world;
+    public final World level;
     public boolean canTick = false;
 
     private int activeTarget = 0;
     private boolean activated;
 
-    public PortalGroup(World world, PortalShape shape){
-        this.world = world;
+    public PortalGroup(World level, PortalShape shape){
+        this.level = level;
         this.shape = shape;
     }
 
-    public PortalGroup(World world, CompoundNBT tag){
-        this.world = world;
+    public PortalGroup(World level, CompoundNBT tag){
+        this.level = level;
         this.shape = PortalShape.read(tag.getCompound("shape"));
         this.activeTarget = tag.contains("activeTarget") ? tag.getInt("activeTarget") : 0;
         this.activated = tag.contains("activated") && tag.getBoolean("activated");
@@ -50,11 +50,11 @@ public class PortalGroup {
     public void setTarget(int index, PortalTarget target){
         int total = 0;
         for(BlockPos pos : this.shape.targetCells){
-            TileEntity tile = this.world.getBlockEntity(pos);
-            if(tile instanceof ITargetCellTile){
-                int capacity = ((ITargetCellTile)tile).getTargetCapacity();
+            TileEntity entity = this.level.getBlockEntity(pos);
+            if(entity instanceof ITargetCellEntity){
+                int capacity = ((ITargetCellEntity)entity).getTargetCapacity();
                 if(total + capacity > index){
-                    ((ITargetCellTile)tile).setTarget(index - total, target);
+                    ((ITargetCellEntity)entity).setTarget(index - total, target);
                     break;
                 }
                 total += capacity;
@@ -64,7 +64,7 @@ public class PortalGroup {
             if(target == null)
                 this.deactivate();
             else
-                this.shape.createPortals(this.world, target.color);
+                this.shape.createPortals(this.level, target.color);
         }
     }
 
@@ -79,34 +79,34 @@ public class PortalGroup {
         int lowIndex = up ? index - 1 : index;
         int highIndex = up ? index : index + 1;
 
-        ITargetCellTile lowTile = null;
-        int lowTileIndex = 0;
-        ITargetCellTile highTile = null;
-        int highTileIndex = 0;
+        ITargetCellEntity lowEntity = null;
+        int lowEntityIndex = 0;
+        ITargetCellEntity highEntity = null;
+        int highEntityIndex = 0;
 
         int total = 0;
         for(BlockPos pos : this.shape.targetCells){
-            TileEntity tile = this.world.getBlockEntity(pos);
-            if(tile instanceof ITargetCellTile){
-                int capacity = ((ITargetCellTile)tile).getTargetCapacity();
-                if(lowTile == null && total + capacity > lowIndex){
-                    lowTile = (ITargetCellTile)tile;
-                    lowTileIndex = lowIndex - total;
+            TileEntity entity = this.level.getBlockEntity(pos);
+            if(entity instanceof ITargetCellEntity){
+                int capacity = ((ITargetCellEntity)entity).getTargetCapacity();
+                if(lowEntity == null && total + capacity > lowIndex){
+                    lowEntity = (ITargetCellEntity)entity;
+                    lowEntityIndex = lowIndex - total;
                 }
-                if(highTile == null && total + capacity > highIndex){
-                    highTile = (ITargetCellTile)tile;
-                    highTileIndex = highIndex - total;
+                if(highEntity == null && total + capacity > highIndex){
+                    highEntity = (ITargetCellEntity)entity;
+                    highEntityIndex = highIndex - total;
                 }
                 total += capacity;
             }
         }
 
-        if(lowTile == null || highTile == null)
+        if(lowEntity == null || highEntity == null)
             return;
 
-        PortalTarget lowTarget = lowTile.getTarget(lowTileIndex);
-        lowTile.setTarget(lowTileIndex, highTile.getTarget(highTileIndex));
-        highTile.setTarget(highTileIndex, lowTarget);
+        PortalTarget lowTarget = lowEntity.getTarget(lowEntityIndex);
+        lowEntity.setTarget(lowEntityIndex, highEntity.getTarget(highEntityIndex));
+        highEntity.setTarget(highEntityIndex, lowTarget);
 
         if(lowIndex == this.activeTarget){
             this.activeTarget++;
@@ -125,7 +125,7 @@ public class PortalGroup {
                 if(target == null)
                     deactivate();
                 else
-                    this.shape.createPortals(this.world, this.getActiveTarget().color);
+                    this.shape.createPortals(this.level, this.getActiveTarget().color);
             }
             this.updateGroup();
         }
@@ -142,9 +142,9 @@ public class PortalGroup {
     public int getTotalTargetCapacity(){
         int total = 0;
         for(BlockPos pos : this.shape.targetCells){
-            TileEntity tile = this.world.getBlockEntity(pos);
-            if(tile instanceof ITargetCellTile)
-                total += ((ITargetCellTile)tile).getTargetCapacity();
+            TileEntity entity = this.level.getBlockEntity(pos);
+            if(entity instanceof ITargetCellEntity)
+                total += ((ITargetCellEntity)entity).getTargetCapacity();
         }
         return total;
     }
@@ -155,11 +155,11 @@ public class PortalGroup {
 
         int total = 0;
         for(BlockPos pos : this.shape.targetCells){
-            TileEntity tile = this.world.getBlockEntity(pos);
-            if(tile instanceof ITargetCellTile){
-                int capacity = ((ITargetCellTile)tile).getTargetCapacity();
+            TileEntity entity = this.level.getBlockEntity(pos);
+            if(entity instanceof ITargetCellEntity){
+                int capacity = ((ITargetCellEntity)entity).getTargetCapacity();
                 if(total + capacity > index)
-                    return ((ITargetCellTile)tile).getTarget(index - total);
+                    return ((ITargetCellEntity)entity).getTarget(index - total);
                 total += capacity;
             }
         }
@@ -186,9 +186,9 @@ public class PortalGroup {
     public int getEnergyCapacity(){
         int total = 0;
         for(BlockPos pos : this.shape.energyCells){
-            TileEntity tile = this.world.getBlockEntity(pos);
-            if(tile instanceof IEnergyStorage)
-                total += ((IEnergyCellTile)tile).getMaxEnergyStored(true);
+            TileEntity entity = this.level.getBlockEntity(pos);
+            if(entity instanceof IEnergyStorage)
+                total += ((IEnergyCellEntity)entity).getMaxEnergyStored(true);
         }
         return total;
     }
@@ -196,27 +196,27 @@ public class PortalGroup {
     public int getStoredEnergy(){
         int total = 0;
         for(BlockPos pos : this.shape.energyCells){
-            TileEntity tile = this.world.getBlockEntity(pos);
-            if(tile instanceof IEnergyStorage)
-                total += ((IEnergyCellTile)tile).getEnergyStored(true);
+            TileEntity entity = this.level.getBlockEntity(pos);
+            if(entity instanceof IEnergyStorage)
+                total += ((IEnergyCellEntity)entity).getEnergyStored(true);
         }
         return total;
     }
 
     public void drainEnergy(int energy){
         for(BlockPos pos : this.shape.energyCells){
-            TileEntity tile = this.world.getBlockEntity(pos);
-            if(tile instanceof IEnergyStorage)
-                energy -= ((IEnergyCellTile)tile).extractEnergy(energy, false, true);
+            TileEntity entity = this.level.getBlockEntity(pos);
+            if(entity instanceof IEnergyStorage)
+                energy -= ((IEnergyCellEntity)entity).extractEnergy(energy, false, true);
         }
     }
 
     public int receiveEnergy(int energy, boolean simulate){
         int received = 0;
         for(BlockPos pos : this.shape.energyCells){
-            TileEntity tile = this.world.getBlockEntity(pos);
-            if(tile instanceof IEnergyStorage){
-                received += ((IEnergyCellTile)tile).receiveEnergy(energy - received, simulate, true);
+            TileEntity entity = this.level.getBlockEntity(pos);
+            if(entity instanceof IEnergyStorage){
+                received += ((IEnergyCellEntity)entity).receiveEnergy(energy - received, simulate, true);
                 if(received >= energy)
                     break;
             }
@@ -225,9 +225,9 @@ public class PortalGroup {
     }
 
     public void activate(){
-        if(!this.activated && this.getActiveTarget() != null && this.shape.validatePortal(this.world)
+        if(!this.activated && this.getActiveTarget() != null && this.shape.validatePortal(this.level)
             && (!WormholeConfig.requirePower.get() || this.getStoredEnergy() >= this.getIdleEnergyCost())){
-            this.shape.createPortals(this.world, this.getActiveTarget().color);
+            this.shape.createPortals(this.level, this.getActiveTarget().color);
             this.activated = true;
             this.updateGroup();
         }
@@ -235,7 +235,7 @@ public class PortalGroup {
 
     public void deactivate(){
         if(this.activated){
-            this.shape.destroyPortals(this.world);
+            this.shape.destroyPortals(this.level);
             this.activated = false;
             this.updateGroup();
         }
@@ -267,7 +267,7 @@ public class PortalGroup {
         PortalTarget target = this.getActiveTarget();
         if(target == null)
             return 0;
-        return getTeleportCostToTarget(this.world, this.getCenterPos(), target);
+        return getTeleportCostToTarget(this.level, this.getCenterPos(), target);
     }
 
     public int getIdleEnergyCost(){
@@ -276,7 +276,7 @@ public class PortalGroup {
 
     public void destroy(){
         this.deactivate();
-        this.world.getCapability(PortalGroupCapability.CAPABILITY).ifPresent(groups -> groups.remove(this));
+        this.level.getCapability(PortalGroupCapability.CAPABILITY).ifPresent(groups -> groups.remove(this));
     }
 
     public CompoundNBT write(){
@@ -288,7 +288,7 @@ public class PortalGroup {
     }
 
     private void updateGroup(){
-        this.world.getCapability(PortalGroupCapability.CAPABILITY).ifPresent(groups -> groups.updateGroup(this));
+        this.level.getCapability(PortalGroupCapability.CAPABILITY).ifPresent(groups -> groups.updateGroup(this));
     }
 
     public BlockPos getCenterPos(){
@@ -305,5 +305,4 @@ public class PortalGroup {
                 (int)Math.round(Math.pow(portalCenter.distSqr(target.getPos()), 1 / 4d) * WormholeConfig.distancePowerDrain.get()) :
                 WormholeConfig.dimensionPowerDrain.get());
     }
-
 }

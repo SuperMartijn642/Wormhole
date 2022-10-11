@@ -1,17 +1,15 @@
 package com.supermartijn642.wormhole.packet;
 
-import com.supermartijn642.wormhole.ClientProxy;
+import com.supermartijn642.core.network.BasePacket;
+import com.supermartijn642.core.network.PacketContext;
 import com.supermartijn642.wormhole.PortalGroupCapability;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
-
-import java.util.function.Supplier;
 
 /**
  * Created 11/9/2020 by SuperMartijn642
  */
-public class UpdateGroupsPacket {
+public class UpdateGroupsPacket implements BasePacket {
 
     private CompoundNBT groupsData;
 
@@ -19,20 +17,21 @@ public class UpdateGroupsPacket {
         this.groupsData = groupsData;
     }
 
-    public UpdateGroupsPacket(PacketBuffer buffer){
-        this.decode(buffer);
+    public UpdateGroupsPacket(){
     }
 
-    public void encode(PacketBuffer buffer){
+    @Override
+    public void write(PacketBuffer buffer){
         buffer.writeNbt(this.groupsData);
     }
 
-    protected void decode(PacketBuffer buffer){
+    @Override
+    public void read(PacketBuffer buffer){
         this.groupsData = buffer.readNbt();
     }
 
-    public void handle(Supplier<NetworkEvent.Context> contextSupplier){
-        contextSupplier.get().setPacketHandled(true);
-        ClientProxy.getWorld().getCapability(PortalGroupCapability.CAPABILITY).ifPresent(groups -> groups.read(this.groupsData));
+    @Override
+    public void handle(PacketContext context){
+        context.getWorld().getCapability(PortalGroupCapability.CAPABILITY).ifPresent(groups -> groups.read(this.groupsData));
     }
 }
