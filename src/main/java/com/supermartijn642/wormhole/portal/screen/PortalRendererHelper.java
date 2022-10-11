@@ -39,7 +39,7 @@ public class PortalRendererHelper {
 
     public static void drawPortal(PoseStack poseStack, PortalShape shape, float x, float y, float width, float height){ // TODO fix transparency
         Level level = ClientUtils.getWorld();
-        float scale = Math.min(width, height) / ((float)shape.span + 2);
+        float scale = Math.min(width, height) / ((float)shape.span + 1);
         Vector3f center = new Vector3f(
             (shape.maxCorner.getX() + shape.minCorner.getX()) / 2f,
             (shape.maxCorner.getY() + shape.minCorner.getY()) / 2f,

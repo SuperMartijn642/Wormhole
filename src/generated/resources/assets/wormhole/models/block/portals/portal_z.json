@@ -17,10 +17,10 @@
         10.0
       ],
       "faces": {
-        "east": {
+        "north": {
           "texture": "#portal"
         },
-        "west": {
+        "south": {
           "texture": "#portal"
         }
       }

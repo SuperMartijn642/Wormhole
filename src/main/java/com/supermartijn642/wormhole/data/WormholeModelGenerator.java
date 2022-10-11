@@ -38,8 +38,8 @@ public class WormholeModelGenerator extends ModelGenerator {
             .particleTexture("#all")
             .element(
                 element -> element.shape(0, 6, 0, 16, 10, 16)
-                    .face(Direction.EAST, face -> face.texture("portal"))
-                    .face(Direction.WEST, face -> face.texture("portal"))
+                    .face(Direction.UP, face -> face.texture("portal"))
+                    .face(Direction.DOWN, face -> face.texture("portal"))
             );
         this.model("block/portals/portal_z")
             .parent("minecraft", "block/block")
@@ -48,8 +48,8 @@ public class WormholeModelGenerator extends ModelGenerator {
             .element(
                 element ->
                     element.shape(0, 0, 6, 16, 16, 10)
-                        .face(Direction.EAST, face -> face.texture("portal"))
-                        .face(Direction.WEST, face -> face.texture("portal"))
+                        .face(Direction.NORTH, face -> face.texture("portal"))
+                        .face(Direction.SOUTH, face -> face.texture("portal"))
             );
         // Actual portals
         for(DyeColor color : DyeColor.values()){
