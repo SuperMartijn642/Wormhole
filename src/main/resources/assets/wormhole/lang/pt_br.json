@@ -23,7 +23,7 @@
   "wormhole.direction.north": "Norte",
   "wormhole.direction.east": "Leste",
   "wormhole.direction.south": "Sul",
-  "wormhole.direction.west": "Oeste"
+  "wormhole.direction.west": "Oeste",
   "wormhole.gui.label": "Rótulo",
   "wormhole.portal.targets.gui.title": "Destino do Portal",
   "wormhole.portal.gui.title": "Visão Geral do Portal",

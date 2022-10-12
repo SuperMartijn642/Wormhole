@@ -38,7 +38,7 @@ public class TeleportHelper {
     }
 
     public static boolean canTeleport(Entity entity, PortalTarget target){
-        if(entity.level.isClientSide || !target.getWorld(entity.getServer()).isPresent())
+        if(entity.level.isClientSide || !target.getLevel(entity.getServer()).isPresent())
             return false;
         if(entity.isPassenger())
             return canTeleport(entity.getRootVehicle(), target);
@@ -59,15 +59,15 @@ public class TeleportHelper {
     }
 
     private static void teleportEntityAndPassengers(Entity entity, Entity entityBeingRidden, PortalTarget target){
-        if(entity.level.isClientSide || !target.getWorld(entity.getServer()).isPresent())
+        if(entity.level.isClientSide || !target.getLevel(entity.getServer()).isPresent())
             return;
-        Optional<ServerWorld> targetWorld = target.getWorld(entity.getServer()).filter(ServerWorld.class::isInstance).map(ServerWorld.class::cast);
-        if(!targetWorld.isPresent())
+        Optional<ServerWorld> targetLevel = target.getLevel(entity.getServer()).filter(ServerWorld.class::isInstance).map(ServerWorld.class::cast);
+        if(!targetLevel.isPresent())
             return;
 
         Collection<Entity> passengers = entity.getPassengers();
         entity.ejectPassengers();
-        Entity newEntity = teleportEntity(entity, targetWorld.get(), target);
+        Entity newEntity = teleportEntity(entity, targetLevel.get(), target);
         if(entityBeingRidden != null){
             newEntity.startRiding(entityBeingRidden);
             if(newEntity instanceof ServerPlayerEntity)
@@ -76,10 +76,10 @@ public class TeleportHelper {
         passengers.forEach(e -> teleportEntityAndPassengers(e, newEntity, target));
     }
 
-    private static Entity teleportEntity(Entity entity, ServerWorld targetWorld, PortalTarget target){
-        if(targetWorld == entity.level){
+    private static Entity teleportEntity(Entity entity, ServerWorld targetLevel, PortalTarget target){
+        if(targetLevel == entity.level){
             if(entity instanceof ServerPlayerEntity)
-                ((ServerPlayerEntity)entity).teleportTo(targetWorld, target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
+                ((ServerPlayerEntity)entity).teleportTo(targetLevel, target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
             else
                 entity.teleportTo(target.x + .5, target.y + .2, target.z + .5);
             entity.setYHeadRot(target.yaw);
@@ -88,17 +88,17 @@ public class TeleportHelper {
             entity.onGround = true;
         }else{
             if(entity instanceof ServerPlayerEntity)
-                ((ServerPlayerEntity)entity).teleportTo(targetWorld, target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
+                ((ServerPlayerEntity)entity).teleportTo(targetLevel, target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
             else{
-                Entity newEntity = entity.changeDimension(targetWorld.dimension.getType(), new ITeleporter() {
+                Entity newEntity = entity.changeDimension(targetLevel.getDimension().getType(), new ITeleporter() {
                     @Override
                     public Entity placeEntity(Entity entity, ServerWorld currentWorld, ServerWorld destWorld, float yaw, Function<Boolean,Entity> repositionEntity){
-                        Entity newEntity = entity.getType().create(targetWorld);
+                        Entity newEntity = entity.getType().create(targetLevel);
                         if(newEntity != null){
                             newEntity.restoreFrom(entity);
                             newEntity.moveTo(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
                             newEntity.setDeltaMovement(Vec3d.ZERO);
-                            targetWorld.addFromAnotherDimension(newEntity);
+                            targetLevel.addFromAnotherDimension(newEntity);
                         }
                         return newEntity;
                     }

@@ -1,16 +1,13 @@
 package com.supermartijn642.wormhole.portal.screen;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.supermartijn642.core.ClientUtils;
+import com.supermartijn642.core.render.RenderUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Quaternion;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -26,56 +23,47 @@ import java.util.Random;
  */
 public class ScreenBlockRenderer {
 
-    public static void drawBlock(Block block, double x, double y, double scale, float yaw, float pitch){
+    public static void drawBlock(MatrixStack poseStack, Block block, double x, double y, double scale, float yaw, float pitch){
         BlockState state = block.defaultBlockState();
 
-        RenderSystem.pushMatrix();
-        RenderSystem.enableRescaleNormal();
-        RenderSystem.enableAlphaTest();
-        RenderSystem.defaultAlphaFunc();
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        RenderSystem.translated(x, y, 350);
-        RenderSystem.scalef(1.0F, -1.0F, 1.0F);
-        RenderSystem.scaled(scale, scale, scale);
-        IRenderTypeBuffer.Impl renderTypeBuffer = Minecraft.getInstance().renderBuffers().bufferSource();
+        poseStack.pushPose();
+        poseStack.translate(x, y, 350);
+        poseStack.scale(1, -1, 1);
+        poseStack.scale((float)scale, (float)scale, (float)scale);
+        IRenderTypeBuffer.Impl bufferSource = RenderUtils.getMainBufferSource();
         RenderHelper.setupForFlatItems();
 
-        MatrixStack matrixstack = new MatrixStack();
-        matrixstack.mulPose(new Quaternion(pitch, yaw, 0, true));
+        poseStack.mulPose(new Quaternion(pitch, yaw, 0, true));
 
-        IBakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
+        IBakedModel model = ClientUtils.getBlockRenderer().getBlockModel(state);
         IModelData modelData = EmptyModelData.INSTANCE;
 
-        matrixstack.translate(-0.5, -0.5, -0.5);
-        RenderType rendertype = RenderType.translucent();
-        renderModel(model, state, matrixstack, renderTypeBuffer.getBuffer(rendertype), modelData);
+        poseStack.translate(-0.5, -0.5, -0.5);
+        RenderType renderType = RenderTypeLookup.getRenderType(state);
+        renderModel(model, state, poseStack, bufferSource.getBuffer(renderType), modelData, renderType);
 
-        renderTypeBuffer.endBatch();
+        bufferSource.endBatch();
+        poseStack.popPose();
         RenderSystem.enableDepthTest();
         RenderHelper.setupFor3DItems();
-        RenderSystem.disableAlphaTest();
-        RenderSystem.disableRescaleNormal();
-        RenderSystem.popMatrix();
     }
 
-    private static void renderModel(IBakedModel modelIn, BlockState state, MatrixStack matrixStackIn, IVertexBuilder bufferIn, IModelData modelData){
+    private static void renderModel(IBakedModel model, BlockState state, MatrixStack poseStack, IVertexBuilder buffer, IModelData modelData, RenderType renderType){
         Random random = new Random();
 
         for(Direction direction : Direction.values()){
             random.setSeed(42L);
-            renderQuads(matrixStackIn, bufferIn, modelIn.getQuads(state, direction, random, modelData));
+            renderQuads(poseStack, buffer, model.getQuads(state, direction, random, modelData));
         }
 
         random.setSeed(42L);
-        renderQuads(matrixStackIn, bufferIn, modelIn.getQuads(state, null, random, modelData));
+        renderQuads(poseStack, buffer, model.getQuads(state, null, random, modelData));
     }
 
-    private static void renderQuads(MatrixStack matrixStackIn, IVertexBuilder bufferIn, List<BakedQuad> quadsIn){
-        MatrixStack.Entry matrix = matrixStackIn.last();
+    private static void renderQuads(MatrixStack poseStack, IVertexBuilder buffer, List<BakedQuad> quads){
+        MatrixStack.Entry matrix = poseStack.last();
 
-        for(BakedQuad bakedquad : quadsIn)
-            bufferIn.addVertexData(matrix, bakedquad, 1, 1, 1, 1, 15728880, OverlayTexture.NO_OVERLAY, false);
+        for(BakedQuad bakedquad : quads)
+            buffer.addVertexData(matrix, bakedquad, 1, 1, 1, 1, 15728880, OverlayTexture.NO_OVERLAY, false);
     }
-
 }

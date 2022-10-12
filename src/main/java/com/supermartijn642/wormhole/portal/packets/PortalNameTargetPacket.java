@@ -1,11 +1,10 @@
 package com.supermartijn642.wormhole.portal.packets;
 
+import com.supermartijn642.core.network.PacketContext;
 import com.supermartijn642.wormhole.packet.PortalGroupPacket;
 import com.supermartijn642.wormhole.portal.PortalGroup;
 import com.supermartijn642.wormhole.portal.PortalTarget;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.world.World;
 
 /**
  * Created 11/5/2020 by SuperMartijn642
@@ -21,26 +20,25 @@ public class PortalNameTargetPacket extends PortalGroupPacket {
         this.name = name;
     }
 
-    public PortalNameTargetPacket(PacketBuffer buffer){
-        super(buffer);
+    public PortalNameTargetPacket(){
     }
 
     @Override
-    public void encode(PacketBuffer buffer){
-        super.encode(buffer);
+    public void write(PacketBuffer buffer){
+        super.write(buffer);
         buffer.writeInt(this.index);
         buffer.writeUtf(this.name);
     }
 
     @Override
-    protected void decode(PacketBuffer buffer){
-        super.decode(buffer);
+    public void read(PacketBuffer buffer){
+        super.read(buffer);
         this.index = buffer.readInt();
         this.name = buffer.readUtf(32767).trim();
     }
 
     @Override
-    protected void handle(PlayerEntity player, World world, PortalGroup group){
+    protected void handle(PortalGroup group, PacketContext context){
         PortalTarget target = group.getTarget(this.index);
         if(target != null){
             target.name = this.name;

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "on\u003dtrue": {
+      "model": "wormhole:block/portal_stabilizer_on"
+    },
+    "on\u003dfalse": {
+      "model": "wormhole:block/portal_stabilizer_off"
+    }
+  }
+}

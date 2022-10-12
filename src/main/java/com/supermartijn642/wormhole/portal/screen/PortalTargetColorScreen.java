@@ -1,11 +1,14 @@
 package com.supermartijn642.wormhole.portal.screen;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.widget.premade.ButtonWidget;
 import com.supermartijn642.wormhole.portal.PortalGroup;
-import com.supermartijn642.wormhole.screen.WormholeButton;
 import net.minecraft.item.DyeColor;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 
 /**
  * Created 11/12/2020 by SuperMartijn642
@@ -18,19 +21,14 @@ public class PortalTargetColorScreen extends PortalGroupScreen {
     private final Runnable returnScreen;
 
     public PortalTargetColorScreen(BlockPos pos, int targetIndex, Runnable returnScreen){
-        super("wormhole.portal.color.gui.title", pos);
+        super(WIDTH, HEIGHT, pos);
         this.targetIndex = targetIndex;
         this.returnScreen = returnScreen;
     }
 
     @Override
-    protected float sizeX(PortalGroup group){
-        return WIDTH;
-    }
-
-    @Override
-    protected float sizeY(PortalGroup group){
-        return HEIGHT;
+    protected ITextComponent getNarrationMessage(PortalGroup object){
+        return TextComponents.translation("wormhole.portal.color.gui.title").get();
     }
 
     @Override
@@ -57,18 +55,21 @@ public class PortalTargetColorScreen extends PortalGroupScreen {
         this.addWidget(new PortalTargetSelectColorButton(125, 114, this, DyeColor.RED));
         this.addWidget(new PortalTargetSelectColorButton(163, 114, this, DyeColor.BLACK));
 
-        this.addWidget(new WormholeButton(124 - 30, 157, 60, 10, "wormhole.portal.color.gui.complete", this.returnScreen));
+        this.addWidget(new ButtonWidget(124 - 30, 157, 60, 10, TextComponents.translation("wormhole.portal.color.gui.complete").get(), this.returnScreen));
     }
 
     @Override
-    protected void render(int mouseX, int mouseY, PortalGroup group){
-        ScreenUtils.drawScreenBackground(0, 0, this.sizeX(), this.sizeY());
-        ScreenUtils.drawString(this.title, 8, 7);
+    protected void renderBackground(MatrixStack poseStack, int mouseX, int mouseY, PortalGroup object){
+        ScreenUtils.drawScreenBackground(poseStack, 0, 0, this.width(), this.height());
+        super.renderBackground(poseStack, mouseX, mouseY, object);
+    }
+
+    @Override
+    protected void render(MatrixStack poseStack, int mouseX, int mouseY, PortalGroup group){
+        super.render(poseStack, mouseX, mouseY, group);
+
+        ScreenUtils.drawString(poseStack, TextComponents.translation("wormhole.portal.color.gui.title").get(), 8, 7);
         // target number
-        ScreenUtils.drawString((this.targetIndex + 1) + ".", 8, 22);
-    }
-
-    @Override
-    protected void renderTooltips(int mouseX, int mouseY, PortalGroup group){
+        ScreenUtils.drawString(poseStack, (this.targetIndex + 1) + ".", 8, 22);
     }
 }
