@@ -1,0 +1,6 @@
+{
+  "parent": "wormhole:block/portals/portal_z",
+  "textures": {
+    "all": "wormhole:portal/portal_black"
+  }
+}

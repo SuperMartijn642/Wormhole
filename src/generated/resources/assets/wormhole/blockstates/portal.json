@@ -1,0 +1,148 @@
+{
+  "variants": {
+    "color\u003dpink,axis\u003dz": {
+      "model": "wormhole:block/portals/portal_z_pink"
+    },
+    "color\u003dlight_blue,axis\u003dy": {
+      "model": "wormhole:block/portals/portal_y_light_blue"
+    },
+    "color\u003dpurple,axis\u003dz": {
+      "model": "wormhole:block/portals/portal_z_purple"
+    },
+    "color\u003dred,axis\u003dz": {
+      "model": "wormhole:block/portals/portal_z_red"
+    },
+    "color\u003dgreen,axis\u003dx": {
+      "model": "wormhole:block/portals/portal_x_green"
+    },
+    "color\u003dlime,axis\u003dy": {
+      "model": "wormhole:block/portals/portal_y_lime"
+    },
+    "color\u003dpink,axis\u003dy": {
+      "model": "wormhole:block/portals/portal_y_pink"
+    },
+    "color\u003dlight_gray,axis\u003dx": {
+      "model": "wormhole:block/portals/portal_x_light_gray"
+    },
+    "color\u003dblack,axis\u003dy": {
+      "model": "wormhole:block/portals/portal_y_black"
+    },
+    "color\u003dbrown,axis\u003dz": {
+      "model": "wormhole:block/portals/portal_z_brown"
+    },
+    "color\u003dmagenta,axis\u003dz": {
+      "model": "wormhole:block/portals/portal_z_magenta"
+    },
+    "color\u003dyellow,axis\u003dz": {
+      "model": "wormhole:block/portals/portal_z_yellow"
+    },
+    "color\u003dorange,axis\u003dy": {
+      "model": "wormhole:block/portals/portal_y_orange"
+    },
+    "color\u003dblack,axis\u003dz": {
+      "model": "wormhole:block/portals/portal_z_black"
+    },
+    "color\u003dblue,axis\u003dy": {
+      "model": "wormhole:block/portals/portal_y_blue"
+    },
+    "color\u003dlight_gray,axis\u003dy": {
+      "model": "wormhole:block/portals/portal_y_light_gray"
+    },
+    "color\u003dgreen,axis\u003dz": {
+      "model": "wormhole:block/portals/portal_z_green"
+    },
+    "color\u003dwhite,axis\u003dz": {
+      "model": "wormhole:block/portals/portal_z_white"
+    },
+    "color\u003dred,axis\u003dx": {
+      "model": "wormhole:block/portals/portal_x_red"
+    },
+    "color\u003dgreen,axis\u003dy": {
+      "model": "wormhole:block/portals/portal_y_green"
+    },
+    "color\u003dorange,axis\u003dx": {
+      "model": "wormhole:block/portals/portal_x_orange"
+    },
+    "color\u003dpurple,axis\u003dy": {
+      "model": "wormhole:block/portals/portal_y_purple"
+    },
+    "color\u003dblack,axis\u003dx": {
+      "model": "wormhole:block/portals/portal_x_black"
+    },
+    "color\u003dmagenta,axis\u003dy": {
+      "model": "wormhole:block/portals/portal_y_magenta"
+    },
+    "color\u003dgray,axis\u003dz": {
+      "model": "wormhole:block/portals/portal_z_gray"
+    },
+    "color\u003dorange,axis\u003dz": {
+      "model": "wormhole:block/portals/portal_z_orange"
+    },
+    "color\u003dblue,axis\u003dz": {
+      "model": "wormhole:block/portals/portal_z_blue"
+    },
+    "color\u003dlight_blue,axis\u003dx": {
+      "model": "wormhole:block/portals/portal_x_light_blue"
+    },
+    "color\u003dyellow,axis\u003dy": {
+      "model": "wormhole:block/portals/portal_y_yellow"
+    },
+    "color\u003dwhite,axis\u003dx": {
+      "model": "wormhole:block/portals/portal_x_white"
+    },
+    "color\u003dlime,axis\u003dx": {
+      "model": "wormhole:block/portals/portal_x_lime"
+    },
+    "color\u003dgray,axis\u003dx": {
+      "model": "wormhole:block/portals/portal_x_gray"
+    },
+    "color\u003dlight_gray,axis\u003dz": {
+      "model": "wormhole:block/portals/portal_z_light_gray"
+    },
+    "color\u003dbrown,axis\u003dx": {
+      "model": "wormhole:block/portals/portal_x_brown"
+    },
+    "color\u003dgray,axis\u003dy": {
+      "model": "wormhole:block/portals/portal_y_gray"
+    },
+    "color\u003dyellow,axis\u003dx": {
+      "model": "wormhole:block/portals/portal_x_yellow"
+    },
+    "color\u003dcyan,axis\u003dy": {
+      "model": "wormhole:block/portals/portal_y_cyan"
+    },
+    "color\u003dred,axis\u003dy": {
+      "model": "wormhole:block/portals/portal_y_red"
+    },
+    "color\u003dbrown,axis\u003dy": {
+      "model": "wormhole:block/portals/portal_y_brown"
+    },
+    "color\u003dpurple,axis\u003dx": {
+      "model": "wormhole:block/portals/portal_x_purple"
+    },
+    "color\u003dlime,axis\u003dz": {
+      "model": "wormhole:block/portals/portal_z_lime"
+    },
+    "color\u003dwhite,axis\u003dy": {
+      "model": "wormhole:block/portals/portal_y_white"
+    },
+    "color\u003dcyan,axis\u003dz": {
+      "model": "wormhole:block/portals/portal_z_cyan"
+    },
+    "color\u003dpink,axis\u003dx": {
+      "model": "wormhole:block/portals/portal_x_pink"
+    },
+    "color\u003dcyan,axis\u003dx": {
+      "model": "wormhole:block/portals/portal_x_cyan"
+    },
+    "color\u003dmagenta,axis\u003dx": {
+      "model": "wormhole:block/portals/portal_x_magenta"
+    },
+    "color\u003dlight_blue,axis\u003dz": {
+      "model": "wormhole:block/portals/portal_z_light_blue"
+    },
+    "color\u003dblue,axis\u003dx": {
+      "model": "wormhole:block/portals/portal_x_blue"
+    }
+  }
+}

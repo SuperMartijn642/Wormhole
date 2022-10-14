@@ -22,7 +22,9 @@ import java.util.List;
  */
 public class NBTRecipe extends ShapedRecipe {
 
-    public static final List<Item> VALID_ITEMS = new LinkedList<>();
+    public static final IRecipeSerializer<NBTRecipe> SERIALIZER = new Serializer();
+
+    private static final List<Item> VALID_ITEMS = new LinkedList<>();
 
     static{
         VALID_ITEMS.add(Wormhole.target_device);
@@ -36,17 +38,17 @@ public class NBTRecipe extends ShapedRecipe {
         VALID_ITEMS.add(Item.byBlock(Wormhole.coal_generator));
     }
 
-    public NBTRecipe(ResourceLocation idIn, String groupIn, int recipeWidthIn, int recipeHeightIn, NonNullList<Ingredient> recipeItemsIn, ItemStack recipeOutputIn){
-        super(idIn, groupIn, recipeWidthIn, recipeHeightIn, recipeItemsIn, recipeOutputIn);
+    public NBTRecipe(ResourceLocation id, String group, int recipeWidth, int recipeHeight, NonNullList<Ingredient> recipeItems, ItemStack recipeOutput){
+        super(id, group, recipeWidth, recipeHeight, recipeItems, recipeOutput);
     }
 
     @Override
-    public ItemStack assemble(CraftingInventory inv){
+    public ItemStack assemble(CraftingInventory inventory){
         CompoundNBT compound = null;
         loop:
-        for(int i = 0; i < inv.getHeight(); i++){
-            for(int j = 0; j < inv.getWidth(); j++){
-                ItemStack stack = inv.getItem(i * inv.getWidth() + j);
+        for(int i = 0; i < inventory.getHeight(); i++){
+            for(int j = 0; j < inventory.getWidth(); j++){
+                ItemStack stack = inventory.getItem(i * inventory.getWidth() + j);
                 if(stack.hasTag() && VALID_ITEMS.contains(stack.getItem())){
                     compound = stack.getTag();
                     break loop;
@@ -68,7 +70,8 @@ public class NBTRecipe extends ShapedRecipe {
         return super.getSerializer();
     }
 
-    public static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<NBTRecipe> {
+    private static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<NBTRecipe> {
+
         @Override
         public NBTRecipe fromJson(ResourceLocation recipeId, JsonObject json){
             ShapedRecipe recipe = IRecipeSerializer.SHAPED_RECIPE.fromJson(recipeId, json);

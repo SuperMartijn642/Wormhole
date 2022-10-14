@@ -1,45 +1,39 @@
 package com.supermartijn642.wormhole;
 
+import com.supermartijn642.core.block.BaseBlock;
+import com.supermartijn642.core.block.BaseBlockEntityType;
+import com.supermartijn642.core.gui.BaseContainerType;
+import com.supermartijn642.core.item.BaseBlockItem;
+import com.supermartijn642.core.item.BaseItem;
+import com.supermartijn642.core.item.CreativeItemGroup;
+import com.supermartijn642.core.item.ItemProperties;
+import com.supermartijn642.core.network.PacketChannel;
+import com.supermartijn642.core.registry.GeneratorRegistrationHandler;
+import com.supermartijn642.core.registry.RegistrationHandler;
+import com.supermartijn642.core.registry.RegistryEntryAcceptor;
+import com.supermartijn642.wormhole.data.*;
 import com.supermartijn642.wormhole.energycell.EnergyCellBlock;
-import com.supermartijn642.wormhole.energycell.EnergyCellTile;
+import com.supermartijn642.wormhole.energycell.EnergyCellBlockEntity;
 import com.supermartijn642.wormhole.energycell.EnergyCellType;
 import com.supermartijn642.wormhole.generator.CoalGeneratorBlock;
+import com.supermartijn642.wormhole.generator.CoalGeneratorBlockEntity;
 import com.supermartijn642.wormhole.generator.CoalGeneratorContainer;
-import com.supermartijn642.wormhole.generator.CoalGeneratorTile;
 import com.supermartijn642.wormhole.packet.UpdateGroupPacket;
 import com.supermartijn642.wormhole.packet.UpdateGroupsPacket;
 import com.supermartijn642.wormhole.portal.PortalGroupBlock;
-import com.supermartijn642.wormhole.portal.PortalGroupTile;
+import com.supermartijn642.wormhole.portal.PortalGroupBlockEntity;
 import com.supermartijn642.wormhole.portal.packets.*;
 import com.supermartijn642.wormhole.targetcell.TargetCellBlock;
-import com.supermartijn642.wormhole.targetcell.TargetCellTile;
+import com.supermartijn642.wormhole.targetcell.TargetCellBlockEntity;
 import com.supermartijn642.wormhole.targetcell.TargetCellType;
 import com.supermartijn642.wormhole.targetdevice.TargetDeviceItem;
 import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceAddPacket;
 import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceMovePacket;
 import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceNamePacket;
 import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceRemovePacket;
-import net.minecraft.block.Block;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.extensions.IForgeContainerType;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
-import net.minecraftforge.registries.ObjectHolder;
-
-import java.util.Comparator;
 
 /**
  * Created 7/7/2020 by SuperMartijn642
@@ -58,142 +52,129 @@ public class Wormhole {
     - improved textures
      */
 
-    public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(new ResourceLocation("wormhole", "main"), () -> "1", "1"::equals, "1"::equals);
+    public static final PacketChannel CHANNEL = PacketChannel.create("wormhole");
 
-    public static final IRecipeSerializer<NBTRecipe> NBT_RECIPE_SERIALIZER = new NBTRecipe.Serializer();
-    public static final ItemGroup ITEM_GROUP = new ItemGroup("wormhole") {
-        @Override
-        public ItemStack makeIcon(){
-            return new ItemStack(advanced_target_device);
-        }
-
-        @Override
-        public void fillItemList(NonNullList<ItemStack> items){
-            super.fillItemList(items);
-            items.sort(Comparator.comparing(a -> a.getDisplayName().getString()));
-        }
-    };
-
-    @ObjectHolder("wormhole:portal_frame")
-    public static Block portal_frame;
-    @ObjectHolder("wormhole:portal")
-    public static Block portal;
-    @ObjectHolder("wormhole:portal_stabilizer")
-    public static Block portal_stabilizer;
-    @ObjectHolder("wormhole:basic_energy_cell")
+    @RegistryEntryAcceptor(namespace = "wormhole", identifier = "portal_frame", registry = RegistryEntryAcceptor.Registry.BLOCKS)
+    public static BaseBlock portal_frame;
+    @RegistryEntryAcceptor(namespace = "wormhole", identifier = "portal", registry = RegistryEntryAcceptor.Registry.BLOCKS)
+    public static BaseBlock portal;
+    @RegistryEntryAcceptor(namespace = "wormhole", identifier = "portal_stabilizer", registry = RegistryEntryAcceptor.Registry.BLOCKS)
+    public static BaseBlock portal_stabilizer;
+    @RegistryEntryAcceptor(namespace = "wormhole", identifier = "basic_energy_cell", registry = RegistryEntryAcceptor.Registry.BLOCKS)
     public static EnergyCellBlock basic_energy_cell;
-    @ObjectHolder("wormhole:advanced_energy_cell")
+    @RegistryEntryAcceptor(namespace = "wormhole", identifier = "advanced_energy_cell", registry = RegistryEntryAcceptor.Registry.BLOCKS)
     public static EnergyCellBlock advanced_energy_cell;
-    @ObjectHolder("wormhole:creative_energy_cell")
+    @RegistryEntryAcceptor(namespace = "wormhole", identifier = "creative_energy_cell", registry = RegistryEntryAcceptor.Registry.BLOCKS)
     public static EnergyCellBlock creative_energy_cell;
-    @ObjectHolder("wormhole:target_device")
-    public static Item target_device;
-    @ObjectHolder("wormhole:advanced_target_device")
-    public static Item advanced_target_device;
-    @ObjectHolder("wormhole:basic_target_cell")
+    @RegistryEntryAcceptor(namespace = "wormhole", identifier = "target_device", registry = RegistryEntryAcceptor.Registry.ITEMS)
+    public static BaseItem target_device;
+    @RegistryEntryAcceptor(namespace = "wormhole", identifier = "advanced_target_device", registry = RegistryEntryAcceptor.Registry.ITEMS)
+    public static BaseItem advanced_target_device;
+    @RegistryEntryAcceptor(namespace = "wormhole", identifier = "basic_target_cell", registry = RegistryEntryAcceptor.Registry.BLOCKS)
     public static TargetCellBlock basic_target_cell;
-    @ObjectHolder("wormhole:advanced_target_cell")
+    @RegistryEntryAcceptor(namespace = "wormhole", identifier = "advanced_target_cell", registry = RegistryEntryAcceptor.Registry.BLOCKS)
     public static TargetCellBlock advanced_target_cell;
-    @ObjectHolder("wormhole:coal_generator")
+    @RegistryEntryAcceptor(namespace = "wormhole", identifier = "coal_generator", registry = RegistryEntryAcceptor.Registry.BLOCKS)
     public static CoalGeneratorBlock coal_generator;
 
-    @ObjectHolder("wormhole:portal_frame_tile")
-    public static TileEntityType<?> portal_frame_tile;
-    @ObjectHolder("wormhole:portal_tile")
-    public static TileEntityType<?> portal_tile;
-    @ObjectHolder("wormhole:stabilizer_tile")
-    public static TileEntityType<?> stabilizer_tile;
-    @ObjectHolder("wormhole:basic_energy_cell_tile")
-    public static TileEntityType<EnergyCellTile> basic_energy_cell_tile;
-    @ObjectHolder("wormhole:advanced_energy_cell_tile")
-    public static TileEntityType<EnergyCellTile> advanced_energy_cell_tile;
-    @ObjectHolder("wormhole:creative_energy_cell_tile")
-    public static TileEntityType<EnergyCellTile> creative_energy_cell_tile;
-    @ObjectHolder("wormhole:basic_target_cell_tile")
-    public static TileEntityType<TargetCellTile> basic_target_cell_tile;
-    @ObjectHolder("wormhole:advanced_target_cell_tile")
-    public static TileEntityType<TargetCellTile> advanced_target_cell_tile;
-    @ObjectHolder("wormhole:coal_generator_tile")
-    public static TileEntityType<CoalGeneratorTile> coal_generator_tile;
+    @RegistryEntryAcceptor(namespace = "wormhole", identifier = "portal_frame_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
+    public static BaseBlockEntityType<?> portal_frame_tile;
+    @RegistryEntryAcceptor(namespace = "wormhole", identifier = "portal_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
+    public static BaseBlockEntityType<?> portal_tile;
+    @RegistryEntryAcceptor(namespace = "wormhole", identifier = "stabilizer_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
+    public static BaseBlockEntityType<?> stabilizer_tile;
+    @RegistryEntryAcceptor(namespace = "wormhole", identifier = "basic_energy_cell_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
+    public static BaseBlockEntityType<EnergyCellBlockEntity> basic_energy_cell_tile;
+    @RegistryEntryAcceptor(namespace = "wormhole", identifier = "advanced_energy_cell_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
+    public static BaseBlockEntityType<EnergyCellBlockEntity> advanced_energy_cell_tile;
+    @RegistryEntryAcceptor(namespace = "wormhole", identifier = "creative_energy_cell_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
+    public static BaseBlockEntityType<EnergyCellBlockEntity> creative_energy_cell_tile;
+    @RegistryEntryAcceptor(namespace = "wormhole", identifier = "basic_target_cell_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
+    public static BaseBlockEntityType<TargetCellBlockEntity> basic_target_cell_tile;
+    @RegistryEntryAcceptor(namespace = "wormhole", identifier = "advanced_target_cell_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
+    public static BaseBlockEntityType<TargetCellBlockEntity> advanced_target_cell_tile;
+    @RegistryEntryAcceptor(namespace = "wormhole", identifier = "coal_generator_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
+    public static BaseBlockEntityType<CoalGeneratorBlockEntity> coal_generator_tile;
 
-    @ObjectHolder("wormhole:coal_generator_container")
-    public static ContainerType<CoalGeneratorContainer> coal_generator_container;
+    @RegistryEntryAcceptor(namespace = "wormhole", identifier = "coal_generator_container", registry = RegistryEntryAcceptor.Registry.MENU_TYPES)
+    public static BaseContainerType<CoalGeneratorContainer> coal_generator_container;
+
+    public static final CreativeItemGroup ITEM_GROUP = CreativeItemGroup.create("wormhole", () -> advanced_target_device).sortAlphabetically();
 
     public Wormhole(){
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::init);
+        CHANNEL.registerMessage(TargetDeviceAddPacket.class, TargetDeviceAddPacket::new, true);
+        CHANNEL.registerMessage(TargetDeviceMovePacket.class, TargetDeviceMovePacket::new, true);
+        CHANNEL.registerMessage(TargetDeviceRemovePacket.class, TargetDeviceRemovePacket::new, true);
+        CHANNEL.registerMessage(TargetDeviceNamePacket.class, TargetDeviceNamePacket::new, true);
+        CHANNEL.registerMessage(PortalAddTargetPacket.class, PortalAddTargetPacket::new, true);
+        CHANNEL.registerMessage(PortalClearTargetPacket.class, PortalClearTargetPacket::new, true);
+        CHANNEL.registerMessage(PortalMoveTargetPacket.class, PortalMoveTargetPacket::new, true);
+        CHANNEL.registerMessage(PortalNameTargetPacket.class, PortalNameTargetPacket::new, true);
+        CHANNEL.registerMessage(PortalSelectTargetPacket.class, PortalSelectTargetPacket::new, true);
+        CHANNEL.registerMessage(UpdateGroupPacket.class, UpdateGroupPacket::new, true);
+        CHANNEL.registerMessage(UpdateGroupsPacket.class, UpdateGroupsPacket::new, true);
+        CHANNEL.registerMessage(PortalColorTargetPacket.class, PortalColorTargetPacket::new, true);
+        CHANNEL.registerMessage(PortalActivatePacket.class, PortalActivatePacket::new, true);
+        CHANNEL.registerMessage(PortalDeactivatePacket.class, PortalDeactivatePacket::new, true);
 
-        CHANNEL.registerMessage(0, TargetDeviceAddPacket.class, TargetDeviceAddPacket::encode, TargetDeviceAddPacket::new, TargetDeviceAddPacket::handle);
-        CHANNEL.registerMessage(1, TargetDeviceMovePacket.class, TargetDeviceMovePacket::encode, TargetDeviceMovePacket::new, TargetDeviceMovePacket::handle);
-        CHANNEL.registerMessage(2, TargetDeviceRemovePacket.class, TargetDeviceRemovePacket::encode, TargetDeviceRemovePacket::new, TargetDeviceRemovePacket::handle);
-        CHANNEL.registerMessage(3, TargetDeviceNamePacket.class, TargetDeviceNamePacket::encode, TargetDeviceNamePacket::new, TargetDeviceNamePacket::handle);
-        CHANNEL.registerMessage(4, PortalAddTargetPacket.class, PortalAddTargetPacket::encode, PortalAddTargetPacket::new, PortalAddTargetPacket::handle);
-        CHANNEL.registerMessage(5, PortalClearTargetPacket.class, PortalClearTargetPacket::encode, PortalClearTargetPacket::new, PortalClearTargetPacket::handle);
-        CHANNEL.registerMessage(6, PortalMoveTargetPacket.class, PortalMoveTargetPacket::encode, PortalMoveTargetPacket::new, PortalMoveTargetPacket::handle);
-        CHANNEL.registerMessage(7, PortalNameTargetPacket.class, PortalNameTargetPacket::encode, PortalNameTargetPacket::new, PortalNameTargetPacket::handle);
-        CHANNEL.registerMessage(8, PortalSelectTargetPacket.class, PortalSelectTargetPacket::encode, PortalSelectTargetPacket::new, PortalSelectTargetPacket::handle);
-        CHANNEL.registerMessage(9, UpdateGroupPacket.class, UpdateGroupPacket::encode, UpdateGroupPacket::new, UpdateGroupPacket::handle);
-        CHANNEL.registerMessage(10, UpdateGroupsPacket.class, UpdateGroupsPacket::encode, UpdateGroupsPacket::new, UpdateGroupsPacket::handle);
-        CHANNEL.registerMessage(11, PortalColorTargetPacket.class, PortalColorTargetPacket::encode, PortalColorTargetPacket::new, PortalColorTargetPacket::handle);
-        CHANNEL.registerMessage(12, PortalActivatePacket.class, PortalActivatePacket::encode, PortalActivatePacket::new, PortalActivatePacket::handle);
-        CHANNEL.registerMessage(13, PortalDeactivatePacket.class, PortalDeactivatePacket::encode, PortalDeactivatePacket::new, PortalDeactivatePacket::handle);
+        register();
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> WormholeClient::register);
+        registerGenerators();
     }
 
-    public void init(FMLCommonSetupEvent e){
-        PortalGroupCapability.register();
+    private static void register(){
+        RegistrationHandler handler = RegistrationHandler.get("wormhole");
+
+        // Portal frame
+        handler.registerBlock("portal_frame", () -> new PortalGroupBlock(() -> portal_frame_tile));
+        handler.registerBlockEntityType("portal_frame_tile", () -> BaseBlockEntityType.create(() -> new PortalGroupBlockEntity(portal_frame_tile), portal_frame));
+        handler.registerItem("portal_frame", () -> new BaseBlockItem(portal_frame, ItemProperties.create().group(ITEM_GROUP)));
+
+        // Portal
+        handler.registerBlock("portal", PortalBlock::new);
+        handler.registerBlockEntityType("portal_tile", () -> BaseBlockEntityType.create(PortalBlockEntity::new, portal));
+        handler.registerItem("portal", () -> new BaseBlockItem(portal, ItemProperties.create()));
+
+        // Portal stabilizer
+        handler.registerBlock("portal_stabilizer", StabilizerBlock::new);
+        handler.registerBlockEntityType("stabilizer_tile", () -> BaseBlockEntityType.create(StabilizerBlockEntity::new, portal_stabilizer));
+        handler.registerItem("portal_stabilizer", () -> new BaseBlockItem(portal_stabilizer, ItemProperties.create().group(ITEM_GROUP)));
+
+        // Energy cells
+        for(EnergyCellType type : EnergyCellType.values()){
+            handler.registerBlock(type.getRegistryName(), () -> new EnergyCellBlock(type));
+            handler.registerBlockEntityType(type.getRegistryName() + "_tile", () -> BaseBlockEntityType.create(type::createTile, type.getBlock()));
+            handler.registerItem(type.getRegistryName(), () -> new BaseBlockItem(type.getBlock(), ItemProperties.create().group(ITEM_GROUP)));
+        }
+
+        // Target cells
+        for(TargetCellType type : TargetCellType.values()){
+            handler.registerBlock(type.getRegistryName(), () -> new TargetCellBlock(type));
+            handler.registerBlockEntityType(type.getRegistryName() + "_tile", () -> BaseBlockEntityType.create(type::createTile, type.getBlock()));
+            handler.registerItem(type.getRegistryName(), () -> new BaseBlockItem(type.getBlock(), ItemProperties.create().group(ITEM_GROUP)));
+        }
+
+        // Coal generator
+        handler.registerBlock("coal_generator", CoalGeneratorBlock::new);
+        handler.registerBlockEntityType("coal_generator_tile", () -> BaseBlockEntityType.create(CoalGeneratorBlockEntity::new, coal_generator));
+        handler.registerItem("coal_generator", () -> new BaseBlockItem(coal_generator, ItemProperties.create().group(ITEM_GROUP)));
+        handler.registerMenuType("coal_generator_container", () -> BaseContainerType.create((container, data) -> data.writeBlockPos(container.getBlockEntityPos()), (player, data) -> new CoalGeneratorContainer(player, data.readBlockPos())));
+
+        // Target devices
+        handler.registerItem("target_device", () -> new TargetDeviceItem(WormholeConfig.basicDeviceTargetCount));
+        handler.registerItem("advanced_target_device", () -> new TargetDeviceItem(WormholeConfig.advancedDeviceTargetCount));
+
+        // NBT recipe serializer
+        handler.registerRecipeSerializer("nbtrecipe", NBTRecipe.SERIALIZER);
     }
 
-    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
-    public static class RegistryEvents {
-
-        @SubscribeEvent
-        public static void onBlockRegistry(final RegistryEvent.Register<Block> e){
-            e.getRegistry().register(new PortalGroupBlock("portal_frame", () -> new PortalGroupTile(portal_frame_tile)));
-            e.getRegistry().register(new PortalBlock());
-            e.getRegistry().register(new StabilizerBlock());
-            for(EnergyCellType type : EnergyCellType.values())
-                e.getRegistry().register(new EnergyCellBlock(type));
-            for(TargetCellType type : TargetCellType.values())
-                e.getRegistry().register(new TargetCellBlock(type));
-            e.getRegistry().register(new CoalGeneratorBlock());
-        }
-
-        @SubscribeEvent
-        public static void onTileRegistry(final RegistryEvent.Register<TileEntityType<?>> e){
-            e.getRegistry().register(TileEntityType.Builder.of(() -> new PortalGroupTile(portal_frame_tile), portal_frame).build(null).setRegistryName("portal_frame_tile"));
-            e.getRegistry().register(TileEntityType.Builder.of(PortalTile::new, portal).build(null).setRegistryName("portal_tile"));
-            e.getRegistry().register(TileEntityType.Builder.of(StabilizerTile::new, portal_stabilizer).build(null).setRegistryName("stabilizer_tile"));
-            for(EnergyCellType type : EnergyCellType.values())
-                e.getRegistry().register(TileEntityType.Builder.of(type::createTile, type.getBlock()).build(null).setRegistryName(type.getRegistryName() + "_tile"));
-            for(TargetCellType type : TargetCellType.values())
-                e.getRegistry().register(TileEntityType.Builder.of(type::createTile, type.getBlock()).build(null).setRegistryName(type.getRegistryName() + "_tile"));
-            e.getRegistry().register(TileEntityType.Builder.of(CoalGeneratorTile::new, coal_generator).build(null).setRegistryName("coal_generator_tile"));
-        }
-
-        @SubscribeEvent
-        public static void onItemRegistry(final RegistryEvent.Register<Item> e){
-            e.getRegistry().register(new BlockItem(portal_frame, new Item.Properties().tab(ITEM_GROUP)).setRegistryName(portal_frame.getRegistryName()));
-            e.getRegistry().register(new BlockItem(portal, new Item.Properties()).setRegistryName(portal.getRegistryName()));
-            e.getRegistry().register(new BlockItem(portal_stabilizer, new Item.Properties().tab(ITEM_GROUP)).setRegistryName(portal_stabilizer.getRegistryName()));
-            e.getRegistry().register(new BlockItem(basic_energy_cell, new Item.Properties().tab(ITEM_GROUP)).setRegistryName(basic_energy_cell.getRegistryName()));
-            e.getRegistry().register(new BlockItem(advanced_energy_cell, new Item.Properties().tab(ITEM_GROUP)).setRegistryName(advanced_energy_cell.getRegistryName()));
-            e.getRegistry().register(new BlockItem(creative_energy_cell, new Item.Properties().tab(ITEM_GROUP)).setRegistryName(creative_energy_cell.getRegistryName()));
-            e.getRegistry().register(new BlockItem(basic_target_cell, new Item.Properties().tab(ITEM_GROUP)).setRegistryName(basic_target_cell.getRegistryName()));
-            e.getRegistry().register(new BlockItem(advanced_target_cell, new Item.Properties().tab(ITEM_GROUP)).setRegistryName(advanced_target_cell.getRegistryName()));
-            e.getRegistry().register(new BlockItem(coal_generator, new Item.Properties().tab(ITEM_GROUP)).setRegistryName(coal_generator.getRegistryName()));
-
-            e.getRegistry().register(new TargetDeviceItem("target_device", WormholeConfig.basicDeviceTargetCount::get));
-            e.getRegistry().register(new TargetDeviceItem("advanced_target_device", WormholeConfig.advancedDeviceTargetCount::get));
-        }
-
-        @SubscribeEvent
-        public static void onContainerRegistry(final RegistryEvent.Register<ContainerType<?>> e){
-            e.getRegistry().register(IForgeContainerType.create((windowId, inv, data) -> new CoalGeneratorContainer(windowId, inv.player, data.readBlockPos())).setRegistryName("coal_generator_container"));
-        }
-
-        @SubscribeEvent
-        public static void onRecipeRegistry(final RegistryEvent.Register<IRecipeSerializer<?>> e){
-            e.getRegistry().register(NBT_RECIPE_SERIALIZER.setRegistryName(new ResourceLocation("wormhole", "nbtrecipe")));
-        }
+    private static void registerGenerators(){
+        GeneratorRegistrationHandler handler = GeneratorRegistrationHandler.get("wormhole");
+        handler.addGenerator(WormholeModelGenerator::new);
+        handler.addGenerator(WormholeBlockStateGenerator::new);
+        handler.addGenerator(WormholeLanguageGenerator::new);
+        handler.addGenerator(WormholeLootTableGenerator::new);
+        handler.addGenerator(WormholeRecipeGenerator::new);
+        handler.addGenerator(WormholeTagGenerator::new);
     }
-
 }

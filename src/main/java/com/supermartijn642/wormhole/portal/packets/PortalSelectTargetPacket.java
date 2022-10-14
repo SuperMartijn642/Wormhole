@@ -1,10 +1,9 @@
 package com.supermartijn642.wormhole.portal.packets;
 
+import com.supermartijn642.core.network.PacketContext;
 import com.supermartijn642.wormhole.packet.PortalGroupPacket;
 import com.supermartijn642.wormhole.portal.PortalGroup;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.world.World;
 
 /**
  * Created 11/5/2020 by SuperMartijn642
@@ -18,24 +17,23 @@ public class PortalSelectTargetPacket extends PortalGroupPacket {
         this.target = target;
     }
 
-    public PortalSelectTargetPacket(PacketBuffer buffer){
-        super(buffer);
+    public PortalSelectTargetPacket(){
     }
 
     @Override
-    public void encode(PacketBuffer buffer){
-        super.encode(buffer);
+    public void write(PacketBuffer buffer){
+        super.write(buffer);
         buffer.writeInt(this.target);
     }
 
     @Override
-    protected void decode(PacketBuffer buffer){
-        super.decode(buffer);
+    public void read(PacketBuffer buffer){
+        super.read(buffer);
         this.target = buffer.readInt();
     }
 
     @Override
-    protected void handle(PlayerEntity player, World world, PortalGroup group){
+    protected void handle(PortalGroup group, PacketContext context){
         group.setActiveTarget(this.target);
     }
 }
