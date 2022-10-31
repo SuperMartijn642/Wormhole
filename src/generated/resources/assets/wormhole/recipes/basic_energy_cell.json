@@ -1,0 +1,25 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "ABA",
+    "BCB",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    },
+    "B": {
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
+    },
+    "C": {
+      "type": "forge:ore_dict",
+      "ore": "blockRedstone"
+    }
+  },
+  "result": {
+    "item": "wormhole:basic_energy_cell"
+  }
+}

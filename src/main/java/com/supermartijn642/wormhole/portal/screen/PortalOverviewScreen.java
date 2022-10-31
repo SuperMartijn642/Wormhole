@@ -1,15 +1,16 @@
 package com.supermartijn642.wormhole.portal.screen;
 
+import com.supermartijn642.core.EnergyFormat;
+import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
-import com.supermartijn642.wormhole.ClientProxy;
-import com.supermartijn642.wormhole.EnergyFormat;
+import com.supermartijn642.core.gui.widget.premade.ButtonWidget;
 import com.supermartijn642.wormhole.Wormhole;
+import com.supermartijn642.wormhole.WormholeClient;
 import com.supermartijn642.wormhole.portal.PortalGroup;
 import com.supermartijn642.wormhole.portal.PortalTarget;
 import com.supermartijn642.wormhole.portal.packets.PortalActivatePacket;
 import com.supermartijn642.wormhole.portal.packets.PortalDeactivatePacket;
 import com.supermartijn642.wormhole.screen.EnergyBarWidget;
-import com.supermartijn642.wormhole.screen.WormholeButton;
 import com.supermartijn642.wormhole.screen.WormholeColoredButton;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.GlStateManager;
@@ -17,8 +18,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.DimensionType;
 
@@ -44,54 +43,56 @@ public class PortalOverviewScreen extends PortalGroupScreen {
     private WormholeColoredButton activateButton;
 
     public PortalOverviewScreen(BlockPos pos){
-        super("wormhole.portal.gui.title", pos);
+        super(WIDTH, HEIGHT, pos);
     }
 
     @Override
-    protected float sizeX(PortalGroup group){
-        return WIDTH;
-    }
-
-    @Override
-    protected float sizeY(PortalGroup group){
-        return HEIGHT;
+    protected ITextComponent getNarrationMessage(PortalGroup object){
+        return TextComponents.translation("wormhole.portal.gui.title").get();
     }
 
     @Override
     protected void addWidgets(PortalGroup group){
-        this.activateButton = this.addWidget(new WormholeColoredButton(45, 159, 60, 15, "", () -> {
-            PortalGroup group2 = this.getObject();
-            if(group2 != null)
-                Wormhole.channel.sendToServer(group2.isActive() ? new PortalDeactivatePacket(group2) : new PortalActivatePacket(group2));
-        }));
-        Supplier<Integer> energy = () -> this.getFromPortalGroup(PortalGroup::getStoredEnergy, 0), capacity = () -> this.getFromPortalGroup(PortalGroup::getEnergyCapacity, 0);
+        this.activateButton = this.addWidget(new WormholeColoredButton(45, 159, 60, 15, TextComponents.empty().get(), () -> Wormhole.CHANNEL.sendToServer(this.object.isActive() ? new PortalDeactivatePacket(this.object) : new PortalActivatePacket(this.object))));
+        Supplier<Integer> energy = () -> this.object.getStoredEnergy(), capacity = () -> this.object.getEnergyCapacity();
         this.addWidget(new EnergyBarWidget(244, 55, 30, 82, energy, capacity));
-        this.addWidget(new WormholeButton(151, 159, 82, 13, "wormhole.portal.gui.change_target", () -> ClientProxy.openPortalTargetScreen(this.pos)));
+        this.addWidget(new ButtonWidget(151, 159, 82, 13, TextComponents.translation("wormhole.portal.gui.change_target").get(), () -> WormholeClient.openPortalTargetScreen(this.pos)));
     }
 
     @Override
-    protected void render(int mouseX, int mouseY, PortalGroup group){
-        this.activateButton.setTextKey(group.isActive() ? "wormhole.portal.gui.deactivate" : "wormhole.portal.gui.activate");
+    protected void update(PortalGroup group){
+        super.update(object);
+
+        this.activateButton.setText(TextComponents.translation(group.isActive() ? "wormhole.portal.gui.deactivate" : "wormhole.portal.gui.activate").get());
         if(group.isActive())
             this.activateButton.setColorRed();
         else
             this.activateButton.setColorGreen();
+    }
 
+    @Override
+    protected void renderBackground(int mouseX, int mouseY, PortalGroup object){
         ScreenUtils.bindTexture(BACKGROUND);
-        ScreenUtils.drawTexture(0, 0, this.sizeX(), this.sizeY());
-        ScreenUtils.drawCenteredString(this.title, 72.5f, 3, Integer.MAX_VALUE);
+        ScreenUtils.drawTexture(0, 0, this.width(), this.height());
+
+        super.renderBackground(mouseX, mouseY, object);
+    }
+
+    @Override
+    protected void render(int mouseX, int mouseY, PortalGroup group){
+        super.render(mouseX, mouseY, group);
+
+        ScreenUtils.drawCenteredString(TextComponents.translation("wormhole.portal.gui.title").get(), 72.5f, 3, Integer.MAX_VALUE);
 
         PortalTarget target = group.getActiveTarget();
         this.renderInfo(group.getStoredEnergy(), group.getIdleEnergyCost(), group.getTeleportEnergyCost(), target);
-
-        PortalRendererHelper.drawPortal(group.shape, 8, 19, 132, 132);
     }
 
     private void renderInfo(int storedEnergy, int idleCost, int teleportCost, PortalTarget target){
         PortalStatus status = target == null ? PortalStatus.NO_TARGET : storedEnergy == 0 ? PortalStatus.NO_ENERGY :
             storedEnergy < idleCost ? PortalStatus.NOT_ENOUGH_ENERGY : PortalStatus.OK;
 
-        ScreenUtils.drawCenteredString(new TextComponentTranslation("wormhole.portal.gui.information"), 192, 31, Integer.MAX_VALUE);
+        ScreenUtils.drawCenteredString(TextComponents.translation("wormhole.portal.gui.information").get(), 192, 31, Integer.MAX_VALUE);
 
         ScreenUtils.bindTexture(SEPARATOR);
         ScreenUtils.drawTexture(154, 41, 77, 1);
@@ -110,7 +111,7 @@ public class PortalOverviewScreen extends PortalGroupScreen {
         GlStateManager.enableAlpha();
         ScreenUtils.bindTexture(TELEPORT_ICON);
         ScreenUtils.drawTexture(150, 70, 11, 11);
-        ScreenUtils.drawString(target == null ? "--" : EnergyFormat.formatEnergy(teleportCost), 162, 72, Integer.MAX_VALUE);
+        ScreenUtils.drawString(target == null ? "--" : EnergyFormat.formatEnergyWithUnit(teleportCost), 162, 72, Integer.MAX_VALUE);
 
         ScreenUtils.bindTexture(SEPARATOR);
         ScreenUtils.drawTexture(154, 85, 77, 1);
@@ -125,14 +126,14 @@ public class PortalOverviewScreen extends PortalGroupScreen {
             GlStateManager.enableAlpha();
             ScreenUtils.bindTexture(LOCATION_ICON);
             ScreenUtils.drawTexture(151, 103, 9, 9);
-            ScreenUtils.drawString(this.font, "(" + target.x + ", " + target.y + ", " + target.z + ")", 162, 104, Integer.MAX_VALUE);
+            ScreenUtils.drawString("(" + target.x + ", " + target.y + ", " + target.z + ")", 162, 104, Integer.MAX_VALUE);
             // dimension
             Block block = null;
-            if(target.dimension == DimensionType.OVERWORLD.getId())
+            if(target.dimension.equals(DimensionType.OVERWORLD))
                 block = Blocks.GRASS_PATH;
-            else if(target.dimension == DimensionType.NETHER.getId())
+            else if(target.dimension.equals(DimensionType.NETHER))
                 block = Blocks.NETHERRACK;
-            else if(target.dimension == DimensionType.THE_END.getId())
+            else if(target.dimension.equals(DimensionType.THE_END))
                 block = Blocks.END_STONE;
             if(block == null){
                 ScreenUtils.bindTexture(DIMENSION_ICON);
@@ -140,30 +141,39 @@ public class PortalOverviewScreen extends PortalGroupScreen {
             }else{
                 ScreenBlockRenderer.drawBlock(block, 155.5, 119.5, 5.5, 45, 40);
             }
-            ScreenUtils.drawString(this.font, target.getDimensionDisplayName(), 162, 116, Integer.MAX_VALUE);
+            ScreenUtils.drawString(target.getDimensionDisplayName(), 162, 116, Integer.MAX_VALUE);
         }
+    }
+
+    @Override
+    protected void renderForeground(int mouseX, int mouseY, PortalGroup group){
+        super.renderForeground(mouseX, mouseY, group);
+
+        PortalRendererHelper.drawPortal(group.shape, this.x + 8, this.y + 19, 132, 132);
     }
 
     @Override
     protected void renderTooltips(int mouseX, int mouseY, PortalGroup group){
         // status
         if(mouseX >= 150 && mouseX <= 161 && mouseY >= 46 && mouseY <= 57)
-            this.drawHoveringText(new TextComponentTranslation("wormhole.portal.gui.status").getFormattedText(), mouseX, mouseY);
+            ScreenUtils.drawTooltip(TextComponents.translation("wormhole.portal.gui.status").get(), mouseX, mouseY);
             // idle cost
         else if(mouseX >= 150 && mouseX <= 161 && mouseY >= 58 && mouseY <= 69)
-            this.drawHoveringText(new TextComponentTranslation("wormhole.portal.gui.idle_cost").getFormattedText(), mouseX, mouseY);
+            ScreenUtils.drawTooltip(TextComponents.translation("wormhole.portal.gui.idle_cost").get(), mouseX, mouseY);
             // teleport cost
         else if(mouseX >= 150 && mouseX <= 161 && mouseY >= 70 && mouseY <= 81)
-            this.drawHoveringText(new TextComponentTranslation("wormhole.portal.gui.teleport_cost").getFormattedText(), mouseX, mouseY);
+            ScreenUtils.drawTooltip(TextComponents.translation("wormhole.portal.gui.teleport_cost").get(), mouseX, mouseY);
             // target
         else if(mouseX >= 150 && mouseX <= 161 && mouseY >= 90 && mouseY <= 101)
-            this.drawHoveringText(new TextComponentTranslation("wormhole.portal.gui.target").getFormattedText(), mouseX, mouseY);
+            ScreenUtils.drawTooltip(TextComponents.translation("wormhole.portal.gui.target").get(), mouseX, mouseY);
             // location
         else if(mouseX >= 150 && mouseX <= 161 && mouseY >= 102 && mouseY <= 113)
-            this.drawHoveringText(new TextComponentTranslation("wormhole.portal.gui.target_location").getFormattedText(), mouseX, mouseY);
+            ScreenUtils.drawTooltip(TextComponents.translation("wormhole.portal.gui.target_location").get(), mouseX, mouseY);
             // dimension
         else if(mouseX >= 150 && mouseX <= 161 && mouseY >= 114 && mouseY <= 125)
-            this.drawHoveringText(new TextComponentTranslation("wormhole.portal.gui.target_dimension").getFormattedText(), mouseX, mouseY);
+            ScreenUtils.drawTooltip(TextComponents.translation("wormhole.portal.gui.target_dimension").get(), mouseX, mouseY);
+
+        super.renderTooltips(mouseX, mouseY, group);
     }
 
     private enum PortalStatus {
@@ -184,7 +194,7 @@ public class PortalOverviewScreen extends PortalGroupScreen {
         }
 
         public ITextComponent getStatus(){
-            return new TextComponentTranslation("wormhole.portal.gui.status." + this.status).setStyle(new Style().setColor(this.color));
+            return TextComponents.translation("wormhole.portal.gui.status." + this.status).color(this.color).get();
         }
 
         public ResourceLocation getIcon(){

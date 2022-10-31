@@ -1,7 +1,0 @@
-{
-  "parent": "block/cube_all",
-  "textures": {
-    "particle": "wormhole:energy_cells/basic_energy_cell_0",
-    "all": "wormhole:energy_cells/basic_energy_cell_0"
-  }
-}

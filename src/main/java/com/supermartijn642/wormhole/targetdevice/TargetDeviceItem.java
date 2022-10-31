@@ -1,73 +1,66 @@
 package com.supermartijn642.wormhole.targetdevice;
 
 import com.google.common.collect.Lists;
-import com.supermartijn642.wormhole.ClientProxy;
+import com.supermartijn642.core.TextComponents;
+import com.supermartijn642.core.item.BaseItem;
+import com.supermartijn642.core.item.ItemProperties;
 import com.supermartijn642.wormhole.Wormhole;
+import com.supermartijn642.wormhole.WormholeClient;
 import com.supermartijn642.wormhole.portal.PortalTarget;
-import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
  * Created 7/21/2020 by SuperMartijn642
  */
-public class TargetDeviceItem extends Item {
+public class TargetDeviceItem extends BaseItem {
 
     private final Supplier<Integer> maxTargetCount;
 
-    public TargetDeviceItem(String registryName, Supplier<Integer> maxTargetCount){
-        super();
+    public TargetDeviceItem(Supplier<Integer> maxTargetCount){
+        super(ItemProperties.create().maxStackSize(1).group(Wormhole.ITEM_GROUP));
         this.maxTargetCount = maxTargetCount;
-        this.setRegistryName(registryName);
-        this.setUnlocalizedName("wormhole." + registryName);
-        this.setMaxStackSize(1);
-        this.setCreativeTab(Wormhole.ITEM_GROUP);
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn){
-        if(worldIn.isRemote)
-            ClientProxy.openTargetDeviceScreen(handIn, playerIn.getPosition(), Math.round(playerIn.rotationYaw / 90) * 90);
-        return ActionResult.newResult(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
+    public ItemUseResult interact(ItemStack stack, EntityPlayer player, EnumHand hand, World level){
+        if(level.isRemote)
+            WormholeClient.openTargetDeviceScreen(hand, player.getPosition(), Math.round(player.rotationYaw / 90) * 90);
+        return ItemUseResult.consume(player.getHeldItem(hand));
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn){
-        tooltip.add(new TextComponentTranslation("wormhole.target_device.info").setStyle(new Style().setColor(TextFormatting.AQUA)).getFormattedText());
+    protected void appendItemInformation(ItemStack stack, @Nullable IBlockAccess level, Consumer<ITextComponent> info, boolean advanced){
+        info.accept(TextComponents.translation("wormhole.target_device.info").color(TextFormatting.AQUA).get());
 
         List<PortalTarget> targets = getTargets(stack);
         int capacity = getMaxTargetCount(stack);
-        tooltip.add(
-            new TextComponentTranslation("wormhole.target_device.info.targets", targets.size(), capacity)
-                .setStyle(new Style().setColor(TextFormatting.YELLOW)).getFormattedText()
-        );
+        info.accept(TextComponents.translation("wormhole.target_device.info.targets", targets.size(), capacity).color(TextFormatting.YELLOW).get());
     }
 
     public static List<PortalTarget> getTargets(ItemStack stack){
-        NBTTagCompound tag = stack.hasTagCompound() ? stack.getTagCompound() : new NBTTagCompound();
+        NBTTagCompound tag = stack.getTagCompound();
 
-        if(tag.hasKey("target")){
+        if(tag != null && tag.hasKey("target")){
             stack.setTagCompound(null);
             setTargets(stack, Lists.newArrayList(PortalTarget.read(tag.getCompoundTag("target"))));
-            tag = stack.hasTagCompound() ? stack.getTagCompound() : new NBTTagCompound();
+            tag = stack.getTagCompound();
         }
 
-        if(!tag.hasKey("targetCount"))
+        if(tag == null || !tag.hasKey("targetCount"))
             return new LinkedList<>();
 
         int count = tag.getInteger("targetCount");
@@ -85,7 +78,6 @@ public class TargetDeviceItem extends Item {
         tag.setInteger("targetCount", targets.size());
         for(int i = 0; i < targets.size(); i++)
             tag.setTag("target" + i, targets.get(i).write());
-
         stack.setTagCompound(tag);
     }
 

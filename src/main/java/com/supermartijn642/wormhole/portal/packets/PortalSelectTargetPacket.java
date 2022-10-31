@@ -1,15 +1,14 @@
 package com.supermartijn642.wormhole.portal.packets;
 
+import com.supermartijn642.core.network.PacketContext;
 import com.supermartijn642.wormhole.packet.PortalGroupPacket;
 import com.supermartijn642.wormhole.portal.PortalGroup;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
+import net.minecraft.network.PacketBuffer;
 
 /**
  * Created 11/5/2020 by SuperMartijn642
  */
-public class PortalSelectTargetPacket extends PortalGroupPacket<PortalSelectTargetPacket> {
+public class PortalSelectTargetPacket extends PortalGroupPacket {
 
     private int target;
 
@@ -22,19 +21,19 @@ public class PortalSelectTargetPacket extends PortalGroupPacket<PortalSelectTarg
     }
 
     @Override
-    public void toBytes(ByteBuf buffer){
-        super.toBytes(buffer);
+    public void write(PacketBuffer buffer){
+        super.write(buffer);
         buffer.writeInt(this.target);
     }
 
     @Override
-    public void fromBytes(ByteBuf buffer){
-        super.fromBytes(buffer);
+    public void read(PacketBuffer buffer){
+        super.read(buffer);
         this.target = buffer.readInt();
     }
 
     @Override
-    protected void handle(PortalSelectTargetPacket message, EntityPlayer player, World world, PortalGroup group){
-        group.setActiveTarget(message.target);
+    protected void handle(PortalGroup group, PacketContext context){
+        group.setActiveTarget(this.target);
     }
 }

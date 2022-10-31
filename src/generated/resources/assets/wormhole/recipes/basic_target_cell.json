@@ -1,0 +1,27 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "ABA",
+    "BCB",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    },
+    "B": {
+      "type": "forge:ore_dict",
+      "ore": "gemLapis"
+    },
+    "C": [
+      {
+        "type": "minecraft:item",
+        "item": "minecraft:compass"
+      }
+    ]
+  },
+  "result": {
+    "item": "wormhole:basic_target_cell"
+  }
+}

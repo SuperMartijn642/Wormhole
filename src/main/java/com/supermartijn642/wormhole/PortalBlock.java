@@ -1,5 +1,7 @@
 package com.supermartijn642.wormhole;
 
+import com.supermartijn642.core.block.BlockProperties;
+import com.supermartijn642.core.block.BlockShape;
 import com.supermartijn642.wormhole.portal.PortalGroupBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -13,56 +15,48 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
-import javax.annotation.Nullable;
-import java.util.Locale;
-import java.util.Random;
 
 /**
  * Created 7/21/2020 by SuperMartijn642
  */
 public class PortalBlock extends PortalGroupBlock {
 
-    private static final AxisAlignedBB
-        SHAPE_X = new AxisAlignedBB(6 / 16d, 0, 0, 10 / 16d, 1, 1),
-        SHAPE_Y = new AxisAlignedBB(0, 6 / 16d, 0, 1, 10 / 16d, 1),
-        SHAPE_Z = new AxisAlignedBB(0, 0, 6 / 16d, 1, 1, 10 / 16d);
+    private static final BlockShape
+        SHAPE_X = BlockShape.createBlockShape(6, 0, 0, 10, 16, 16),
+        SHAPE_Y = BlockShape.createBlockShape(0, 6, 0, 16, 10, 16),
+        SHAPE_Z = BlockShape.createBlockShape(0, 0, 6, 16, 16, 10);
 
     public static final PropertyEnum<EnumDyeColor> COLOR_PROPERTY = PropertyEnum.create("color", EnumDyeColor.class, EnumDyeColor.values());
 
     public final EnumFacing.Axis axis;
 
     public PortalBlock(EnumFacing.Axis axis){
-        super("portal_" + axis.name().toLowerCase(Locale.ROOT), PortalTile::new, Material.PORTAL, Material.PORTAL.getMaterialMapColor(), SoundType.GLASS, 0, 0);
+        super(BlockProperties.create(Material.PORTAL).noCollision().destroyTime(-1.0F).explosionResistance(-1).sound(SoundType.GLASS).lightLevel(o -> 11).noLootTable(), () -> Wormhole.portal_tile);
         this.axis = axis;
-        this.setDefaultState(this.blockState.getBaseState().withProperty(COLOR_PROPERTY, EnumDyeColor.WHITE));
-
-        this.setCreativeTab(null);
+        this.setDefaultState(this.getDefaultState().withProperty(COLOR_PROPERTY, EnumDyeColor.WHITE));
     }
 
     @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ){
-        TileEntity tile = worldIn.getTileEntity(pos);
-        if(tile instanceof PortalTile)
-            return ((PortalTile)tile).activate(player, hand);
-        return super.onBlockActivated(worldIn, pos, state, player, hand, facing, hitX, hitY, hitZ);
+    protected InteractionFeedback interact(IBlockState state, World level, BlockPos pos, EntityPlayer player, EnumHand hand, EnumFacing hitSide, Vec3d hitLocation){
+        TileEntity entity = level.getTileEntity(pos);
+        if(entity instanceof PortalBlockEntity)
+            return ((PortalBlockEntity)entity).activate(player, hand) ? InteractionFeedback.SUCCESS : InteractionFeedback.PASS;
+        return super.interact(state, level, pos, player, hand, hitSide, hitLocation);
     }
 
     @Override
-    public void onEntityCollidedWithBlock(World worldIn, BlockPos pos, IBlockState state, Entity entityIn){
-        TileEntity tile = worldIn.getTileEntity(pos);
-        if(tile instanceof PortalTile)
-            ((PortalTile)tile).teleport(entityIn);
+    public void onEntityCollidedWithBlock(World level, BlockPos pos, IBlockState state, Entity entity){
+        TileEntity blockEntity = level.getTileEntity(pos);
+        if(blockEntity instanceof PortalBlockEntity)
+            ((PortalBlockEntity)blockEntity).teleport(entity);
     }
 
     @Override
@@ -70,44 +64,31 @@ public class PortalBlock extends PortalGroupBlock {
         return new BlockStateContainer(this, COLOR_PROPERTY);
     }
 
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos){
-        return this.axis == EnumFacing.Axis.X ? SHAPE_X : this.axis == EnumFacing.Axis.Y ? SHAPE_Y : this.axis == EnumFacing.Axis.Z ? SHAPE_Z : NULL_AABB;
-    }
-
-    @Nullable
     @Override
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos){
-        return NULL_AABB;
-    }
-
-    public boolean isFullCube(IBlockState state){
-        return false;
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess level, BlockPos pos){
+        return (this.axis == EnumFacing.Axis.X ? SHAPE_X : this.axis == EnumFacing.Axis.Y ? SHAPE_Y : this.axis == EnumFacing.Axis.Z ? SHAPE_Z : BlockShape.empty()).simplify();
     }
 
     @Override
-    public void onNeighborChange(IBlockAccess world, BlockPos pos, BlockPos neighbor){
-        TileEntity tile = world.getTileEntity(pos);
-        if(tile instanceof PortalTile && !((PortalTile)tile).hasGroup())
-            tile.getWorld().setBlockState(pos, Blocks.AIR.getDefaultState());
+    public void onNeighborChange(IBlockAccess level, BlockPos pos, BlockPos neighbor){
+        TileEntity entity = level.getTileEntity(pos);
+        if(entity instanceof PortalBlockEntity && !((PortalBlockEntity)entity).hasGroup())
+            entity.getWorld().setBlockState(pos, Blocks.AIR.getDefaultState());
     }
 
     @Override
-    public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player){
+    public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World level, BlockPos pos, EntityPlayer player){
         return ItemStack.EMPTY;
     }
 
-    @SideOnly(Side.CLIENT)
-    public BlockRenderLayer getBlockLayer(){
-        return BlockRenderLayer.TRANSLUCENT;
-    }
-
-    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face){
+    public BlockFaceShape getBlockFaceShape(IBlockAccess level, IBlockState state, BlockPos pos, EnumFacing face){
         return BlockFaceShape.UNDEFINED;
     }
 
     @Override
     public IBlockState getStateFromMeta(int meta){
-        return this.getDefaultState().withProperty(COLOR_PROPERTY, EnumDyeColor.byDyeDamage(meta & 15));
+        int color = meta & 15;
+        return this.getDefaultState().withProperty(COLOR_PROPERTY, EnumDyeColor.byDyeDamage(color));
     }
 
     @Override
@@ -118,10 +99,5 @@ public class PortalBlock extends PortalGroupBlock {
     @Override
     public boolean isOpaqueCube(IBlockState state){
         return false;
-    }
-
-    @Override
-    public int quantityDropped(IBlockState state, int fortune, Random random){
-        return 0;
     }
 }

@@ -1,0 +1,31 @@
+{
+  "type": "wormhole:nbtrecipe",
+  "pattern": [
+    "  A",
+    "BCD",
+    "BBB"
+  ],
+  "key": {
+    "A": {
+      "type": "forge:ore_dict",
+      "ore": "dustGlowstone"
+    },
+    "B": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    },
+    "C": [
+      {
+        "type": "minecraft:item",
+        "item": "wormhole:target_device"
+      }
+    ],
+    "D": {
+      "type": "forge:ore_dict",
+      "ore": "ingotGold"
+    }
+  },
+  "result": {
+    "item": "wormhole:advanced_target_device"
+  }
+}

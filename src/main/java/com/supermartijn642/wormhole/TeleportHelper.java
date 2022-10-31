@@ -42,7 +42,7 @@ public class TeleportHelper {
     }
 
     public static boolean canTeleport(Entity entity, PortalTarget target){
-        if(entity.world.isRemote || !target.getWorld(entity.getServer()).isPresent())
+        if(entity.world.isRemote || !target.getLevel(entity.getServer()).isPresent())
             return false;
         if(entity.isPassenger(entity))
             return canTeleport(entity.getLowestRidingEntity(), target);
@@ -63,15 +63,15 @@ public class TeleportHelper {
     }
 
     private static void teleportEntityAndPassengers(Entity entity, Entity entityBeingRidden, PortalTarget target){
-        if(entity.world.isRemote || !target.getWorld(entity.getServer()).isPresent())
+        if(entity.world.isRemote || !target.getLevel(entity.getServer()).isPresent())
             return;
-        Optional<WorldServer> targetWorld = target.getWorld(entity.getServer()).filter(WorldServer.class::isInstance).map(WorldServer.class::cast);
-        if(!targetWorld.isPresent())
+        Optional<WorldServer> targetLevel = target.getLevel(entity.getServer()).filter(WorldServer.class::isInstance).map(WorldServer.class::cast);
+        if(!targetLevel.isPresent())
             return;
 
         Collection<Entity> passengers = entity.getPassengers();
         entity.removePassengers();
-        Entity newEntity = teleportEntity(entity, targetWorld.get(), target);
+        Entity newEntity = teleportEntity(entity, targetLevel.get(), target);
         if(entityBeingRidden != null){
             newEntity.startRiding(entityBeingRidden);
             if(newEntity instanceof EntityPlayerMP)
@@ -80,8 +80,8 @@ public class TeleportHelper {
         passengers.forEach(e -> teleportEntityAndPassengers(e, newEntity, target));
     }
 
-    private static Entity teleportEntity(Entity entity, WorldServer targetWorld, PortalTarget target){
-        if(targetWorld == entity.world){
+    private static Entity teleportEntity(Entity entity, WorldServer targetLevel, PortalTarget target){
+        if(targetLevel == entity.world){
             if(entity instanceof EntityPlayerMP)
                 ((EntityPlayerMP)entity).connection.setPlayerLocation(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
             else
@@ -93,7 +93,7 @@ public class TeleportHelper {
             entity.fallDistance = 0;
             entity.onGround = true;
         }else{
-            Entity newEntity = entity.changeDimension(targetWorld.provider.getDimensionType().getId(), (world, entity1, yaw) -> entity1.moveToBlockPosAndAngles(target.getPos(), target.yaw, entity1.rotationPitch));
+            Entity newEntity = entity.changeDimension(targetLevel.provider.getDimensionType().getId(), (world, entity1, yaw) -> entity1.moveToBlockPosAndAngles(target.getPos(), target.yaw, entity1.rotationPitch));
             if(entity != null){
                 entity.motionX = 0;
                 entity.motionY = 0;

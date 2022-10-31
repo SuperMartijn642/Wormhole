@@ -1,21 +1,20 @@
 package com.supermartijn642.wormhole.portal.packets;
 
+import com.supermartijn642.core.network.PacketContext;
 import com.supermartijn642.wormhole.packet.PortalGroupPacket;
 import com.supermartijn642.wormhole.portal.PortalGroup;
 import com.supermartijn642.wormhole.portal.PortalTarget;
 import com.supermartijn642.wormhole.targetdevice.TargetDeviceItem;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumHand;
-import net.minecraft.world.World;
 
 import java.util.List;
 
 /**
  * Created 11/5/2020 by SuperMartijn642
  */
-public class PortalAddTargetPacket extends PortalGroupPacket<PortalAddTargetPacket> {
+public class PortalAddTargetPacket extends PortalGroupPacket {
 
     private EnumHand hand;
     private int index;
@@ -30,26 +29,26 @@ public class PortalAddTargetPacket extends PortalGroupPacket<PortalAddTargetPack
     }
 
     @Override
-    public void toBytes(ByteBuf buffer){
-        super.toBytes(buffer);
-        buffer.writeBoolean(this.hand == EnumHand.MAIN_HAND);
+    public void write(PacketBuffer buffer){
+        super.write(buffer);
+        buffer.writeEnumValue(this.hand);
         buffer.writeInt(this.index);
     }
 
     @Override
-    public void fromBytes(ByteBuf buffer){
-        super.fromBytes(buffer);
-        this.hand = buffer.readBoolean() ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND;
+    public void read(PacketBuffer buffer){
+        super.read(buffer);
+        this.hand = buffer.readEnumValue(EnumHand.class);
         this.index = buffer.readInt();
     }
 
     @Override
-    protected void handle(PortalAddTargetPacket message, EntityPlayer player, World world, PortalGroup group){
-        ItemStack stack = player.getHeldItem(message.hand);
+    protected void handle(PortalGroup group, PacketContext context){
+        ItemStack stack = context.getSendingPlayer().getHeldItem(this.hand);
         if(stack.isEmpty() || !(stack.getItem() instanceof TargetDeviceItem))
             return;
         List<PortalTarget> targets = TargetDeviceItem.getTargets(stack);
-        if(message.index >= 0 && message.index < targets.size())
-            group.addTarget(targets.get(message.index));
+        if(this.index >= 0 && this.index < targets.size())
+            group.addTarget(targets.get(this.index));
     }
 }

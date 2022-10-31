@@ -1,0 +1,33 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AEA"
+  ],
+  "key": {
+    "A": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    },
+    "B": {
+      "type": "forge:ore_dict",
+      "ore": "blockLapis"
+    },
+    "C": {
+      "type": "forge:ore_dict",
+      "ore": "dustGlowstone"
+    },
+    "D": {
+      "type": "forge:ore_dict",
+      "ore": "enderpearl"
+    },
+    "E": {
+      "type": "forge:ore_dict",
+      "ore": "blockRedstone"
+    }
+  },
+  "result": {
+    "item": "wormhole:portal_stabilizer"
+  }
+}

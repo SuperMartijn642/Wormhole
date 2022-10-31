@@ -1,5 +1,5 @@
 {
   "recipes": {
-    "nbtrecipe": "com.supermartijn642.wormhole.NBTRecipeFactory"
+    "nbtrecipe": "com.supermartijn642.wormhole.NBTRecipe$Serializer"
   }
 }

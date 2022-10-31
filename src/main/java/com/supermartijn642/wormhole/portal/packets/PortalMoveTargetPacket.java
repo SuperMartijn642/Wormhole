@@ -1,15 +1,14 @@
 package com.supermartijn642.wormhole.portal.packets;
 
+import com.supermartijn642.core.network.PacketContext;
 import com.supermartijn642.wormhole.packet.PortalGroupPacket;
 import com.supermartijn642.wormhole.portal.PortalGroup;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
+import net.minecraft.network.PacketBuffer;
 
 /**
  * Created 11/5/2020 by SuperMartijn642
  */
-public class PortalMoveTargetPacket extends PortalGroupPacket<PortalMoveTargetPacket> {
+public class PortalMoveTargetPacket extends PortalGroupPacket {
 
     private int index;
     private boolean up;
@@ -24,21 +23,21 @@ public class PortalMoveTargetPacket extends PortalGroupPacket<PortalMoveTargetPa
     }
 
     @Override
-    public void toBytes(ByteBuf buffer){
-        super.toBytes(buffer);
+    public void write(PacketBuffer buffer){
+        super.write(buffer);
         buffer.writeInt(this.index);
         buffer.writeBoolean(this.up);
     }
 
     @Override
-    public void fromBytes(ByteBuf buffer){
-        super.fromBytes(buffer);
+    public void read(PacketBuffer buffer){
+        super.read(buffer);
         this.index = buffer.readInt();
         this.up = buffer.readBoolean();
     }
 
     @Override
-    protected void handle(PortalMoveTargetPacket message, EntityPlayer player, World world, PortalGroup group){
-        group.moveTarget(message.index, message.up);
+    protected void handle(PortalGroup group, PacketContext context){
+        group.moveTarget(this.index, this.up);
     }
 }

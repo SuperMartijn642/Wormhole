@@ -1,0 +1,31 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "  A",
+    "BCB",
+    "BDB"
+  ],
+  "key": {
+    "A": {
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
+    },
+    "B": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    },
+    "C": {
+      "type": "forge:ore_dict",
+      "ore": "enderpearl"
+    },
+    "D": [
+      {
+        "type": "minecraft:item",
+        "item": "minecraft:compass"
+      }
+    ]
+  },
+  "result": {
+    "item": "wormhole:target_device"
+  }
+}

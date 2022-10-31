@@ -1,0 +1,31 @@
+{
+  "type": "wormhole:nbtrecipe",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    },
+    "B": {
+      "type": "forge:ore_dict",
+      "ore": "gemLapis"
+    },
+    "C": {
+      "type": "forge:ore_dict",
+      "ore": "dustGlowstone"
+    },
+    "D": [
+      {
+        "type": "minecraft:item",
+        "item": "wormhole:basic_target_cell"
+      }
+    ]
+  },
+  "result": {
+    "item": "wormhole:advanced_target_cell"
+  }
+}

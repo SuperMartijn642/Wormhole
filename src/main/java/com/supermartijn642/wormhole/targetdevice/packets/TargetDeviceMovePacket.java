@@ -1,20 +1,19 @@
 package com.supermartijn642.wormhole.targetdevice.packets;
 
+import com.supermartijn642.core.network.PacketContext;
 import com.supermartijn642.wormhole.packet.TargetDevicePacket;
 import com.supermartijn642.wormhole.portal.PortalTarget;
 import com.supermartijn642.wormhole.targetdevice.TargetDeviceItem;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumHand;
-import net.minecraft.world.World;
 
 import java.util.List;
 
 /**
  * Created 10/25/2020 by SuperMartijn642
  */
-public class TargetDeviceMovePacket extends TargetDevicePacket<TargetDeviceMovePacket> {
+public class TargetDeviceMovePacket extends TargetDevicePacket {
 
     private int index;
     private boolean up;
@@ -29,24 +28,24 @@ public class TargetDeviceMovePacket extends TargetDevicePacket<TargetDeviceMoveP
     }
 
     @Override
-    public void toBytes(ByteBuf buffer){
-        super.toBytes(buffer);
+    public void write(PacketBuffer buffer){
+        super.write(buffer);
         buffer.writeInt(this.index);
         buffer.writeBoolean(this.up);
     }
 
     @Override
-    public void fromBytes(ByteBuf buffer){
-        super.fromBytes(buffer);
+    public void read(PacketBuffer buffer){
+        super.read(buffer);
         this.index = buffer.readInt();
         this.up = buffer.readBoolean();
     }
 
     @Override
-    protected void handle(TargetDeviceMovePacket message, EntityPlayer player, World world, ItemStack targetDevice){
+    protected void handle(ItemStack targetDevice, PacketContext context){
         List<PortalTarget> targets = TargetDeviceItem.getTargets(targetDevice);
-        if(message.index < 0 || message.index > targets.size() - 1)
+        if(this.index < 0 || this.index > targets.size() - 1)
             return;
-        TargetDeviceItem.moveTarget(targetDevice, message.index, message.up);
+        TargetDeviceItem.moveTarget(targetDevice, this.index, this.up);
     }
 }

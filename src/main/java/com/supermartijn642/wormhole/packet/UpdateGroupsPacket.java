@@ -1,17 +1,16 @@
 package com.supermartijn642.wormhole.packet;
 
-import com.supermartijn642.wormhole.ClientProxy;
+import com.supermartijn642.core.network.BasePacket;
+import com.supermartijn642.core.network.PacketContext;
 import com.supermartijn642.wormhole.PortalGroupCapability;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
+import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 /**
  * Created 11/9/2020 by SuperMartijn642
  */
-public class UpdateGroupsPacket extends WormholePacket<UpdateGroupsPacket> {
+public class UpdateGroupsPacket implements BasePacket {
 
     private NBTTagCompound groupsData;
 
@@ -23,19 +22,19 @@ public class UpdateGroupsPacket extends WormholePacket<UpdateGroupsPacket> {
     }
 
     @Override
-    public void toBytes(ByteBuf buf){
-        ByteBufUtils.writeTag(buf, this.groupsData);
+    public void write(PacketBuffer buffer){
+        ByteBufUtils.writeTag(buffer, this.groupsData);
     }
 
     @Override
-    public void fromBytes(ByteBuf buf){
-        this.groupsData = ByteBufUtils.readTag(buf);
+    public void read(PacketBuffer buffer){
+        this.groupsData = ByteBufUtils.readTag(buffer);
     }
 
     @Override
-    protected void handle(UpdateGroupsPacket message, EntityPlayer player, World world){
-        PortalGroupCapability groups = ClientProxy.getWorld().getCapability(PortalGroupCapability.CAPABILITY, null);
+    public void handle(PacketContext context){
+        PortalGroupCapability groups = context.getWorld().getCapability(PortalGroupCapability.CAPABILITY, null);
         if(groups != null)
-            groups.read(message.groupsData);
+            groups.read(this.groupsData);
     }
 }

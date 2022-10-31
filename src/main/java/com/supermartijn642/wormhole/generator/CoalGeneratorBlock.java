@@ -1,8 +1,13 @@
 package com.supermartijn642.wormhole.generator;
 
-import com.supermartijn642.wormhole.EnergyFormat;
+import com.supermartijn642.core.CommonUtils;
+import com.supermartijn642.core.EnergyFormat;
+import com.supermartijn642.core.TextComponents;
+import com.supermartijn642.core.block.BaseBlock;
+import com.supermartijn642.core.block.BlockProperties;
+import com.supermartijn642.core.block.BlockShape;
+import com.supermartijn642.core.block.EntityHoldingBlock;
 import com.supermartijn642.wormhole.Wormhole;
-import com.supermartijn642.wormhole.WormholeBlock;
 import com.supermartijn642.wormhole.WormholeConfig;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
@@ -13,7 +18,6 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,121 +28,88 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 
-import java.util.Arrays;
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Created 12/18/2020 by SuperMartijn642
  */
-public class CoalGeneratorBlock extends WormholeBlock {
+public class CoalGeneratorBlock extends BaseBlock implements EntityHoldingBlock {
 
-    private static final AxisAlignedBB[] SHAPE = new AxisAlignedBB[]{
-        new AxisAlignedBB(2 / 16d, 0, 1 / 16d, 14 / 16d, 12 / 16d, 13 / 16d),
-        new AxisAlignedBB(3 / 16d, 0, 13 / 16d, 7 / 16d, 7 / 16d, 15 / 16d),
-        new AxisAlignedBB(4 / 16d, 7 / 16d, 13 / 16d, 6 / 16d, 10 / 16d, 14 / 16d),
-        new AxisAlignedBB(9 / 16d, 0, 13 / 16d, 13 / 16d, 7 / 16d, 15 / 16d),
-        new AxisAlignedBB(10 / 16d, 7 / 16d, 13 / 16d, 12 / 16d, 10 / 16d, 14 / 16d)
-    };
-    private static final AxisAlignedBB[][] SHAPES = new AxisAlignedBB[4][];
+    private static final BlockShape SHAPE = BlockShape.or(
+        BlockShape.createBlockShape(2, 0, 1, 14, 12, 13),
+        BlockShape.createBlockShape(3, 0, 13, 7, 7, 15),
+        BlockShape.createBlockShape(4, 7, 13, 6, 10, 14),
+        BlockShape.createBlockShape(9, 0, 13, 13, 7, 15),
+        BlockShape.createBlockShape(10, 7, 13, 12, 10, 14)
+    );
+    private static final BlockShape[] SHAPES = new BlockShape[4];
 
     static{
         SHAPES[EnumFacing.NORTH.getHorizontalIndex()] = SHAPE;
-        SHAPES[EnumFacing.EAST.getHorizontalIndex()] = rotateShape(EnumFacing.NORTH, EnumFacing.EAST, SHAPE);
-        SHAPES[EnumFacing.SOUTH.getHorizontalIndex()] = rotateShape(EnumFacing.NORTH, EnumFacing.SOUTH, SHAPE);
-        SHAPES[EnumFacing.WEST.getHorizontalIndex()] = rotateShape(EnumFacing.NORTH, EnumFacing.WEST, SHAPE);
-    }
-
-    public static AxisAlignedBB[] rotateShape(EnumFacing from, EnumFacing to, AxisAlignedBB[] shape){
-        AxisAlignedBB[] result = new AxisAlignedBB[shape.length];
-        System.arraycopy(shape, 0, result, 0, shape.length);
-
-        int times = (to.getHorizontalIndex() - from.getHorizontalIndex() + 4) % 4;
-        for(int i = 0; i < times; i++){
-            for(int j = 0; j < result.length; j++){
-                AxisAlignedBB box = result[j];
-                result[j] = new AxisAlignedBB(1 - box.maxZ, box.minY, box.minX, 1 - box.minZ, box.maxY, box.maxX);
-            }
-        }
-
-        return result;
+        SHAPES[EnumFacing.EAST.getHorizontalIndex()] = SHAPE.rotate(EnumFacing.Axis.Y);
+        SHAPES[EnumFacing.SOUTH.getHorizontalIndex()] = SHAPE.rotate(EnumFacing.Axis.Y).rotate(EnumFacing.Axis.Y);
+        SHAPES[EnumFacing.WEST.getHorizontalIndex()] = SHAPE.rotate(EnumFacing.Axis.Y).rotate(EnumFacing.Axis.Y).rotate(EnumFacing.Axis.Y);
     }
 
     public static final PropertyBool LIT = PropertyBool.create("lit");
     public static final PropertyEnum<EnumFacing> FACING = BlockHorizontal.FACING;
 
     public CoalGeneratorBlock(){
-        super("coal_generator", true, Material.IRON, MapColor.GRAY, SoundType.METAL, 1.5f, 6);
-        this.setHarvestLevel("pickaxe", 1);
+        super(true, BlockProperties.create(Material.IRON, MapColor.GRAY).sound(SoundType.METAL).requiresCorrectTool());
         this.setDefaultState(this.getDefaultState().withProperty(LIT, false).withProperty(FACING, EnumFacing.NORTH));
     }
 
     @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ){
-        playerIn.openGui(Wormhole.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
-        return true;
+    protected InteractionFeedback interact(IBlockState state, World level, BlockPos pos, EntityPlayer player, EnumHand hand, EnumFacing hitSide, Vec3d hitLocation){
+        if(!level.isRemote)
+            CommonUtils.openContainer(new CoalGeneratorContainer(player, pos));
+        return InteractionFeedback.CONSUME;
     }
 
     @Override
-    public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn){
+    protected void appendItemInformation(ItemStack stack, @Nullable IBlockAccess level, Consumer<ITextComponent> info, boolean advanced){
         int range = 2 * WormholeConfig.coalGeneratorRange.get() + 1;
-        tooltip.add(new TextComponentTranslation("wormhole.coal_generator.info", range, EnergyFormat.formatEnergyPerTick(WormholeConfig.coalGeneratorPower.get())).setStyle(new Style().setColor(TextFormatting.AQUA)).getFormattedText());
+        info.accept(TextComponents.translation("wormhole.coal_generator.info", range, EnergyFormat.formatEnergyPerTick(WormholeConfig.coalGeneratorPower.get())).color(TextFormatting.AQUA).get());
 
-        NBTTagCompound tag = stack.hasTagCompound() && stack.getTagCompound().hasKey("tileData") ? stack.getTagCompound().getCompoundTag("tileData") : null;
-        int energy = tag == null || tag.hasNoTags() || !tag.hasKey("energy") ? 0 : tag.getInteger("energy");
-        tooltip.add(new TextComponentString(EnergyFormat.formatCapacity(energy, WormholeConfig.coalGeneratorCapacity.get())).setStyle(new Style().setColor(TextFormatting.YELLOW)).getFormattedText());
+        NBTTagCompound tag = stack.hasTagCompound() && stack.getTagCompound().hasKey("tileData", Constants.NBT.TAG_COMPOUND) ? stack.getTagCompound().getCompoundTag("tileData") : null;
+        int energy = tag == null || tag.hasNoTags() || !tag.hasKey("energy", Constants.NBT.TAG_INT) ? 0 : tag.getInteger("energy");
+        info.accept(TextComponents.string(EnergyFormat.formatCapacityWithUnit(energy, WormholeConfig.coalGeneratorCapacity.get())).color(TextFormatting.YELLOW).get());
     }
 
     @Override
-    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand){
+    public IBlockState getStateForPlacement(World level, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand){
         return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
     }
 
     @Override
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, Entity entityIn, boolean isActualState){
-        Arrays.stream(SHAPES[state.getValue(FACING).getHorizontalIndex()]).forEach(
+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState){
+        SHAPES[state.getValue(FACING).getHorizontalIndex()].forEachBox(
             box -> addCollisionBoxToList(pos, entityBox, collidingBoxes, box)
         );
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos){
-        AxisAlignedBB result = null;
-        for(AxisAlignedBB box : SHAPES[state.getValue(FACING).getHorizontalIndex()]){
-            if(result == null)
-                result = box;
-            else
-                result = new AxisAlignedBB(
-                    Math.min(result.minX, box.minX),
-                    Math.min(result.minY, box.minY),
-                    Math.min(result.minZ, box.minZ),
-                    Math.max(result.maxX, box.maxX),
-                    Math.max(result.maxY, box.maxY),
-                    Math.max(result.maxZ, box.maxZ)
-                );
-        }
-        return result;
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess level, BlockPos pos){
+        return SHAPES[state.getValue(FACING).getHorizontalIndex()].simplify();
     }
 
     @Override
-    public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos){
+    public int getLightValue(IBlockState state, IBlockAccess level, BlockPos pos){
         return state.getValue(LIT) ? 8 : 0;
     }
 
     @Override
-    public boolean hasTileEntity(IBlockState state){
-        return true;
-    }
-
-    @Override
-    public TileEntity createTileEntity(World world, IBlockState state){
-        return new CoalGeneratorTile();
+    public TileEntity createNewBlockEntity(){
+        return Wormhole.coal_generator_tile.createBlockEntity();
     }
 
     @Override
@@ -146,7 +117,6 @@ public class CoalGeneratorBlock extends WormholeBlock {
         return new BlockStateContainer(this, LIT, FACING);
     }
 
-    @Override
     public int getMetaFromState(IBlockState state){
         return state.getValue(FACING).getHorizontalIndex() + (state.getValue(LIT) ? 4 : 0);
     }

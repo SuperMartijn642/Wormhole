@@ -1,22 +1,19 @@
 package com.supermartijn642.wormhole.targetdevice.packets;
 
+import com.supermartijn642.core.network.PacketContext;
 import com.supermartijn642.wormhole.packet.TargetDevicePacket;
 import com.supermartijn642.wormhole.portal.PortalTarget;
 import com.supermartijn642.wormhole.targetdevice.TargetDeviceItem;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatAllowedCharacters;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumHand;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 import java.util.List;
 
 /**
  * Created 10/25/2020 by SuperMartijn642
  */
-public class TargetDeviceNamePacket extends TargetDevicePacket<TargetDeviceNamePacket> {
+public class TargetDeviceNamePacket extends TargetDevicePacket {
 
     private int index;
     private String name;
@@ -31,24 +28,24 @@ public class TargetDeviceNamePacket extends TargetDevicePacket<TargetDeviceNameP
     }
 
     @Override
-    public void toBytes(ByteBuf buffer){
-        super.toBytes(buffer);
+    public void write(PacketBuffer buffer){
+        super.write(buffer);
         buffer.writeInt(this.index);
-        ByteBufUtils.writeUTF8String(buffer, this.name);
+        buffer.writeString(this.name);
     }
 
     @Override
-    public void fromBytes(ByteBuf buffer){
-        super.fromBytes(buffer);
+    public void read(PacketBuffer buffer){
+        super.read(buffer);
         this.index = buffer.readInt();
-        this.name = ByteBufUtils.readUTF8String(buffer);
+        this.name = buffer.readString(32767).trim();
     }
 
     @Override
-    protected void handle(TargetDeviceNamePacket message, EntityPlayer player, World world, ItemStack targetDevice){
+    protected void handle(ItemStack targetDevice, PacketContext context){
         List<PortalTarget> targets = TargetDeviceItem.getTargets(targetDevice);
-        if(message.index < 0 || message.index > targets.size() - 1)
+        if(this.index < 0 || this.index > targets.size() - 1)
             return;
-        TargetDeviceItem.changeTargetName(targetDevice, message.index, ChatAllowedCharacters.filterAllowedCharacters(message.name));
+        TargetDeviceItem.changeTargetName(targetDevice, this.index, this.name);
     }
 }

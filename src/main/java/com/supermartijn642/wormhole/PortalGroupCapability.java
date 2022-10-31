@@ -3,7 +3,7 @@ package com.supermartijn642.wormhole;
 import com.supermartijn642.wormhole.packet.UpdateGroupPacket;
 import com.supermartijn642.wormhole.packet.UpdateGroupsPacket;
 import com.supermartijn642.wormhole.portal.PortalGroup;
-import com.supermartijn642.wormhole.portal.PortalGroupTile;
+import com.supermartijn642.wormhole.portal.PortalGroupBlockEntity;
 import com.supermartijn642.wormhole.portal.PortalShape;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTBase;
@@ -42,18 +42,17 @@ public class PortalGroupCapability {
             }
 
             public void readNBT(Capability<PortalGroupCapability> capability, PortalGroupCapability instance, EnumFacing side, NBTBase nbt){
-                instance.read((NBTTagCompound)nbt);
+                instance.read(nbt);
             }
-        }, PortalGroupCapability::new);
+        }, () -> new PortalGroupCapability(null));
     }
 
     @SubscribeEvent
     public static void attachCapabilities(AttachCapabilitiesEvent<World> e){
-        World world = e.getObject();
+        World level = e.getObject();
 
-        PortalGroupCapability capability = new PortalGroupCapability(world);
+        PortalGroupCapability capability = new PortalGroupCapability(level);
         e.addCapability(new ResourceLocation("wormhole", "portal_groups"), new ICapabilitySerializable<NBTBase>() {
-            @Nonnull
             @Override
             public <T> T getCapability(@Nonnull Capability<T> cap, @Nullable EnumFacing side){
                 return cap == CAPABILITY ? CAPABILITY.cast(capability) : null;
@@ -82,11 +81,11 @@ public class PortalGroupCapability {
         if(e.phase != TickEvent.Phase.END)
             return;
 
-        tickWorldCapability(e.world);
+        tickLevelCapability(e.world);
     }
 
-    public static void tickWorldCapability(World world){
-        PortalGroupCapability groups = world.getCapability(CAPABILITY, null);
+    public static void tickLevelCapability(World level){
+        PortalGroupCapability groups = level.getCapability(CAPABILITY, null);
         if(groups != null)
             groups.tick();
     }
@@ -96,7 +95,7 @@ public class PortalGroupCapability {
         EntityPlayerMP player = (EntityPlayerMP)e.player;
         PortalGroupCapability groups = player.world.getCapability(CAPABILITY, null);
         if(groups != null)
-            Wormhole.channel.sendTo(new UpdateGroupsPacket(groups.write()), player);
+            Wormhole.CHANNEL.sendToPlayer(player, new UpdateGroupsPacket(groups.write()));
     }
 
     @SubscribeEvent
@@ -104,7 +103,7 @@ public class PortalGroupCapability {
         EntityPlayerMP player = (EntityPlayerMP)e.player;
         PortalGroupCapability groups = player.world.getCapability(CAPABILITY, null);
         if(groups != null)
-            Wormhole.channel.sendTo(new UpdateGroupsPacket(groups.write()), player);
+            Wormhole.CHANNEL.sendToPlayer(player, new UpdateGroupsPacket(groups.write()));
     }
 
     @SubscribeEvent
@@ -112,23 +111,19 @@ public class PortalGroupCapability {
         EntityPlayerMP player = (EntityPlayerMP)e.player;
         PortalGroupCapability groups = player.world.getCapability(CAPABILITY, null);
         if(groups != null)
-            Wormhole.channel.sendTo(new UpdateGroupsPacket(groups.write()), player);
+            Wormhole.CHANNEL.sendToPlayer(player, new UpdateGroupsPacket(groups.write()));
     }
 
-    private final World world;
+    private final World level;
     private final List<PortalGroup> groups = new LinkedList<>();
     private final Map<BlockPos,PortalGroup> groupsByPosition = new HashMap<>();
 
-    public PortalGroupCapability(World world){
-        this.world = world;
-    }
-
-    public PortalGroupCapability(){
-        this.world = null;
+    public PortalGroupCapability(World level){
+        this.level = level;
     }
 
     public void add(PortalShape shape){
-        PortalGroup group = new PortalGroup(this.world, shape);
+        PortalGroup group = new PortalGroup(this.level, shape);
         this.groups.add(group);
         group.shape.frame.forEach(pos -> this.groupsByPosition.put(pos, group));
         group.shape.area.forEach(pos -> this.groupsByPosition.put(pos, group));
@@ -148,16 +143,16 @@ public class PortalGroupCapability {
     }
 
     public void updateGroup(PortalGroup group){
-        if(!this.world.isRemote && group != null)
-            Wormhole.channel.sendToDimension(new UpdateGroupPacket(this.writeGroup(group)), this.world.provider.getDimensionType().getId());
+        if(!this.level.isRemote && group != null)
+            Wormhole.CHANNEL.sendToDimension(this.level, new UpdateGroupPacket(this.writeGroup(group)));
     }
 
     private void update(){
-        Wormhole.channel.sendToDimension(new UpdateGroupsPacket(this.write()), this.world.provider.getDimensionType().getId());
+        Wormhole.CHANNEL.sendToDimension(this.level, new UpdateGroupsPacket(this.write()));
     }
 
-    public PortalGroup getGroup(PortalGroupTile tile){
-        return this.groupsByPosition.get(tile.getPos());
+    public PortalGroup getGroup(PortalGroupBlockEntity entity){
+        return this.groupsByPosition.get(entity.getPos());
     }
 
     public PortalGroup getGroup(BlockPos pos){
@@ -177,15 +172,18 @@ public class PortalGroupCapability {
         return compound;
     }
 
-    public void read(NBTTagCompound compound){
-        this.groups.clear();
-        this.groupsByPosition.clear();
-        NBTTagCompound groupsTag = compound.getCompoundTag("groups");
-        for(String key : groupsTag.getKeySet()){
-            PortalGroup group = new PortalGroup(this.world, groupsTag.getCompoundTag(key));
-            this.groups.add(group);
-            group.shape.frame.forEach(pos -> this.groupsByPosition.put(pos, group));
-            group.shape.area.forEach(pos -> this.groupsByPosition.put(pos, group));
+    public void read(NBTBase tag){
+        if(tag instanceof NBTTagCompound){
+            NBTTagCompound compound = (NBTTagCompound)tag;
+            this.groups.clear();
+            this.groupsByPosition.clear();
+            NBTTagCompound groupsTag = compound.getCompoundTag("groups");
+            for(String key : groupsTag.getKeySet()){
+                PortalGroup group = new PortalGroup(this.level, groupsTag.getCompoundTag(key));
+                this.groups.add(group);
+                group.shape.frame.forEach(pos -> this.groupsByPosition.put(pos, group));
+                group.shape.area.forEach(pos -> this.groupsByPosition.put(pos, group));
+            }
         }
     }
 
@@ -197,11 +195,10 @@ public class PortalGroupCapability {
 
     public void readGroup(NBTTagCompound tag){
         if(tag.hasKey("group")){
-            PortalGroup group = new PortalGroup(this.world, tag.getCompoundTag("group"));
+            PortalGroup group = new PortalGroup(this.level, tag.getCompoundTag("group"));
             this.groups.add(group);
             group.shape.frame.forEach(pos -> this.groupsByPosition.put(pos, group));
             group.shape.area.forEach(pos -> this.groupsByPosition.put(pos, group));
         }
     }
-
 }

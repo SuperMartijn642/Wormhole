@@ -1,21 +1,22 @@
 package com.supermartijn642.wormhole.screen;
 
+import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
-import com.supermartijn642.core.gui.widget.AbstractButtonWidget;
-import com.supermartijn642.core.gui.widget.IHoverTextWidget;
-import net.minecraft.client.Minecraft;
+import com.supermartijn642.core.gui.widget.premade.AbstractButtonWidget;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
+
+import java.util.function.Consumer;
 
 /**
  * Created 10/9/2020 by SuperMartijn642
  */
-public class ArrowButton extends AbstractButtonWidget implements IHoverTextWidget {
+public class ArrowButton extends AbstractButtonWidget {
 
     private final ResourceLocation BUTTONS = new ResourceLocation("wormhole", "textures/gui/arrow_buttons.png");
 
     private final boolean up;
+    public boolean active = true;
 
     public ArrowButton(int x, int y, boolean up, Runnable onPress){
         super(x, y, 10, 5, onPress);
@@ -28,19 +29,19 @@ public class ArrowButton extends AbstractButtonWidget implements IHoverTextWidge
     }
 
     @Override
-    public ITextComponent getHoverText(){
-        return this.active ? new TextComponentTranslation("wormhole.gui.arrow_button." + (this.up ? "up" : "down")) : null;
+    protected void getTooltips(Consumer<ITextComponent> tooltips){
+        tooltips.accept(TextComponents.translation("wormhole.gui.arrow_button." + (this.up ? "up" : "down")).get());
     }
 
     @Override
-    protected ITextComponent getNarrationMessage(){
-        return new TextComponentTranslation("wormhole.gui.arrow_button." + (up ? "up" : "down"));
+    public ITextComponent getNarrationMessage(){
+        return TextComponents.translation("wormhole.gui.arrow_button." + (up ? "up" : "down")).get();
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks){
-        Minecraft.getMinecraft().getTextureManager().bindTexture(BUTTONS);
-        float x = (this.active ? this.hovered ? 15 : 0 : 30) / 45f;
+    public void render(int mouseX, int mouseY){
+        ScreenUtils.bindTexture(BUTTONS);
+        float x = (this.active ? this.isFocused() ? 15 : 0 : 30) / 45f;
         float y = (this.up ? 0 : 8) / 16f;
         ScreenUtils.drawTexture(this.x, this.y, this.width, this.height, x, y, 15 / 45f, 8 / 16f);
     }

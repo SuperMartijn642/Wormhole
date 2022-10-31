@@ -2,7 +2,7 @@ package com.supermartijn642.wormhole.portal;
 
 import com.google.common.collect.Lists;
 import com.supermartijn642.wormhole.PortalBlock;
-import com.supermartijn642.wormhole.StabilizerTile;
+import com.supermartijn642.wormhole.StabilizerBlockEntity;
 import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.WormholeConfig;
 import net.minecraft.block.Block;
@@ -13,6 +13,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import java.util.*;
@@ -43,19 +44,20 @@ public class PortalShape {
         }
     }
 
-    public static PortalShape find(World world, BlockPos center){
+    public static PortalShape find(IBlockAccess level, BlockPos center){
         for(EnumFacing.Axis axis : EnumFacing.Axis.values()){
-            PortalShape shape = find(world, center, axis);
+            PortalShape shape = find(level, center, axis);
             if(shape != null)
                 return shape;
         }
         return null;
     }
 
-    private static PortalShape find(World world, BlockPos center, EnumFacing.Axis axis){
+    private static PortalShape find(IBlockAccess level, BlockPos center, EnumFacing.Axis axis){
         for(BlockPos offset : ALL_OFFSETS.get(axis)){
-            if(world.getBlockState(center.add(offset)).getBlock() == Blocks.AIR){
-                PortalShape shape = findArea(world, center.add(offset), axis);
+            Block offsetBlock = level.getBlockState(center.add(offset)).getBlock();
+            if(offsetBlock == Blocks.AIR || offsetBlock == Blocks.WATER){
+                PortalShape shape = findArea(level, center.add(offset), axis);
                 if(shape != null)
                     return shape;
             }
@@ -63,7 +65,7 @@ public class PortalShape {
         return null;
     }
 
-    private static PortalShape findArea(World world, BlockPos start, EnumFacing.Axis axis){
+    private static PortalShape findArea(IBlockAccess level, BlockPos start, EnumFacing.Axis axis){
         List<BlockPos> next = new LinkedList<>();
         List<BlockPos> current = new LinkedList<>();
         current.add(start);
@@ -78,19 +80,19 @@ public class PortalShape {
                 int frames = 0;
                 for(BlockPos offset : DIRECT_OFFSETS.get(axis)){
                     BlockPos offPos = pos.add(offset);
-                    Block block = world.getBlockState(offPos).getBlock();
-                    TileEntity tile = world.getTileEntity(offPos);
-                    if(block == Blocks.AIR){
+                    Block block = level.getBlockState(offPos).getBlock();
+                    TileEntity entity = level.getTileEntity(offPos);
+                    if(block == Blocks.AIR || block == Blocks.WATER){
                         if(!done.contains(offPos) && !current.contains(offPos) && !next.contains(offPos))
                             next.add(offPos);
-                    }else if(tile instanceof IPortalGroupTile && !((IPortalGroupTile)tile).hasGroup()){
+                    }else if(entity instanceof IPortalGroupEntity && !((IPortalGroupEntity)entity).hasGroup()){
                         if(!frame.contains(offPos)){
                             frame.add(offPos);
-                            if(tile instanceof StabilizerTile)
+                            if(entity instanceof StabilizerBlockEntity)
                                 stabilizers.add(offPos);
-                            if(tile instanceof IEnergyCellTile)
+                            if(entity instanceof IEnergyCellEntity)
                                 energyCells.add(offPos);
-                            if(tile instanceof ITargetCellTile)
+                            if(entity instanceof ITargetCellEntity)
                                 targetCells.add(offPos);
                         }
                         frames++;
@@ -109,10 +111,10 @@ public class PortalShape {
         }
 
         if(WormholeConfig.requireCorners.get()){
-            if(!validateCorners(world, done, frame, corners, stabilizers, energyCells, targetCells, axis))
+            if(!validateCorners(level, done, frame, corners, stabilizers, energyCells, targetCells, axis))
                 return null;
         }else
-            collectCorners(world, done, frame, corners, stabilizers, energyCells, targetCells, axis);
+            collectCorners(level, done, frame, corners, stabilizers, energyCells, targetCells, axis);
 
         if(stabilizers.size() == 0)
             return null;
@@ -120,50 +122,50 @@ public class PortalShape {
         return new PortalShape(axis, done, frame, stabilizers, energyCells, targetCells);
     }
 
-    private static void collectCorners(World world, List<BlockPos> area, List<BlockPos> frame, List<BlockPos> corners, List<BlockPos> stabilizers, List<BlockPos> energyCells, List<BlockPos> targetCells, EnumFacing.Axis axis){
+    private static void collectCorners(IBlockAccess level, List<BlockPos> area, List<BlockPos> frame, List<BlockPos> corners, List<BlockPos> stabilizers, List<BlockPos> energyCells, List<BlockPos> targetCells, EnumFacing.Axis axis){
         BlockPos dir1pos = axis == EnumFacing.Axis.Y ? BlockPos.ORIGIN.east() : BlockPos.ORIGIN.up();
         BlockPos dir1neg = axis == EnumFacing.Axis.Y ? BlockPos.ORIGIN.west() : BlockPos.ORIGIN.down();
         BlockPos dir2pos = axis == EnumFacing.Axis.Z ? BlockPos.ORIGIN.east() : BlockPos.ORIGIN.north();
         BlockPos dir2neg = axis == EnumFacing.Axis.Z ? BlockPos.ORIGIN.west() : BlockPos.ORIGIN.south();
         for(BlockPos corner : corners){
-            collectCorner(world, area, frame, stabilizers, energyCells, targetCells, corner, dir1pos, dir2pos);
-            collectCorner(world, area, frame, stabilizers, energyCells, targetCells, corner, dir1pos, dir2neg);
-            collectCorner(world, area, frame, stabilizers, energyCells, targetCells, corner, dir1neg, dir2pos);
-            collectCorner(world, area, frame, stabilizers, energyCells, targetCells, corner, dir1neg, dir2neg);
+            collectCorner(level, area, frame, stabilizers, energyCells, targetCells, corner, dir1pos, dir2pos);
+            collectCorner(level, area, frame, stabilizers, energyCells, targetCells, corner, dir1pos, dir2neg);
+            collectCorner(level, area, frame, stabilizers, energyCells, targetCells, corner, dir1neg, dir2pos);
+            collectCorner(level, area, frame, stabilizers, energyCells, targetCells, corner, dir1neg, dir2neg);
         }
     }
 
-    private static boolean validateCorners(World world, List<BlockPos> area, List<BlockPos> frame, List<BlockPos> corners, List<BlockPos> stabilizers, List<BlockPos> energyCells, List<BlockPos> targetCells, EnumFacing.Axis axis){
+    private static boolean validateCorners(IBlockAccess level, List<BlockPos> area, List<BlockPos> frame, List<BlockPos> corners, List<BlockPos> stabilizers, List<BlockPos> energyCells, List<BlockPos> targetCells, EnumFacing.Axis axis){
         BlockPos dir1pos = axis == EnumFacing.Axis.Y ? BlockPos.ORIGIN.east() : BlockPos.ORIGIN.up();
         BlockPos dir1neg = axis == EnumFacing.Axis.Y ? BlockPos.ORIGIN.west() : BlockPos.ORIGIN.down();
         BlockPos dir2pos = axis == EnumFacing.Axis.Z ? BlockPos.ORIGIN.east() : BlockPos.ORIGIN.north();
         BlockPos dir2neg = axis == EnumFacing.Axis.Z ? BlockPos.ORIGIN.west() : BlockPos.ORIGIN.south();
         for(BlockPos corner : corners){
-            if(!collectCorner(world, area, frame, stabilizers, energyCells, targetCells, corner, dir1pos, dir2pos))
+            if(!collectCorner(level, area, frame, stabilizers, energyCells, targetCells, corner, dir1pos, dir2pos))
                 return false;
-            if(!collectCorner(world, area, frame, stabilizers, energyCells, targetCells, corner, dir1pos, dir2neg))
+            if(!collectCorner(level, area, frame, stabilizers, energyCells, targetCells, corner, dir1pos, dir2neg))
                 return false;
-            if(!collectCorner(world, area, frame, stabilizers, energyCells, targetCells, corner, dir1neg, dir2pos))
+            if(!collectCorner(level, area, frame, stabilizers, energyCells, targetCells, corner, dir1neg, dir2pos))
                 return false;
-            if(!collectCorner(world, area, frame, stabilizers, energyCells, targetCells, corner, dir1neg, dir2neg))
+            if(!collectCorner(level, area, frame, stabilizers, energyCells, targetCells, corner, dir1neg, dir2neg))
                 return false;
         }
         return true;
     }
 
-    private static boolean collectCorner(World world, List<BlockPos> area, List<BlockPos> frame, List<BlockPos> stabilizers, List<BlockPos> energyCells, List<BlockPos> targetCells, BlockPos corner, BlockPos dir1, BlockPos dir2){
+    private static boolean collectCorner(IBlockAccess level, List<BlockPos> area, List<BlockPos> frame, List<BlockPos> stabilizers, List<BlockPos> energyCells, List<BlockPos> targetCells, BlockPos corner, BlockPos dir1, BlockPos dir2){
         if(frame.contains(corner.add(dir1)) && frame.contains(corner.add(dir2))){
             BlockPos pos = corner.add(dir1).add(dir2);
-            TileEntity tile = world.getTileEntity(pos);
-            if(tile instanceof IPortalGroupTile ? ((IPortalGroupTile)tile).hasGroup() : !area.contains(pos))
+            TileEntity entity = level.getTileEntity(pos);
+            if(entity instanceof IPortalGroupEntity ? ((IPortalGroupEntity)entity).hasGroup() : !area.contains(pos))
                 return false;
             else if(!frame.contains(pos)){
                 frame.add(pos);
-                if(tile instanceof StabilizerTile)
+                if(entity instanceof StabilizerBlockEntity)
                     stabilizers.add(pos);
-                if(tile instanceof IEnergyCellTile)
+                if(entity instanceof IEnergyCellEntity)
                     energyCells.add(pos);
-                if(tile instanceof ITargetCellTile)
+                if(entity instanceof ITargetCellEntity)
                     targetCells.add(pos);
             }
         }
@@ -223,7 +225,7 @@ public class PortalShape {
             if(pos1.getZ() > maxZ)
                 maxZ = pos1.getZ();
         }
-        this.span = Math.sqrt(span);
+        this.span = Math.sqrt((maxX - minX + 1) * (maxX - minX + 1) + (maxY - minY + 1) * (maxY - minY + 1) + (maxZ - minZ + 1) * (maxZ - minZ + 1));
         this.minCorner = new BlockPos(minX, minY, minZ);
         this.maxCorner = new BlockPos(maxX, maxY, maxZ);
     }
@@ -267,34 +269,38 @@ public class PortalShape {
         this.maxCorner = new BlockPos(tag.getInteger("maxCornerX"), tag.getInteger("maxCornerY"), tag.getInteger("maxCornerZ"));
     }
 
-    public void createPortals(World world, EnumDyeColor color){
+    public void createPortals(World level, EnumDyeColor color){
         if(color == null)
             color = EnumDyeColor.values()[new Random().nextInt(EnumDyeColor.values().length)];
+        PortalBlock portalBlock = this.axis == EnumFacing.Axis.X ? Wormhole.portal_x : this.axis == EnumFacing.Axis.Y ? Wormhole.portal_y : Wormhole.portal_z;
         for(BlockPos pos : this.area){
-            if(!(world.getBlockState(pos).getBlock() instanceof PortalBlock) || ((PortalBlock)world.getBlockState(pos).getBlock()).axis != this.axis || world.getBlockState(pos).getValue(PortalBlock.COLOR_PROPERTY) != color)
-                world.setBlockState(pos, (this.axis == EnumFacing.Axis.X ? Wormhole.portal_x : this.axis == EnumFacing.Axis.Y ? Wormhole.portal_y : Wormhole.portal_z).getDefaultState().withProperty(PortalBlock.COLOR_PROPERTY, color));
+            IBlockState state = level.getBlockState(pos);
+            if(!(state.getBlock() instanceof PortalBlock) || state.getBlock() != portalBlock || state.getValue(PortalBlock.COLOR_PROPERTY) != color)
+                level.setBlockState(pos, portalBlock.getDefaultState().withProperty(PortalBlock.COLOR_PROPERTY, color));
         }
     }
 
     public void destroyPortals(World world){
         for(BlockPos pos : this.area){
-            if(world.getBlockState(pos).getBlock() instanceof PortalBlock)
+            IBlockState state = world.getBlockState(pos);
+            if(state.getBlock() instanceof PortalBlock)
                 world.setBlockState(pos, Blocks.AIR.getDefaultState());
         }
     }
 
-    public boolean validateFrame(World world){
+    public boolean validateFrame(IBlockAccess world){
         for(BlockPos pos : this.frame){
-            if(!(world.getBlockState(pos).getBlock() instanceof IPortalGroupTile))
+            if(!(world.getBlockState(pos).getBlock() instanceof IPortalGroupEntity))
                 return false;
         }
         return true;
     }
 
-    public boolean validatePortal(World world){
+    public boolean validatePortal(IBlockAccess world){
+        PortalBlock portalBlock = this.axis == EnumFacing.Axis.X ? Wormhole.portal_x : this.axis == EnumFacing.Axis.Y ? Wormhole.portal_y : Wormhole.portal_z;
         for(BlockPos pos : this.area){
             IBlockState state = world.getBlockState(pos);
-            if(!(state.getBlock() instanceof PortalBlock && ((PortalBlock)state.getBlock()).axis == this.axis) && state.getBlock() != Blocks.AIR)
+            if(state.getBlock() != portalBlock && state.getBlock() != Blocks.AIR && state.getBlock() != Blocks.WATER)
                 return false;
         }
         return true;
@@ -370,5 +376,4 @@ public class PortalShape {
     public static PortalShape read(NBTTagCompound tag){
         return new PortalShape(tag);
     }
-
 }

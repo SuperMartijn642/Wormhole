@@ -1,59 +1,69 @@
 package com.supermartijn642.wormhole.targetcell;
 
+import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.wormhole.portal.PortalGroupBlock;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
+import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.common.util.Constants;
 
-import java.util.List;
+import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
 /**
  * Created 11/16/2020 by SuperMartijn642
  */
 public class TargetCellBlock extends PortalGroupBlock {
 
-    private static final PropertyInteger STUPID_MODEL_LOADING_SOLUTION = PropertyInteger.create("model", 0, 9);
+    public static final PropertyInteger VISUAL_TARGETS;
+
+    static{
+        int maxCapacity = 0;
+        for(TargetCellType type : TargetCellType.values()){
+            if(type.getVisualCapacity() > maxCapacity)
+                maxCapacity = type.getVisualCapacity();
+        }
+        VISUAL_TARGETS = PropertyInteger.create("targets", 0, maxCapacity);
+    }
 
     private final TargetCellType type;
 
     public TargetCellBlock(TargetCellType type){
-        super(type.getRegistryName(), type::createTile);
+        super(type::getBlockEntityType);
         this.type = type;
+        this.setDefaultState(this.getDefaultState().withProperty(VISUAL_TARGETS, 0));
     }
 
     @Override
-    public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn){
-        tooltip.add(new TextComponentTranslation("wormhole.target_cell.info").setStyle(new Style().setColor(TextFormatting.AQUA)).getFormattedText());
+    protected void appendItemInformation(ItemStack stack, @Nullable IBlockAccess level, Consumer<ITextComponent> info, boolean advanced){
+        info.accept(TextComponents.translation("wormhole.target_cell.info").color(TextFormatting.AQUA).get());
 
-        NBTTagCompound tag = stack.hasTagCompound() && stack.getTagCompound().hasKey("tileData") ? stack.getTagCompound().getCompoundTag("tileData") : null;
+        NBTTagCompound tag = stack.hasTagCompound() && stack.getTagCompound().hasKey("tileData", Constants.NBT.TAG_COMPOUND) ? stack.getTagCompound().getCompoundTag("tileData") : null;
 
-        int targets = tag == null || tag.hasNoTags() || !tag.hasKey("targetCount") ? 0 : tag.getInteger("targetCount");
+        int targets = tag == null || tag.hasNoTags() || !tag.hasKey("targetCount", Constants.NBT.TAG_INT) ? 0 : tag.getInteger("targetCount");
         int targetCapacity = this.type.getCapacity();
 
         if(targetCapacity > 0)
-            tooltip.add(new TextComponentTranslation("wormhole.portal_stabilizer.info.targets", targets, targetCapacity).setStyle(new Style().setColor(TextFormatting.YELLOW)).getFormattedText());
-    }
-
-    @Override
-    public EnumBlockRenderType getRenderType(IBlockState state){
-        return EnumBlockRenderType.INVISIBLE;
+            info.accept(TextComponents.translation("wormhole.portal_stabilizer.info.targets", targets, targetCapacity).color(TextFormatting.YELLOW).get());
     }
 
     @Override
     protected BlockStateContainer createBlockState(){
-        return new BlockStateContainer(this, STUPID_MODEL_LOADING_SOLUTION);
+        return new BlockStateContainer(this, VISUAL_TARGETS);
     }
 
     @Override
     public int getMetaFromState(IBlockState state){
-        return 0;
+        return state.getValue(VISUAL_TARGETS);
+    }
+
+    @Override
+    public IBlockState getStateFromMeta(int meta){
+        return this.getDefaultState().withProperty(VISUAL_TARGETS, meta);
     }
 }
