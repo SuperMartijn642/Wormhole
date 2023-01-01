@@ -1,22 +1,7 @@
 {
   "variants": {
-    "color=brown": {
-      "model": "wormhole:portals/portal_z_brown"
-    },
-    "color=yellow": {
-      "model": "wormhole:portals/portal_z_yellow"
-    },
-    "color=cyan": {
-      "model": "wormhole:portals/portal_z_cyan"
-    },
-    "color=pink": {
-      "model": "wormhole:portals/portal_z_pink"
-    },
-    "color=gray": {
-      "model": "wormhole:portals/portal_z_gray"
-    },
-    "color=red": {
-      "model": "wormhole:portals/portal_z_red"
+    "color=blue": {
+      "model": "wormhole:portals/portal_z_blue"
     },
     "color=green": {
       "model": "wormhole:portals/portal_z_green"
@@ -24,29 +9,44 @@
     "color=magenta": {
       "model": "wormhole:portals/portal_z_magenta"
     },
-    "color=blue": {
-      "model": "wormhole:portals/portal_z_blue"
+    "color=orange": {
+      "model": "wormhole:portals/portal_z_orange"
     },
-    "color=silver": {
-      "model": "wormhole:portals/portal_z_silver"
-    },
-    "color=light_blue": {
-      "model": "wormhole:portals/portal_z_light_blue"
-    },
-    "color=purple": {
-      "model": "wormhole:portals/portal_z_purple"
+    "color=red": {
+      "model": "wormhole:portals/portal_z_red"
     },
     "color=lime": {
       "model": "wormhole:portals/portal_z_lime"
     },
+    "color=pink": {
+      "model": "wormhole:portals/portal_z_pink"
+    },
+    "color=yellow": {
+      "model": "wormhole:portals/portal_z_yellow"
+    },
+    "color=cyan": {
+      "model": "wormhole:portals/portal_z_cyan"
+    },
     "color=black": {
       "model": "wormhole:portals/portal_z_black"
+    },
+    "color=purple": {
+      "model": "wormhole:portals/portal_z_purple"
+    },
+    "color=light_blue": {
+      "model": "wormhole:portals/portal_z_light_blue"
+    },
+    "color=brown": {
+      "model": "wormhole:portals/portal_z_brown"
+    },
+    "color=gray": {
+      "model": "wormhole:portals/portal_z_gray"
     },
     "color=white": {
       "model": "wormhole:portals/portal_z_white"
     },
-    "color=orange": {
-      "model": "wormhole:portals/portal_z_orange"
+    "color=silver": {
+      "model": "wormhole:portals/portal_z_silver"
     }
   }
 }

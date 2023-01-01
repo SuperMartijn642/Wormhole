@@ -5,10 +5,10 @@
       "item": "wormhole:portal_stabilizer"
     },
     "title": {
-      "translate": "wormhole.advancement.recipes/wormhole/portal_stabilizer.title"
+      "translate": "wormhole.advancement.recipes/portal_stabilizer.title"
     },
     "description": {
-      "translate": "wormhole.advancement.recipes/wormhole/portal_stabilizer.description"
+      "translate": "wormhole.advancement.recipes/portal_stabilizer.description"
     },
     "frame": "task",
     "show_toast": false,

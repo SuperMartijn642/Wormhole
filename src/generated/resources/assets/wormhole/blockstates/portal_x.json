@@ -1,7 +1,22 @@
 {
   "variants": {
-    "color=gray": {
-      "model": "wormhole:portals/portal_x_gray"
+    "color=yellow": {
+      "model": "wormhole:portals/portal_x_yellow"
+    },
+    "color=orange": {
+      "model": "wormhole:portals/portal_x_orange"
+    },
+    "color=red": {
+      "model": "wormhole:portals/portal_x_red"
+    },
+    "color=green": {
+      "model": "wormhole:portals/portal_x_green"
+    },
+    "color=brown": {
+      "model": "wormhole:portals/portal_x_brown"
+    },
+    "color=cyan": {
+      "model": "wormhole:portals/portal_x_cyan"
     },
     "color=pink": {
       "model": "wormhole:portals/portal_x_pink"
@@ -9,44 +24,29 @@
     "color=lime": {
       "model": "wormhole:portals/portal_x_lime"
     },
-    "color=red": {
-      "model": "wormhole:portals/portal_x_red"
-    },
-    "color=magenta": {
-      "model": "wormhole:portals/portal_x_magenta"
-    },
-    "color=cyan": {
-      "model": "wormhole:portals/portal_x_cyan"
-    },
-    "color=purple": {
-      "model": "wormhole:portals/portal_x_purple"
-    },
-    "color=brown": {
-      "model": "wormhole:portals/portal_x_brown"
-    },
-    "color=blue": {
-      "model": "wormhole:portals/portal_x_blue"
+    "color=white": {
+      "model": "wormhole:portals/portal_x_white"
     },
     "color=light_blue": {
       "model": "wormhole:portals/portal_x_light_blue"
     },
-    "color=green": {
-      "model": "wormhole:portals/portal_x_green"
+    "color=purple": {
+      "model": "wormhole:portals/portal_x_purple"
     },
-    "color=white": {
-      "model": "wormhole:portals/portal_x_white"
+    "color=gray": {
+      "model": "wormhole:portals/portal_x_gray"
     },
-    "color=yellow": {
-      "model": "wormhole:portals/portal_x_yellow"
+    "color=magenta": {
+      "model": "wormhole:portals/portal_x_magenta"
     },
-    "color=black": {
-      "model": "wormhole:portals/portal_x_black"
-    },
-    "color=orange": {
-      "model": "wormhole:portals/portal_x_orange"
+    "color=blue": {
+      "model": "wormhole:portals/portal_x_blue"
     },
     "color=silver": {
       "model": "wormhole:portals/portal_x_silver"
+    },
+    "color=black": {
+      "model": "wormhole:portals/portal_x_black"
     }
   }
 }

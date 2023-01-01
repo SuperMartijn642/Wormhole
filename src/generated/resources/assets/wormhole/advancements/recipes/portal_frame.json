@@ -5,10 +5,10 @@
       "item": "wormhole:portal_frame"
     },
     "title": {
-      "translate": "wormhole.advancement.recipes/wormhole/portal_frame.title"
+      "translate": "wormhole.advancement.recipes/portal_frame.title"
     },
     "description": {
-      "translate": "wormhole.advancement.recipes/wormhole/portal_frame.description"
+      "translate": "wormhole.advancement.recipes/portal_frame.description"
     },
     "frame": "task",
     "show_toast": false,
