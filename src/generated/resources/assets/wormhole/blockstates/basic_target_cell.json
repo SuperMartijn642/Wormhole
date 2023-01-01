@@ -3,16 +3,10 @@
     "targets=0": {
       "model": "wormhole:block/target_cells/basic_target_cell_0"
     },
-    "targets=6": {
+    "targets=8": {
       "model": "wormhole:block/target_cells/basic_target_cell_4"
     },
     "targets=7": {
-      "model": "wormhole:block/target_cells/basic_target_cell_4"
-    },
-    "targets=3": {
-      "model": "wormhole:block/target_cells/basic_target_cell_3"
-    },
-    "targets=5": {
       "model": "wormhole:block/target_cells/basic_target_cell_4"
     },
     "targets=1": {
@@ -21,7 +15,13 @@
     "targets=2": {
       "model": "wormhole:block/target_cells/basic_target_cell_2"
     },
-    "targets=8": {
+    "targets=5": {
+      "model": "wormhole:block/target_cells/basic_target_cell_4"
+    },
+    "targets=3": {
+      "model": "wormhole:block/target_cells/basic_target_cell_3"
+    },
+    "targets=6": {
       "model": "wormhole:block/target_cells/basic_target_cell_4"
     },
     "targets=4": {
