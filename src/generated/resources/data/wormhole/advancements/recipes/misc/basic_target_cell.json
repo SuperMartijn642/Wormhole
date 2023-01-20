@@ -5,10 +5,10 @@
       "item": "wormhole:basic_target_cell"
     },
     "title": {
-      "translate": "wormhole.advancement.recipes/wormhole/basic_target_cell.title"
+      "translate": "wormhole.advancement.recipes/misc/basic_target_cell.title"
     },
     "description": {
-      "translate": "wormhole.advancement.recipes/wormhole/basic_target_cell.description"
+      "translate": "wormhole.advancement.recipes/misc/basic_target_cell.description"
     },
     "frame": "task",
     "show_toast": false,

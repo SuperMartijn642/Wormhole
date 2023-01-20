@@ -2,13 +2,13 @@
   "parent": "minecraft:recipes/root",
   "display": {
     "icon": {
-      "item": "wormhole:basic_energy_cell"
+      "item": "wormhole:portal_frame"
     },
     "title": {
-      "translate": "wormhole.advancement.recipes/wormhole/basic_energy_cell.title"
+      "translate": "wormhole.advancement.recipes/misc/portal_frame.title"
     },
     "description": {
-      "translate": "wormhole.advancement.recipes/wormhole/basic_energy_cell.description"
+      "translate": "wormhole.advancement.recipes/misc/portal_frame.description"
     },
     "frame": "task",
     "show_toast": false,
@@ -19,7 +19,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "wormhole:basic_energy_cell"
+        "recipe": "wormhole:portal_frame"
       }
     },
     "recipe_condition": {
@@ -41,7 +41,7 @@
   ],
   "rewards": {
     "recipes": [
-      "wormhole:basic_energy_cell"
+      "wormhole:portal_frame"
     ]
   }
 }

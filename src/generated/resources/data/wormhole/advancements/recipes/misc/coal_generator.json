@@ -2,13 +2,13 @@
   "parent": "minecraft:recipes/root",
   "display": {
     "icon": {
-      "item": "wormhole:portal_frame"
+      "item": "wormhole:coal_generator"
     },
     "title": {
-      "translate": "wormhole.advancement.recipes/wormhole/portal_frame.title"
+      "translate": "wormhole.advancement.recipes/misc/coal_generator.title"
     },
     "description": {
-      "translate": "wormhole.advancement.recipes/wormhole/portal_frame.description"
+      "translate": "wormhole.advancement.recipes/misc/coal_generator.description"
     },
     "frame": "task",
     "show_toast": false,
@@ -19,7 +19,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "wormhole:portal_frame"
+        "recipe": "wormhole:coal_generator"
       }
     },
     "recipe_condition": {
@@ -41,7 +41,7 @@
   ],
   "rewards": {
     "recipes": [
-      "wormhole:portal_frame"
+      "wormhole:coal_generator"
     ]
   }
 }

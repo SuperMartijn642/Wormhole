@@ -2,13 +2,13 @@
   "parent": "minecraft:recipes/root",
   "display": {
     "icon": {
-      "item": "wormhole:advanced_energy_cell"
+      "item": "wormhole:basic_energy_cell"
     },
     "title": {
-      "translate": "wormhole.advancement.recipes/wormhole/advanced_energy_cell.title"
+      "translate": "wormhole.advancement.recipes/misc/basic_energy_cell.title"
     },
     "description": {
-      "translate": "wormhole.advancement.recipes/wormhole/advanced_energy_cell.description"
+      "translate": "wormhole.advancement.recipes/misc/basic_energy_cell.description"
     },
     "frame": "task",
     "show_toast": false,
@@ -19,7 +19,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "wormhole:advanced_energy_cell"
+        "recipe": "wormhole:basic_energy_cell"
       }
     },
     "recipe_condition": {
@@ -27,9 +27,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "wormhole:basic_energy_cell"
-            ]
+            "tag": "forge:ingots/iron"
           }
         ]
       }
@@ -43,7 +41,7 @@
   ],
   "rewards": {
     "recipes": [
-      "wormhole:advanced_energy_cell"
+      "wormhole:basic_energy_cell"
     ]
   }
 }

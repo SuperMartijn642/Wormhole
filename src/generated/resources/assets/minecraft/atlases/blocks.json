@@ -1,0 +1,224 @@
+{
+  "sources": [
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_magenta"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:generators/coal_generator_unlit"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_red"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:generators/coal_generator_lit"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal_frame"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_brown"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_cyan"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:generators/coal_generator_side"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:target_device"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:energy_cells/basic_energy_cell_0"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:energy_cells/basic_energy_cell_2"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:energy_cells/basic_energy_cell_1"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:energy_cells/basic_energy_cell_4"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:energy_cells/basic_energy_cell_3"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:energy_cells/basic_energy_cell_6"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:energy_cells/basic_energy_cell_5"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:energy_cells/basic_energy_cell_8"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:energy_cells/basic_energy_cell_7"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:energy_cells/basic_energy_cell_9"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:energy_cells/basic_energy_cell_12"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:target_cells/basic_target_cell_0"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:energy_cells/basic_energy_cell_13"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:target_cells/basic_target_cell_1"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:energy_cells/basic_energy_cell_10"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:target_cells/basic_target_cell_2"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:energy_cells/basic_energy_cell_11"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:target_cells/basic_target_cell_3"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:target_cells/basic_target_cell_4"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:energy_cells/basic_energy_cell_14"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:energy_cells/basic_energy_cell_15"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:advanced_target_device"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal_stabilizer_on"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_blue"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:generators/coal_generator_backside"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_purple"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_lime"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_gray"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_black"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_orange"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:target_cells/advanced_target_cell_2"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:target_cells/advanced_target_cell_1"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:target_cells/advanced_target_cell_0"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_pink"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:target_cells/advanced_target_cell_6"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:target_cells/advanced_target_cell_5"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:target_cells/advanced_target_cell_4"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:target_cells/advanced_target_cell_3"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:target_cells/advanced_target_cell_8"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:target_cells/advanced_target_cell_7"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_white"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_light_blue"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_yellow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal_stabilizer_off"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_green"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_light_gray"
+    }
+  ]
+}

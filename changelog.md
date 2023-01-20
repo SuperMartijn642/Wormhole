@@ -1,4 +1,2 @@
 ### Wormhole 1.1.11
-- Updated to core library 1.1
-- Portal blocks can now be waterlogged and portals can be formed underwater
-- Improved performance when rendering energy cells and target cells
+- Initial release of Wormhole for Minecraft 1.19.3
