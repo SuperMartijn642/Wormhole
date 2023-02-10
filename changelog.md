@@ -1,3 +1,6 @@
+### Wormhole 1.1.12
+- Updated Simplified Chinese translations (thanks to Kasualix!)
+
 ### Wormhole 1.1.11a
 - Fix crash on dedicated server
 
