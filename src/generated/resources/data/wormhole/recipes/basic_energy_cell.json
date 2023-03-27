@@ -7,13 +7,13 @@
   ],
   "key": {
     "A": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:iron_ingots"
     },
     "B": {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:redstone_dusts"
     },
     "C": {
-      "tag": "forge:storage_blocks/redstone"
+      "item": "minecraft:redstone_block"
     }
   },
   "result": {

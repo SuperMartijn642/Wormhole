@@ -28,7 +28,7 @@ public abstract class PortalGroupPacket extends BlockPosBasePacket {
         Level level = context.getWorld();
         if(level == null)
             return;
-        PortalGroupCapability groups = level.getCapability(PortalGroupCapability.CAPABILITY).orElse(null);
+        PortalGroupCapability groups = PortalGroupCapability.get(level);
         if(groups == null)
             return;
         PortalGroup group = groups.getGroup(this.pos);

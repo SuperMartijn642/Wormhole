@@ -5,16 +5,11 @@ import com.supermartijn642.wormhole.portal.*;
 import com.supermartijn642.wormhole.targetdevice.TargetDeviceItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +20,6 @@ import java.util.List;
 public class StabilizerBlockEntity extends PortalGroupBlockEntity implements ITargetCellEntity, IEnergyCellEntity {
 
     private final List<PortalTarget> targets = new ArrayList<>();
-    private final LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> this);
     private int energy = 0;
 
     public StabilizerBlockEntity(BlockPos pos, BlockState state){
@@ -57,7 +51,7 @@ public class StabilizerBlockEntity extends PortalGroupBlockEntity implements ITa
             if(shape == null)
                 player.displayClientMessage(TextComponents.translation("wormhole.portal_stabilizer.error").color(ChatFormatting.RED).get(), true);
             else{
-                this.level.getCapability(PortalGroupCapability.CAPABILITY).ifPresent(groups -> groups.add(shape));
+                PortalGroupCapability.get(this.level).add(shape);
                 player.displayClientMessage(TextComponents.translation("wormhole.portal_stabilizer.success").color(ChatFormatting.YELLOW).get(), true);
             }
         }
@@ -132,6 +126,12 @@ public class StabilizerBlockEntity extends PortalGroupBlockEntity implements ITa
     }
 
     @Override
+    public void setEnergyStored(int energy){
+        this.energy = energy;
+        this.dataChanged();
+    }
+
+    @Override
     public int getMaxEnergyStored(boolean fromGroup){
         if(!fromGroup && this.hasGroup())
             return this.getGroup().getEnergyCapacity();
@@ -147,20 +147,6 @@ public class StabilizerBlockEntity extends PortalGroupBlockEntity implements ITa
     @Override
     public boolean canReceive(){
         return true;
-    }
-
-    @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side){
-        //noinspection removal
-        if(cap == CapabilityEnergy.ENERGY)
-            return this.energyCapability.cast();
-        return super.getCapability(cap, side);
-    }
-
-    @Override
-    public void invalidateCaps(){
-        super.invalidateCaps();
-        this.energyCapability.invalidate();
     }
 
     @Override

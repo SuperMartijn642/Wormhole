@@ -7,10 +7,10 @@
   ],
   "key": {
     "A": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:iron_ingots"
     },
     "B": {
-      "tag": "forge:gems/lapis"
+      "tag": "c:lapis"
     },
     "C": {
       "item": "minecraft:compass"

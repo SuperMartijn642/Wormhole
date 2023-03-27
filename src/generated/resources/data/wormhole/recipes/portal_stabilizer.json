@@ -7,19 +7,19 @@
   ],
   "key": {
     "A": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:iron_ingots"
     },
     "B": {
-      "tag": "forge:storage_blocks/lapis"
+      "item": "minecraft:lapis_block"
     },
     "C": {
-      "tag": "forge:dusts/glowstone"
+      "item": "minecraft:glowstone_dust"
     },
     "D": {
-      "tag": "forge:ender_pearls"
+      "item": "minecraft:ender_pearl"
     },
     "E": {
-      "tag": "forge:storage_blocks/redstone"
+      "item": "minecraft:redstone_block"
     }
   },
   "result": {

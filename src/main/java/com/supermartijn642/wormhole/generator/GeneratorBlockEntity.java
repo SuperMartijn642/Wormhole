@@ -1,21 +1,19 @@
 package com.supermartijn642.wormhole.generator;
 
+import com.supermartijn642.core.CommonUtils;
 import com.supermartijn642.core.block.BaseBlockEntity;
 import com.supermartijn642.core.block.BaseBlockEntityType;
 import com.supermartijn642.core.block.TickableBlockEntity;
+import com.supermartijn642.wormhole.energycell.EnergyHolder;
 import com.supermartijn642.wormhole.portal.IPortalGroupEntity;
 import com.supermartijn642.wormhole.portal.PortalGroup;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import team.reborn.energy.api.EnergyStorage;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -25,7 +23,7 @@ import java.util.Set;
 /**
  * Created 12/18/2020 by SuperMartijn642
  */
-public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlockEntity, IEnergyStorage {
+public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlockEntity, EnergyHolder {
 
     private static final int BLOCKS_PER_TICK = 5;
 
@@ -33,7 +31,6 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
     protected final int energyCapacity;
     private final int energyRange;
     private final int energyTransferLimit;
-    private final LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> this);
 
     private final Set<BlockPos> portalBlocks = new LinkedHashSet<>();
     private final Set<BlockPos> energyBlocks = new LinkedHashSet<>();
@@ -59,12 +56,23 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
                 if(entity instanceof IPortalGroupEntity && ((IPortalGroupEntity)entity).hasGroup()){
                     this.portalBlocks.add(pos);
                     this.energyBlocks.remove(pos);
-                }else if(entity != null && entity.getCapability(CapabilityEnergy.ENERGY).isPresent()){
-                    this.portalBlocks.remove(pos);
-                    this.energyBlocks.add(pos);
                 }else{
+                    boolean isEnergyHolder = entity instanceof EnergyHolder;
+                    if(!isEnergyHolder && entity != null && CommonUtils.isModLoaded("team_reborn_energy")){
+                        BlockState state = entity.getBlockState();
+                        for(Direction side : Direction.values()){
+                            EnergyStorage storage = EnergyStorage.SIDED.find(this.level, pos, state, entity, side);
+                            if(storage != null && storage.supportsInsertion()){
+                                isEnergyHolder = true;
+                                break;
+                            }
+                        }
+                    }
+                    if(isEnergyHolder)
+                        this.energyBlocks.add(pos);
+                    else
+                        this.energyBlocks.remove(pos);
                     this.portalBlocks.remove(pos);
-                    this.energyBlocks.remove(pos);
                 }
             }
 
@@ -107,17 +115,34 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
         while(iterator.hasNext()){
             BlockPos pos = iterator.next();
             BlockEntity entity = this.level.getBlockEntity(pos);
-            LazyOptional<IEnergyStorage> optional;
-            //noinspection removal
-            if(entity != null && (optional = entity.getCapability(CapabilityEnergy.ENERGY)).isPresent()){
-                final int max = toTransfer;
-                int transferred = optional.map(storage -> storage.receiveEnergy(max, false)).orElse(0);
+            if(entity instanceof EnergyHolder){
+                int transferred = ((EnergyHolder)entity).receiveEnergy(toTransfer, false);
                 toTransfer -= transferred;
                 this.energy -= transferred;
                 if(this.energy == 0)
                     return;
-            }else
-                toRemove.add(pos);
+            }else{
+                boolean isEnergyHolder = false;
+                if(entity != null && CommonUtils.isModLoaded("team_reborn_energy")){
+                    BlockState state = entity.getBlockState();
+                    for(Direction side : Direction.values()){
+                        EnergyStorage storage = EnergyStorage.SIDED.find(this.level, pos, state, entity, side);
+                        if(storage != null && storage.supportsInsertion()){
+                            try(Transaction transaction = Transaction.openOuter()){
+                                int transferred = (int)storage.insert(toTransfer, transaction);
+                                toTransfer -= transferred;
+                                this.energy -= transferred;
+                                if(this.energy == 0)
+                                    return;
+                            }
+                            isEnergyHolder = true;
+                            break;
+                        }
+                    }
+                }
+                if(!isEnergyHolder)
+                    toRemove.add(pos);
+            }
         }
         this.energyBlocks.removeAll(toRemove);
     }
@@ -149,14 +174,6 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side){
-        //noinspection removal
-        if(cap == CapabilityEnergy.ENERGY)
-            return this.energyCapability.cast();
-        return super.getCapability(cap, side);
-    }
-
-    @Override
     public int receiveEnergy(int maxReceive, boolean simulate){
         return 0;
     }
@@ -172,6 +189,11 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
     }
 
     @Override
+    public void setEnergyStored(int energy){
+        this.energy = energy;
+    }
+
+    @Override
     public int getMaxEnergyStored(){
         return this.energyCapacity;
     }
@@ -184,11 +206,5 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
     @Override
     public boolean canReceive(){
         return false;
-    }
-
-    @Override
-    public void invalidateCaps(){
-        super.invalidateCaps();
-        this.energyCapability.invalidate();
     }
 }

@@ -11,9 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
-import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -70,19 +68,18 @@ public class NBTRecipe extends ShapedRecipe {
         return super.getSerializer();
     }
 
-    private static class Serializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<NBTRecipe> {
+    private static class Serializer implements RecipeSerializer<NBTRecipe> {
 
         @Override
         public NBTRecipe fromJson(ResourceLocation recipeId, JsonObject json){
             ShapedRecipe recipe = RecipeSerializer.SHAPED_RECIPE.fromJson(recipeId, json);
-            return new NBTRecipe(recipeId, recipe.getGroup(), recipe.getRecipeWidth(), recipe.getRecipeHeight(), recipe.getIngredients(), recipe.getResultItem());
+            return new NBTRecipe(recipeId, recipe.getGroup(), recipe.getWidth(), recipe.getHeight(), recipe.getIngredients(), recipe.getResultItem());
         }
 
-        @Nullable
         @Override
         public NBTRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer){
             ShapedRecipe recipe = RecipeSerializer.SHAPED_RECIPE.fromNetwork(recipeId, buffer);
-            return new NBTRecipe(recipeId, recipe.getGroup(), recipe.getRecipeWidth(), recipe.getRecipeHeight(), recipe.getIngredients(), recipe.getResultItem());
+            return new NBTRecipe(recipeId, recipe.getGroup(), recipe.getWidth(), recipe.getHeight(), recipe.getIngredients(), recipe.getResultItem());
         }
 
         @Override

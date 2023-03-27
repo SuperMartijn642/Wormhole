@@ -26,8 +26,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.data.EmptyModelData;
-import net.minecraftforge.client.model.data.IModelData;
 
 import java.util.List;
 import java.util.Random;
@@ -82,44 +80,42 @@ public class PortalRendererHelper {
         BlockEntity entity = level.getBlockEntity(pos);
 
         BakedModel model = ClientUtils.getBlockRenderer().getBlockModel(state);
-        IModelData modelData = entity == null ? EmptyModelData.INSTANCE : entity.getModelData();
-        modelData = model.getModelData(level, pos, state, modelData);
 
         poseStack.pushPose();
         poseStack.translate(pos.getX(), pos.getY(), pos.getZ());
 
-        translateAndRenderModel(state, poseStack, bufferSource, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, model, modelData, valid);
+        translateAndRenderModel(state, poseStack, bufferSource, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, model, valid);
 
         poseStack.popPose();
     }
 
-    private static void translateAndRenderModel(BlockState state, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, BakedModel model, IModelData modelData, boolean valid){
+    private static void translateAndRenderModel(BlockState state, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, BakedModel model, boolean valid){
         poseStack.pushPose();
 
         poseStack.translate(-0.5D, -0.5D, -0.5D);
         RenderType renderType = ItemBlockRenderTypes.getRenderType(state, true);
-        renderModel(model, state, combinedLight, combinedOverlay, poseStack, bufferSource.getBuffer(renderType), modelData, renderType, valid);
+        renderModel(model, state, combinedLight, combinedOverlay, poseStack, bufferSource.getBuffer(renderType), renderType, valid);
 
         poseStack.popPose();
     }
 
-    private static void renderModel(BakedModel model, BlockState state, int combinedLight, int combinedOverlay, PoseStack poseStack, VertexConsumer buffer, IModelData modelData, RenderType renderType, boolean valid){
+    private static void renderModel(BakedModel model, BlockState state, int combinedLight, int combinedOverlay, PoseStack poseStack, VertexConsumer buffer, RenderType renderType, boolean valid){
         Random random = new Random();
 
         for(Direction direction : Direction.values()){
             random.setSeed(42L);
-            renderQuads(poseStack, buffer, model.getQuads(state, direction, random, modelData), combinedLight, combinedOverlay, valid);
+            renderQuads(poseStack, buffer, model.getQuads(state, direction, random), combinedLight, combinedOverlay, valid);
         }
 
         random.setSeed(42L);
-        renderQuads(poseStack, buffer, model.getQuads(state, null, random, modelData), combinedLight, combinedOverlay, valid);
+        renderQuads(poseStack, buffer, model.getQuads(state, null, random), combinedLight, combinedOverlay, valid);
     }
 
     private static void renderQuads(PoseStack poseStack, VertexConsumer buffer, List<BakedQuad> quads, int combinedLight, int combinedOverlay, boolean valid){
         PoseStack.Pose matrix = poseStack.last();
 
         for(BakedQuad bakedquad : quads)
-            buffer.putBulkData(matrix, bakedquad, 1, valid ? 1 : 0.5f, valid ? 1 : 0.5f, valid ? 1 : 0.8f, combinedLight, combinedOverlay, false);
+            buffer.putBulkData(matrix, bakedquad, 1, valid ? 1 : 0.5f, valid ? 1 : 0.5f, combinedLight, combinedOverlay);
     }
 
     private static void renderBlockEntity(Level level, BlockPos pos, PoseStack poseStack, MultiBufferSource bufferSource){

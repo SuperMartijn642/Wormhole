@@ -7,13 +7,13 @@
   ],
   "key": {
     "A": {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:redstone_dusts"
     },
     "B": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:iron_ingots"
     },
     "C": {
-      "tag": "forge:ender_pearls"
+      "item": "minecraft:ender_pearl"
     },
     "D": {
       "item": "minecraft:compass"

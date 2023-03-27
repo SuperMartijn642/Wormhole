@@ -1,16 +1,14 @@
 package com.supermartijn642.wormhole.energycell;
 
+import com.supermartijn642.core.CommonUtils;
 import com.supermartijn642.wormhole.portal.IEnergyCellEntity;
 import com.supermartijn642.wormhole.portal.PortalGroupBlockEntity;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
+import team.reborn.energy.api.EnergyStorage;
 
 /**
  * Created 11/16/2020 by SuperMartijn642
@@ -53,6 +51,10 @@ public class EnergyCellBlockEntity extends PortalGroupBlockEntity implements IEn
         }
 
         @Override
+        public void setEnergyStored(int energy){
+        }
+
+        @Override
         public int getMaxEnergyStored(boolean fromGroup){
             return this.type.getCapacity();
         }
@@ -62,25 +64,24 @@ public class EnergyCellBlockEntity extends PortalGroupBlockEntity implements IEn
             return true;
         }
 
+        @SuppressWarnings("UnstableApiUsage")
         @Override
         public void update(){
             super.update();
-            for(Direction direction : Direction.values()){
-                BlockEntity entity = this.level.getBlockEntity(this.worldPosition.relative(direction));
-                if(entity != null)
-                    //noinspection removal
-                    entity.getCapability(CapabilityEnergy.ENERGY).ifPresent(this::pushEnergy);
+            if(CommonUtils.isModLoaded("team_reborn_energy")){
+                for(Direction direction : Direction.values()){
+                    EnergyStorage storage = EnergyStorage.SIDED.find(this.level, this.worldPosition.relative(direction), direction.getOpposite());
+                    if(storage != null && storage.supportsInsertion()){
+                        try(Transaction transaction = Transaction.openOuter()){
+                            storage.insert(this.getMaxEnergyStored(true), transaction);
+                        }
+                    }
+                }
             }
-        }
-
-        public void pushEnergy(IEnergyStorage energyStorage){
-            if(energyStorage.canReceive())
-                energyStorage.receiveEnergy(this.getMaxEnergyStored(true), false);
         }
     }
 
     protected final EnergyCellType type;
-    private final LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> this);
     protected int energy = 0;
     private int ticks = 40;
 
@@ -142,6 +143,11 @@ public class EnergyCellBlockEntity extends PortalGroupBlockEntity implements IEn
     }
 
     @Override
+    public void setEnergyStored(int energy){
+        this.energy = energy;
+    }
+
+    @Override
     public int getMaxEnergyStored(boolean fromGroup){
         if(!fromGroup && this.hasGroup())
             return this.getGroup().getEnergyCapacity();
@@ -157,20 +163,6 @@ public class EnergyCellBlockEntity extends PortalGroupBlockEntity implements IEn
     @Override
     public boolean canReceive(){
         return true;
-    }
-
-    @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side){
-        //noinspection removal
-        if(cap == CapabilityEnergy.ENERGY)
-            return this.energyCapability.cast();
-        return super.getCapability(cap, side);
-    }
-
-    @Override
-    public void invalidateCaps(){
-        super.invalidateCaps();
-        this.energyCapability.invalidate();
     }
 
     @Override

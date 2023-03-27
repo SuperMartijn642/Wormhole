@@ -34,8 +34,8 @@ import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 /**
@@ -63,7 +63,7 @@ public class CoalGeneratorBlock extends BaseBlock implements EntityHoldingBlock 
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     public CoalGeneratorBlock(){
-        super(true, BlockProperties.create(Material.METAL, MaterialColor.COLOR_GRAY).sound(SoundType.METAL).requiresCorrectTool());
+        super(true, BlockProperties.create(Material.METAL, MaterialColor.COLOR_GRAY).sound(SoundType.METAL).lightLevel(state -> state.getValue(LIT) ? 8 : 0).requiresCorrectTool());
         this.registerDefaultState(this.defaultBlockState().setValue(LIT, false).setValue(FACING, Direction.NORTH));
     }
 
@@ -92,11 +92,6 @@ public class CoalGeneratorBlock extends BaseBlock implements EntityHoldingBlock 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context){
         return SHAPES[state.getValue(FACING).get2DDataValue()].getUnderlying();
-    }
-
-    @Override
-    public int getLightEmission(BlockState state, BlockGetter level, BlockPos pos){
-        return state.getValue(LIT) ? 8 : 0;
     }
 
     @Override

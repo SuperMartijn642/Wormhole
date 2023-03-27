@@ -4,8 +4,8 @@ import com.supermartijn642.core.generator.RecipeGenerator;
 import com.supermartijn642.core.generator.ResourceCache;
 import com.supermartijn642.wormhole.NBTRecipe;
 import com.supermartijn642.wormhole.Wormhole;
+import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.common.Tags;
 
 /**
  * Created 06/10/2022 by SuperMartijn642
@@ -23,32 +23,32 @@ public class WormholeRecipeGenerator extends RecipeGenerator {
             .pattern("ABA")
             .pattern("BCB")
             .pattern("ABA")
-            .input('A', Tags.Items.INGOTS_IRON)
-            .input('B', Tags.Items.COBBLESTONE)
-            .input('C', Tags.Items.OBSIDIAN)
-            .unlockedBy(Tags.Items.INGOTS_IRON);
+            .input('A', ConventionalItemTags.IRON_INGOTS)
+            .input('B', Items.COBBLESTONE)
+            .input('C', Items.OBSIDIAN)
+            .unlockedBy(ConventionalItemTags.IRON_INGOTS);
 
         // Portal stabilizer
         this.shaped(Wormhole.portal_stabilizer)
             .pattern("ABA")
             .pattern("CDC")
             .pattern("AEA")
-            .input('A', Tags.Items.INGOTS_IRON)
-            .input('B', Tags.Items.STORAGE_BLOCKS_LAPIS)
-            .input('C', Tags.Items.DUSTS_GLOWSTONE)
-            .input('D', Tags.Items.ENDER_PEARLS)
-            .input('E', Tags.Items.STORAGE_BLOCKS_REDSTONE)
-            .unlockedBy(Tags.Items.ENDER_PEARLS);
+            .input('A', ConventionalItemTags.IRON_INGOTS)
+            .input('B', Items.LAPIS_BLOCK)
+            .input('C', Items.GLOWSTONE_DUST)
+            .input('D', Items.ENDER_PEARL)
+            .input('E', Items.REDSTONE_BLOCK)
+            .unlockedBy(Items.ENDER_PEARL);
 
         // Basic energy cell
         this.shaped(Wormhole.basic_energy_cell)
             .pattern("ABA")
             .pattern("BCB")
             .pattern("ABA")
-            .input('A', Tags.Items.INGOTS_IRON)
-            .input('B', Tags.Items.DUSTS_REDSTONE)
-            .input('C', Tags.Items.STORAGE_BLOCKS_REDSTONE)
-            .unlockedBy(Tags.Items.INGOTS_IRON);
+            .input('A', ConventionalItemTags.IRON_INGOTS)
+            .input('B', ConventionalItemTags.REDSTONE_DUSTS)
+            .input('C', Items.REDSTONE_BLOCK)
+            .unlockedBy(ConventionalItemTags.IRON_INGOTS);
 
         // Advanced energy cell
         this.shaped(Wormhole.advanced_energy_cell)
@@ -56,8 +56,8 @@ public class WormholeRecipeGenerator extends RecipeGenerator {
             .pattern("ABA")
             .pattern("CDC")
             .pattern("ABA")
-            .input('A', Tags.Items.INGOTS_IRON)
-            .input('B', Tags.Items.GEMS_QUARTZ)
+            .input('A', ConventionalItemTags.IRON_INGOTS)
+            .input('B', ConventionalItemTags.QUARTZ)
             .input('C', Items.REPEATER)
             .input('D', Wormhole.basic_energy_cell)
             .unlockedBy(Wormhole.basic_energy_cell);
@@ -67,10 +67,10 @@ public class WormholeRecipeGenerator extends RecipeGenerator {
             .pattern("ABA")
             .pattern("BCB")
             .pattern("ABA")
-            .input('A', Tags.Items.INGOTS_IRON)
-            .input('B', Tags.Items.GEMS_LAPIS)
+            .input('A', ConventionalItemTags.IRON_INGOTS)
+            .input('B', ConventionalItemTags.LAPIS)
             .input('C', Items.COMPASS)
-            .unlockedBy(Tags.Items.INGOTS_IRON);
+            .unlockedBy(ConventionalItemTags.IRON_INGOTS);
 
         // Advanced target cell
         this.shaped(Wormhole.advanced_target_cell)
@@ -78,9 +78,9 @@ public class WormholeRecipeGenerator extends RecipeGenerator {
             .pattern("ABA")
             .pattern("CDC")
             .pattern("ABA")
-            .input('A', Tags.Items.INGOTS_IRON)
-            .input('B', Tags.Items.GEMS_LAPIS)
-            .input('C', Tags.Items.DUSTS_GLOWSTONE)
+            .input('A', ConventionalItemTags.IRON_INGOTS)
+            .input('B', ConventionalItemTags.LAPIS)
+            .input('C', Items.GLOWSTONE_DUST)
             .input('D', Wormhole.basic_target_cell)
             .unlockedBy(Wormhole.basic_target_cell);
 
@@ -89,22 +89,22 @@ public class WormholeRecipeGenerator extends RecipeGenerator {
             .pattern("ABA")
             .pattern("ACA")
             .pattern("ADA")
-            .input('A', Tags.Items.INGOTS_IRON)
-            .input('B',Tags.Items.ENDER_PEARLS)
+            .input('A', ConventionalItemTags.IRON_INGOTS)
+            .input('B', Items.ENDER_PEARL)
             .input('C', Items.FURNACE)
-            .input('D', Tags.Items.DUSTS_REDSTONE)
-            .unlockedBy(Tags.Items.INGOTS_IRON);
+            .input('D', ConventionalItemTags.REDSTONE_DUSTS)
+            .unlockedBy(ConventionalItemTags.IRON_INGOTS);
 
         // Target definition device
         this.shaped(Wormhole.target_device)
             .pattern("  A")
             .pattern("BCB")
             .pattern("BDB")
-            .input('A', Tags.Items.DUSTS_REDSTONE)
-            .input('B', Tags.Items.INGOTS_IRON)
-            .input('C', Tags.Items.ENDER_PEARLS)
+            .input('A', ConventionalItemTags.REDSTONE_DUSTS)
+            .input('B', ConventionalItemTags.IRON_INGOTS)
+            .input('C', Items.ENDER_PEARL)
             .input('D', Items.COMPASS)
-            .unlockedBy(Tags.Items.INGOTS_IRON);
+            .unlockedBy(ConventionalItemTags.IRON_INGOTS);
 
         // Advanced target definition device
         this.shaped(Wormhole.advanced_target_device)
@@ -112,10 +112,10 @@ public class WormholeRecipeGenerator extends RecipeGenerator {
             .pattern("  A")
             .pattern("BCD")
             .pattern("BBB")
-            .input('A', Tags.Items.DUSTS_GLOWSTONE)
-            .input('B', Tags.Items.INGOTS_IRON)
+            .input('A', Items.GLOWSTONE_DUST)
+            .input('B', ConventionalItemTags.IRON_INGOTS)
             .input('C', Wormhole.target_device)
-            .input('D', Tags.Items.INGOTS_GOLD)
+            .input('D', ConventionalItemTags.GOLD_INGOTS)
             .unlockedBy(Wormhole.target_device);
     }
 }

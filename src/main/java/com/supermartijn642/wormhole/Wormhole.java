@@ -31,26 +31,12 @@ import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceAddPacket;
 import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceMovePacket;
 import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceNamePacket;
 import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceRemovePacket;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.common.Mod;
+import net.fabricmc.api.ModInitializer;
 
 /**
  * Created 7/7/2020 by SuperMartijn642
  */
-@Mod("wormhole")
-public class Wormhole {
-
-    /*
-    TODO
-    - item tooltips
-    - dimensional core
-    - generators
-    - screen
-    - redstone
-
-    - improved textures
-     */
+public class Wormhole implements ModInitializer {
 
     public static final PacketChannel CHANNEL = PacketChannel.create("wormhole");
 
@@ -101,7 +87,8 @@ public class Wormhole {
 
     public static final CreativeItemGroup ITEM_GROUP = CreativeItemGroup.create("wormhole", () -> advanced_target_device).sortAlphabetically();
 
-    public Wormhole(){
+    @Override
+    public void onInitialize(){
         CHANNEL.registerMessage(TargetDeviceAddPacket.class, TargetDeviceAddPacket::new, true);
         CHANNEL.registerMessage(TargetDeviceMovePacket.class, TargetDeviceMovePacket::new, true);
         CHANNEL.registerMessage(TargetDeviceRemovePacket.class, TargetDeviceRemovePacket::new, true);
@@ -117,8 +104,9 @@ public class Wormhole {
         CHANNEL.registerMessage(PortalActivatePacket.class, PortalActivatePacket::new, true);
         CHANNEL.registerMessage(PortalDeactivatePacket.class, PortalDeactivatePacket::new, true);
 
+        PortalGroupCapability.registerListeners();
+
         register();
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> WormholeClient::register);
         registerGenerators();
     }
 

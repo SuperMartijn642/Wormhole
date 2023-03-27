@@ -27,7 +27,9 @@
       "conditions": {
         "items": [
           {
-            "tag": "forge:ender_pearls"
+            "items": [
+              "minecraft:ender_pearl"
+            ]
           }
         ]
       }

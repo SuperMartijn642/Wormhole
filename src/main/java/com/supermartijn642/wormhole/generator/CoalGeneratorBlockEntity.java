@@ -2,25 +2,41 @@ package com.supermartijn642.wormhole.generator;
 
 import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.WormholeConfig;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.item.base.SingleStackStorage;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
+
+import java.util.Map;
 
 /**
  * Created 12/18/2020 by SuperMartijn642
  */
-public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements IItemHandlerModifiable {
+public class CoalGeneratorBlockEntity extends GeneratorBlockEntity {
 
-    private final LazyOptional<IItemHandler> itemCapability = LazyOptional.of(() -> this);
+    private Map<Item,Integer> burnTimes;
+
+    @SuppressWarnings("UnstableApiUsage")
+    public final SingleStackStorage itemCapability = new SingleStackStorage() {
+        @Override
+        protected ItemStack getStack(){
+            return stack;
+        }
+
+        @Override
+        protected void setStack(ItemStack newStack){
+            stack = newStack;
+        }
+
+        @Override
+        protected boolean canInsert(ItemVariant itemVariant){
+            return isItemValid(itemVariant.getItem());
+        }
+    };
     private int burnTime = 0, totalBurnTime = 0;
     private ItemStack stack = ItemStack.EMPTY;
 
@@ -54,7 +70,7 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements II
     }
 
     private void burnItem(){
-        int burnTime = this.stack.isEmpty() ? 0 : ForgeHooks.getBurnTime(this.stack, RecipeType.SMELTING);
+        int burnTime = this.stack.isEmpty() ? 0 : this.getBurnTime(this.stack.getItem());
         if(burnTime > 0){
             this.burnTime = this.totalBurnTime = burnTime;
             this.stack.shrink(1);
@@ -65,14 +81,6 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements II
         boolean lit = this.getBlockState().getValue(CoalGeneratorBlock.LIT);
         if(lit != this.burnTime > 0)
             this.level.setBlockAndUpdate(this.worldPosition, state.setValue(CoalGeneratorBlock.LIT, !lit));
-    }
-
-    @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side){
-        //noinspection removal
-        if(cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
-            return this.itemCapability.cast();
-        return super.getCapability(cap, side);
     }
 
     @Override
@@ -96,58 +104,22 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements II
         return this.totalBurnTime == 0 ? 0 : (float)this.burnTime / this.totalBurnTime;
     }
 
-    @Override
-    public int getSlots(){
-        return 1;
+    public ItemStack getStack(){
+        return stack;
     }
 
-    @Override
-    public void setStackInSlot(int slot, ItemStack stack){
-        if(slot == 0)
-            this.stack = stack.copy();
+    public void setStack(ItemStack stack){
+        this.stack = stack;
+        this.dataChanged();
     }
 
-    @Override
-    public ItemStack getStackInSlot(int slot){
-        return this.stack;
+    public boolean isItemValid(Item item){
+        return this.getBurnTime(item) > 0;
     }
 
-    @Override
-    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate){
-        if(stack.isEmpty() || (!this.stack.isEmpty() && (!ItemStack.isSame(this.stack, stack) ||
-            !ItemStack.tagMatches(this.stack, stack))))
-            return stack;
-
-        int count = Math.min(stack.getMaxStackSize() - this.stack.getCount(), stack.getCount());
-        if(!simulate){
-            ItemStack newStack = stack.copy();
-            newStack.setCount(this.stack.getCount() + count);
-            this.stack = newStack;
-        }
-
-        ItemStack result = stack.copy();
-        result.shrink(count);
-        return result;
-    }
-
-    @Override
-    public ItemStack extractItem(int slot, int amount, boolean simulate){
-        return ItemStack.EMPTY;
-    }
-
-    @Override
-    public int getSlotLimit(int slot){
-        return this.stack.isEmpty() ? 64 : this.stack.getMaxStackSize();
-    }
-
-    @Override
-    public boolean isItemValid(int slot, ItemStack stack){
-        return ForgeHooks.getBurnTime(stack, RecipeType.SMELTING) > 0;
-    }
-
-    @Override
-    public void invalidateCaps(){
-        super.invalidateCaps();
-        this.itemCapability.invalidate();
+    private int getBurnTime(Item item){
+        if(this.burnTimes == null)
+            this.burnTimes = AbstractFurnaceBlockEntity.getFuel();
+        return this.burnTimes.getOrDefault(item, 0);
     }
 }

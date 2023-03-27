@@ -17,8 +17,6 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.data.EmptyModelData;
-import net.minecraftforge.client.model.data.IModelData;
 
 import java.util.List;
 import java.util.Random;
@@ -41,11 +39,10 @@ public class ScreenBlockRenderer {
         poseStack.mulPose(new Quaternion(pitch, yaw, 0, true));
 
         BakedModel model = ClientUtils.getBlockRenderer().getBlockModel(state);
-        IModelData modelData = EmptyModelData.INSTANCE;
 
         poseStack.translate(-0.5, -0.5, -0.5);
         RenderType renderType = ItemBlockRenderTypes.getRenderType(state, true);
-        renderModel(model, state, poseStack, bufferSource.getBuffer(renderType), modelData, renderType);
+        renderModel(model, state, poseStack, bufferSource.getBuffer(renderType), renderType);
 
         bufferSource.endBatch();
         poseStack.popPose();
@@ -53,22 +50,22 @@ public class ScreenBlockRenderer {
         Lighting.setupFor3DItems();
     }
 
-    private static void renderModel(BakedModel model, BlockState state, PoseStack poseStack, VertexConsumer buffer, IModelData modelData, RenderType renderType){
+    private static void renderModel(BakedModel model, BlockState state, PoseStack poseStack, VertexConsumer buffer, RenderType renderType){
         Random random = new Random();
 
         for(Direction direction : Direction.values()){
             random.setSeed(42L);
-            renderQuads(poseStack, buffer, model.getQuads(state, direction, random, modelData));
+            renderQuads(poseStack, buffer, model.getQuads(state, direction, random));
         }
 
         random.setSeed(42L);
-        renderQuads(poseStack, buffer, model.getQuads(state, null, random, modelData));
+        renderQuads(poseStack, buffer, model.getQuads(state, null, random));
     }
 
     private static void renderQuads(PoseStack poseStack, VertexConsumer buffer, List<BakedQuad> quads){
         PoseStack.Pose matrix = poseStack.last();
 
         for(BakedQuad bakedquad : quads)
-            buffer.putBulkData(matrix, bakedquad, 1, 1, 1, 1, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, false);
+            buffer.putBulkData(matrix, bakedquad, 1, 1, 1, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
     }
 }

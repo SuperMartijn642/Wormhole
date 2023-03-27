@@ -7,13 +7,13 @@
   ],
   "key": {
     "A": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:iron_ingots"
     },
     "B": {
-      "tag": "forge:cobblestone"
+      "item": "minecraft:cobblestone"
     },
     "C": {
-      "tag": "forge:obsidian"
+      "item": "minecraft:obsidian"
     }
   },
   "result": {

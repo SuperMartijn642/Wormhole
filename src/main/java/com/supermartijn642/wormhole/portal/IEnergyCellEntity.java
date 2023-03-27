@@ -1,11 +1,11 @@
 package com.supermartijn642.wormhole.portal;
 
-import net.minecraftforge.energy.IEnergyStorage;
+import com.supermartijn642.wormhole.energycell.EnergyHolder;
 
 /**
  * Created 10/29/2020 by SuperMartijn642
  */
-public interface IEnergyCellEntity extends IEnergyStorage {
+public interface IEnergyCellEntity extends EnergyHolder {
 
     @Override
     default int receiveEnergy(int maxReceive, boolean simulate){
@@ -38,6 +38,9 @@ public interface IEnergyCellEntity extends IEnergyStorage {
     int getEnergyStored(boolean fromGroup);
 
     @Override
+    void setEnergyStored(int energy);
+
+    @Override
     default int getMaxEnergyStored(){
         return this.getMaxEnergyStored(false);
     }
@@ -46,5 +49,4 @@ public interface IEnergyCellEntity extends IEnergyStorage {
      * {@link IEnergyStorage#getMaxEnergyStored()}
      */
     int getMaxEnergyStored(boolean fromGroup);
-
 }

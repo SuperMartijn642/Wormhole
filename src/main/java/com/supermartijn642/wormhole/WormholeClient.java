@@ -12,24 +12,25 @@ import com.supermartijn642.wormhole.portal.screen.PortalOverviewScreen;
 import com.supermartijn642.wormhole.portal.screen.PortalTargetColorScreen;
 import com.supermartijn642.wormhole.portal.screen.PortalTargetScreen;
 import com.supermartijn642.wormhole.targetdevice.TargetDeviceScreen;
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.DrawSelectionEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 
 /**
  * Created 7/23/2020 by SuperMartijn642
  */
-@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class WormholeClient {
+public class WormholeClient implements ClientModInitializer {
 
-    public static void register(){
+    @Override
+    public void onInitializeClient(){
+        WorldRenderEvents.BLOCK_OUTLINE.register(WormholeClient::onBlockHighlight);
+
         ClientRegistrationHandler handler = ClientRegistrationHandler.get("wormhole");
 
         // Set translucent render type for the portal
@@ -59,12 +60,11 @@ public class WormholeClient {
         ClientUtils.displayScreen(WidgetScreen.of(new PortalOverviewScreen(pos)));
     }
 
-    @SubscribeEvent
-    public static void onBlockHighlight(DrawSelectionEvent.HighlightBlock e){
+    public static boolean onBlockHighlight(WorldRenderContext renderContext, WorldRenderContext.BlockOutlineContext blockOutlineContext){
         Level level = ClientUtils.getWorld();
-        BlockEntity entity = level.getBlockEntity(e.getTarget().getBlockPos());
+        BlockEntity entity = level.getBlockEntity(blockOutlineContext.blockPos());
         if(entity instanceof GeneratorBlockEntity){
-            PoseStack poseStack = e.getPoseStack();
+            PoseStack poseStack = renderContext.matrixStack();
             poseStack.pushPose();
             Vec3 playerPos = RenderUtils.getCameraPosition();
             poseStack.translate(-playerPos.x, -playerPos.y, -playerPos.z);
@@ -78,5 +78,6 @@ public class WormholeClient {
             }
             poseStack.popPose();
         }
+        return true;
     }
 }

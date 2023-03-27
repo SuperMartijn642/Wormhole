@@ -1,21 +1,18 @@
 package com.supermartijn642.wormhole;
 
 import com.supermartijn642.wormhole.portal.PortalTarget;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundSetPassengersPacket;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.TicketType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.portal.PortalInfo;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.ITeleporter;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * Created 12/10/2020 by SuperMartijn642
@@ -46,17 +43,15 @@ public class TeleportHelper {
             return canTeleport(entity.getRootVehicle(), target);
 
         for(Entity rider : entity.getIndirectPassengers()){
-            CompoundTag tag = rider.getPersistentData();
-            if(tag.contains("wormhole:teleported") && rider.tickCount - tag.getLong("wormhole:teleported") >= 0 && rider.tickCount - tag.getLong("wormhole:teleported") < TELEPORT_COOLDOWN)
+            if(rider.isOnPortalCooldown())
                 return false;
         }
 
-        CompoundTag tag = entity.getPersistentData();
-        return !tag.contains("wormhole:teleported") || entity.tickCount - tag.getLong("wormhole:teleported") < 0 || entity.tickCount - tag.getLong("wormhole:teleported") >= TELEPORT_COOLDOWN;
+        return !entity.isOnPortalCooldown();
     }
 
     private static void markEntityAndPassengers(Entity entity){
-        entity.getPersistentData().putLong("wormhole:teleported", entity.tickCount);
+        entity.portalCooldown = TELEPORT_COOLDOWN;
         entity.getPassengers().forEach(TeleportHelper::markEntityAndPassengers);
     }
 
@@ -79,6 +74,8 @@ public class TeleportHelper {
     }
 
     private static Entity teleportEntity(Entity entity, ServerLevel targetLevel, PortalTarget target){
+        ChunkPos targetChunkPos = new ChunkPos(target.getPos());
+        targetLevel.getChunkSource().addRegionTicket(TicketType.POST_TELEPORT, targetChunkPos, 1, entity.getId());
         if(targetLevel == entity.level){
             if(entity instanceof ServerPlayer)
                 ((ServerPlayer)entity).teleportTo(targetLevel, target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
@@ -89,26 +86,17 @@ public class TeleportHelper {
             entity.fallDistance = 0;
             entity.setOnGround(true);
             return entity;
-        }else
-            return entity.changeDimension(targetLevel, new WormholeTeleporter(target));
-    }
-
-    private static class WormholeTeleporter implements ITeleporter {
-        private final PortalTarget target;
-
-        public WormholeTeleporter(PortalTarget target){
-            this.target = target;
-        }
-
-        @Override
-        public Entity placeEntity(Entity entity, ServerLevel currentLevel, ServerLevel destLevel, float yaw, Function<Boolean,Entity> repositionEntity){
-            return repositionEntity.apply(false);
-        }
-
-        @Nullable
-        @Override
-        public PortalInfo getPortalInfo(Entity entity, ServerLevel destLevel, Function<ServerLevel,PortalInfo> defaultPortalInfo){
-            return new PortalInfo(this.target.getCenteredPos(), Vec3.ZERO, this.target.yaw, 0);
+        }else{
+            Entity newEntity = entity.getType().create(targetLevel);
+            newEntity.restoreFrom(entity);
+            newEntity.moveTo(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
+            newEntity.setYHeadRot(target.yaw);
+            entity.setDeltaMovement(Vec3.ZERO);
+            entity.fallDistance = 0;
+            entity.setOnGround(true);
+            entity.setRemoved(Entity.RemovalReason.CHANGED_DIMENSION);
+            targetLevel.addDuringTeleport(newEntity);
+            return newEntity;
         }
     }
 }
