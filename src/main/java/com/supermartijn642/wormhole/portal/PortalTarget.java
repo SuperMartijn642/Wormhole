@@ -2,7 +2,7 @@ package com.supermartijn642.wormhole.portal;
 
 import com.supermartijn642.core.TextComponents;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -44,7 +44,7 @@ public class PortalTarget {
     }
 
     public PortalTarget(CompoundTag tag){
-        this(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(tag.getString("dimension"))), tag.getInt("x"), tag.getInt("y"), tag.getInt("z"), tag.getFloat("yaw"), tag.contains("name") ? tag.getString("name") : "Target Destination");
+        this(ResourceKey.create(Registries.DIMENSION, new ResourceLocation(tag.getString("dimension"))), tag.getInt("x"), tag.getInt("y"), tag.getInt("z"), tag.getFloat("yaw"), tag.contains("name") ? tag.getString("name") : "Target Destination");
         this.color = tag.contains("color") ? DyeColor.byId(tag.getInt("color")) : null;
     }
 

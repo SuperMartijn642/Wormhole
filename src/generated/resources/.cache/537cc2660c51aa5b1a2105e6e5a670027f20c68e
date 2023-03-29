@@ -1,0 +1,9 @@
+// 1.19.3	2023-03-30T00:19:48.3310316	Wormhole (Portals)/Wormhole (Portals) Loot Table Generator
+6105a7cdfc79f0be8dca066d8b3a7bc8dcfd862b data\wormhole\loot_tables\blocks\basic_energy_cell.json
+4fe68416b7fcb3247358d505fc3053666a4f52f9 data\wormhole\loot_tables\blocks\advanced_target_cell.json
+2ffee66f08494267e5651ac62b998ed9fa2632c2 data\wormhole\loot_tables\blocks\basic_target_cell.json
+1c5b58504a4b552ca1c591030f85254566b02a56 data\wormhole\loot_tables\blocks\advanced_energy_cell.json
+61b47f7013140fce0dc88ffd7b4b5ebd2f83f992 data\wormhole\loot_tables\blocks\coal_generator.json
+4d8ac2e32c8df08ceb4f88fd88cb49c1531946a0 data\wormhole\loot_tables\blocks\portal_frame.json
+3d74f908a0050b9682c00165ac0a29ce18462927 data\wormhole\loot_tables\blocks\creative_energy_cell.json
+c3a60cb1976591f45c93137847ddb1524f195283 data\wormhole\loot_tables\blocks\portal_stabilizer.json

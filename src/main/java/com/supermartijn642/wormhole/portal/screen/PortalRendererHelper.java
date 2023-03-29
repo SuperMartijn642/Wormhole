@@ -4,8 +4,6 @@ import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
 import com.supermartijn642.core.ClientUtils;
 import com.supermartijn642.core.render.RenderUtils;
 import com.supermartijn642.wormhole.PortalBlock;
@@ -22,13 +20,15 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created 11/24/2020 by SuperMartijn642
@@ -51,9 +51,10 @@ public class PortalRendererHelper {
         poseStack.scale(scale, -scale, scale);
         MultiBufferSource.BufferSource bufferSource = RenderUtils.getMainBufferSource();
 
-        RenderSystem.setShaderLights(Vector3f.YP, Vector3f.ZP);
+        RenderSystem.setShaderLights(new Vector3f(0, 1, 0), new Vector3f(0, 0, 1));
 
-        poseStack.mulPose(new Quaternion(45, (float)(System.currentTimeMillis() % ROTATE_TIME) / ROTATE_TIME * 360, 0, true));
+        poseStack.mulPose(new Quaternionf().setAngleAxis(Math.PI / 4, 1, 0, 0));
+        poseStack.mulPose(new Quaternionf().setAngleAxis((double)(System.currentTimeMillis() % ROTATE_TIME) / ROTATE_TIME * Math.PI, 0, 1, 0));
         poseStack.translate(-center.x(), -center.y(), -center.z());
 
         for(BlockPos pos : shape.frame)
@@ -100,7 +101,7 @@ public class PortalRendererHelper {
     }
 
     private static void renderModel(BakedModel model, BlockState state, int combinedLight, int combinedOverlay, PoseStack poseStack, VertexConsumer buffer, RenderType renderType, boolean valid){
-        Random random = new Random();
+        RandomSource random = RandomSource.create();
 
         for(Direction direction : Direction.values()){
             random.setSeed(42L);

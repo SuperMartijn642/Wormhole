@@ -2,13 +2,13 @@
   "parent": "minecraft:recipes/root",
   "display": {
     "icon": {
-      "item": "wormhole:portal_frame"
+      "item": "wormhole:portal_stabilizer"
     },
     "title": {
-      "translate": "wormhole.advancement.recipes/wormhole/portal_frame.title"
+      "translate": "wormhole.advancement.recipes/misc/portal_stabilizer.title"
     },
     "description": {
-      "translate": "wormhole.advancement.recipes/wormhole/portal_frame.description"
+      "translate": "wormhole.advancement.recipes/misc/portal_stabilizer.description"
     },
     "frame": "task",
     "show_toast": false,
@@ -19,7 +19,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "wormhole:portal_frame"
+        "recipe": "wormhole:portal_stabilizer"
       }
     },
     "recipe_condition": {
@@ -27,7 +27,9 @@
       "conditions": {
         "items": [
           {
-            "tag": "c:iron_ingots"
+            "items": [
+              "minecraft:ender_pearl"
+            ]
           }
         ]
       }
@@ -41,7 +43,7 @@
   ],
   "rewards": {
     "recipes": [
-      "wormhole:portal_frame"
+      "wormhole:portal_stabilizer"
     ]
   }
 }

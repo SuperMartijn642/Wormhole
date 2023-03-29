@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Quaternion;
 import com.supermartijn642.core.ClientUtils;
 import com.supermartijn642.core.render.RenderUtils;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -15,11 +14,12 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import org.joml.Quaternionf;
 
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created 2/2/2021 by SuperMartijn642
@@ -36,7 +36,8 @@ public class ScreenBlockRenderer {
         MultiBufferSource.BufferSource bufferSource = RenderUtils.getMainBufferSource();
         Lighting.setupForFlatItems();
 
-        poseStack.mulPose(new Quaternion(pitch, yaw, 0, true));
+        poseStack.mulPose(new Quaternionf().setAngleAxis(pitch / 180 * Math.PI, 1, 0, 0));
+        poseStack.mulPose(new Quaternionf().setAngleAxis(yaw / 180 * Math.PI, 0, 1, 0));
 
         BakedModel model = ClientUtils.getBlockRenderer().getBlockModel(state);
 
@@ -51,7 +52,7 @@ public class ScreenBlockRenderer {
     }
 
     private static void renderModel(BakedModel model, BlockState state, PoseStack poseStack, VertexConsumer buffer, RenderType renderType){
-        Random random = new Random();
+        RandomSource random = RandomSource.create();
 
         for(Direction direction : Direction.values()){
             random.setSeed(42L);

@@ -2,13 +2,13 @@
   "parent": "minecraft:recipes/root",
   "display": {
     "icon": {
-      "item": "wormhole:advanced_target_device"
+      "item": "wormhole:target_device"
     },
     "title": {
-      "translate": "wormhole.advancement.recipes/wormhole/advanced_target_device.title"
+      "translate": "wormhole.advancement.recipes/misc/target_device.title"
     },
     "description": {
-      "translate": "wormhole.advancement.recipes/wormhole/advanced_target_device.description"
+      "translate": "wormhole.advancement.recipes/misc/target_device.description"
     },
     "frame": "task",
     "show_toast": false,
@@ -19,7 +19,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "wormhole:advanced_target_device"
+        "recipe": "wormhole:target_device"
       }
     },
     "recipe_condition": {
@@ -27,9 +27,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "wormhole:target_device"
-            ]
+            "tag": "c:iron_ingots"
           }
         ]
       }
@@ -43,7 +41,7 @@
   ],
   "rewards": {
     "recipes": [
-      "wormhole:advanced_target_device"
+      "wormhole:target_device"
     ]
   }
 }

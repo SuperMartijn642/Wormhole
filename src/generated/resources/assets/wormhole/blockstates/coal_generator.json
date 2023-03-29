@@ -3,6 +3,22 @@
     "lit=false,facing=south": {
       "model": "wormhole:block/coal_generator"
     },
+    "lit=true,facing=west": {
+      "model": "wormhole:block/coal_generator_lit",
+      "y": -90
+    },
+    "lit=false,facing=east": {
+      "model": "wormhole:block/coal_generator",
+      "y": -270
+    },
+    "lit=false,facing=north": {
+      "model": "wormhole:block/coal_generator",
+      "y": -180
+    },
+    "lit=false,facing=west": {
+      "model": "wormhole:block/coal_generator",
+      "y": -90
+    },
     "lit=true,facing=south": {
       "model": "wormhole:block/coal_generator_lit"
     },
@@ -13,22 +29,6 @@
     "lit=true,facing=east": {
       "model": "wormhole:block/coal_generator_lit",
       "y": -270
-    },
-    "lit=false,facing=east": {
-      "model": "wormhole:block/coal_generator",
-      "y": -270
-    },
-    "lit=false,facing=west": {
-      "model": "wormhole:block/coal_generator",
-      "y": -90
-    },
-    "lit=false,facing=north": {
-      "model": "wormhole:block/coal_generator",
-      "y": -180
-    },
-    "lit=true,facing=west": {
-      "model": "wormhole:block/coal_generator_lit",
-      "y": -90
     }
   }
 }
