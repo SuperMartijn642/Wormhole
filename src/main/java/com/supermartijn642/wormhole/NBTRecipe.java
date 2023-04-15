@@ -2,6 +2,7 @@ package com.supermartijn642.wormhole;
 
 import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -43,7 +44,7 @@ public class NBTRecipe extends ShapedRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer inventory){
+    public ItemStack assemble(CraftingContainer inventory, RegistryAccess registryAccess){
         CompoundTag compound = null;
         loop:
         for(int i = 0; i < inventory.getHeight(); i++){
@@ -57,12 +58,12 @@ public class NBTRecipe extends ShapedRecipe {
         }
 
         if(compound != null){
-            ItemStack result = this.getResultItem().copy();
+            ItemStack result = this.getResultItem(registryAccess).copy();
             result.getOrCreateTag().merge(compound);
             return result;
         }
 
-        return this.getResultItem().copy();
+        return this.getResultItem(registryAccess).copy();
     }
 
     @Override
@@ -75,14 +76,14 @@ public class NBTRecipe extends ShapedRecipe {
         @Override
         public NBTRecipe fromJson(ResourceLocation recipeId, JsonObject json){
             ShapedRecipe recipe = RecipeSerializer.SHAPED_RECIPE.fromJson(recipeId, json);
-            return new NBTRecipe(recipeId, recipe.getGroup(), recipe.category(), recipe.getRecipeWidth(), recipe.getRecipeHeight(), recipe.getIngredients(), recipe.getResultItem());
+            return new NBTRecipe(recipeId, recipe.getGroup(), recipe.category(), recipe.getRecipeWidth(), recipe.getRecipeHeight(), recipe.getIngredients(), recipe.getResultItem(null));
         }
 
         @Nullable
         @Override
         public NBTRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer){
             ShapedRecipe recipe = RecipeSerializer.SHAPED_RECIPE.fromNetwork(recipeId, buffer);
-            return new NBTRecipe(recipeId, recipe.getGroup(), recipe.category(), recipe.getRecipeWidth(), recipe.getRecipeHeight(), recipe.getIngredients(), recipe.getResultItem());
+            return new NBTRecipe(recipeId, recipe.getGroup(), recipe.category(), recipe.getRecipeWidth(), recipe.getRecipeHeight(), recipe.getIngredients(), recipe.getResultItem(null));
         }
 
         @Override
