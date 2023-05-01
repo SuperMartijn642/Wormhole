@@ -1,5 +1,6 @@
 package com.supermartijn642.wormhole;
 
+import com.supermartijn642.core.CommonUtils;
 import com.supermartijn642.wormhole.extensions.WormholeLevel;
 import com.supermartijn642.wormhole.packet.UpdateGroupPacket;
 import com.supermartijn642.wormhole.packet.UpdateGroupsPacket;
@@ -26,7 +27,8 @@ public class PortalGroupCapability {
 
     public static void registerListeners(){
         ServerTickEvents.END_WORLD_TICK.register(PortalGroupCapability::tickLevelCapability);
-        ClientTickEvents.END_WORLD_TICK.register(PortalGroupCapability::tickLevelCapability);
+        if(CommonUtils.getEnvironmentSide().isClient())
+            ClientTickEvents.END_WORLD_TICK.register(PortalGroupCapability::tickLevelCapability);
         ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> onJoinWorld(player, destination));
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> onRespawn(newPlayer));
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> onJoin(handler.getPlayer()));
