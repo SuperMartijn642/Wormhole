@@ -2,3 +2,8 @@ accessWidener v1 named
 
 # Entity
 accessible field net/minecraft/world/entity/Entity portalCooldown I
+accessible method net/minecraft/world/entity/Entity unsetRemoved ()V
+# ServerLevel
+accessible method net/minecraft/server/level/ServerLevel addPlayer (Lnet/minecraft/server/level/ServerPlayer;)V
+# ServerPlayer
+accessible method net/minecraft/server/level/ServerPlayer triggerDimensionChangeTriggers (Lnet/minecraft/server/level/ServerLevel;)V
