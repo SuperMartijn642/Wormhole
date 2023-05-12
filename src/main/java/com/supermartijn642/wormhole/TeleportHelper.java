@@ -1,14 +1,19 @@
 package com.supermartijn642.wormhole;
 
 import com.supermartijn642.wormhole.portal.PortalTarget;
+import net.minecraft.network.protocol.game.ClientboundChangeDifficultyPacket;
+import net.minecraft.network.protocol.game.ClientboundRespawnPacket;
 import net.minecraft.network.protocol.game.ClientboundSetPassengersPacket;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.TicketType;
+import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.biome.BiomeManager;
+import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Collection;
@@ -85,18 +90,39 @@ public class TeleportHelper {
             entity.setDeltaMovement(Vec3.ZERO);
             entity.fallDistance = 0;
             entity.setOnGround(true);
-            return entity;
         }else{
-            Entity newEntity = entity.getType().create(targetLevel);
-            newEntity.restoreFrom(entity);
-            newEntity.moveTo(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
-            newEntity.setYHeadRot(target.yaw);
-            entity.setDeltaMovement(Vec3.ZERO);
-            entity.fallDistance = 0;
-            entity.setOnGround(true);
-            entity.setRemoved(Entity.RemovalReason.CHANGED_DIMENSION);
-            targetLevel.addDuringTeleport(newEntity);
-            return newEntity;
+            if(entity instanceof ServerPlayer){
+                ServerPlayer player = ((ServerPlayer)entity);
+                LevelData levelData = targetLevel.getLevelData();
+                player.connection.send(new ClientboundRespawnPacket(targetLevel.dimensionTypeRegistration(), targetLevel.dimension(), BiomeManager.obfuscateSeed(targetLevel.getSeed()), player.gameMode.getGameModeForPlayer(), player.gameMode.getPreviousGameModeForPlayer(), targetLevel.isDebug(), targetLevel.isFlat(), true));
+                player.connection.send(new ClientboundChangeDifficultyPacket(levelData.getDifficulty(), levelData.isDifficultyLocked()));
+                PlayerList playerList = player.server.getPlayerList();
+                playerList.sendPlayerPermissionLevel(player);
+                ServerLevel oldLevel = player.getLevel();
+                player.remove(Entity.RemovalReason.CHANGED_DIMENSION);
+                player.unsetRemoved();
+                player.moveTo(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
+                player.setLevel(targetLevel);
+                targetLevel.addPlayer(player);
+                player.triggerDimensionChangeTriggers(oldLevel);
+                player.connection.teleport(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
+                playerList.sendLevelInfo(player, targetLevel);
+                playerList.sendAllPlayerInfo(player);
+            }else{
+                Entity newEntity = entity.getType().create(targetLevel);
+                if(newEntity != null){
+                    newEntity.restoreFrom(entity);
+                    newEntity.moveTo(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
+                    newEntity.setYHeadRot(target.yaw);
+                    newEntity.setDeltaMovement(Vec3.ZERO);
+                    newEntity.fallDistance = 0;
+                    newEntity.setOnGround(true);
+                    entity.setRemoved(Entity.RemovalReason.CHANGED_DIMENSION);
+                    targetLevel.addDuringTeleport(newEntity);
+                    return newEntity;
+                }
+            }
         }
+        return entity;
     }
 }
