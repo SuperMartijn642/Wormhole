@@ -94,7 +94,7 @@ public class TeleportHelper {
             if(entity instanceof ServerPlayer){
                 ServerPlayer player = ((ServerPlayer)entity);
                 LevelData levelData = targetLevel.getLevelData();
-                player.connection.send(new ClientboundRespawnPacket(targetLevel.dimensionTypeRegistration(), targetLevel.dimension(), BiomeManager.obfuscateSeed(targetLevel.getSeed()), player.gameMode.getGameModeForPlayer(), player.gameMode.getPreviousGameModeForPlayer(), targetLevel.isDebug(), targetLevel.isFlat(), true));
+                player.connection.send(new ClientboundRespawnPacket(targetLevel.dimensionTypeId(), targetLevel.dimension(), BiomeManager.obfuscateSeed(targetLevel.getSeed()), player.gameMode.getGameModeForPlayer(), player.gameMode.getPreviousGameModeForPlayer(), targetLevel.isDebug(), targetLevel.isFlat(), true, player.getLastDeathLocation()));
                 player.connection.send(new ClientboundChangeDifficultyPacket(levelData.getDifficulty(), levelData.isDifficultyLocked()));
                 PlayerList playerList = player.server.getPlayerList();
                 playerList.sendPlayerPermissionLevel(player);

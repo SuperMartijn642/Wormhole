@@ -15,11 +15,11 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created 2/2/2021 by SuperMartijn642
@@ -51,7 +51,7 @@ public class ScreenBlockRenderer {
     }
 
     private static void renderModel(BakedModel model, BlockState state, PoseStack poseStack, VertexConsumer buffer, RenderType renderType){
-        Random random = new Random();
+        RandomSource random = RandomSource.create();
 
         for(Direction direction : Direction.values()){
             random.setSeed(42L);
