@@ -1,8 +1,8 @@
 package com.supermartijn642.wormhole.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.core.gui.widget.premade.AbstractButtonWidget;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -40,10 +40,10 @@ public class ArrowButton extends AbstractButtonWidget {
     }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY){
+    public void render(WidgetRenderContext context, int mouseX, int mouseY){
         ScreenUtils.bindTexture(BUTTONS);
         float x = (this.active ? this.isFocused() ? 15 : 0 : 30) / 45f;
         float y = (this.up ? 0 : 8) / 16f;
-        ScreenUtils.drawTexture(poseStack, this.x, this.y, this.width, this.height, x, y, 15 / 45f, 8 / 16f);
+        ScreenUtils.drawTexture(context.poseStack(), this.x, this.y, this.width, this.height, x, y, 15 / 45f, 8 / 16f);
     }
 }

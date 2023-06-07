@@ -1,14 +1,14 @@
 package com.supermartijn642.wormhole;
 
 import com.supermartijn642.wormhole.portal.PortalTarget;
-import net.minecraft.network.protocol.game.ClientboundChangeDifficultyPacket;
-import net.minecraft.network.protocol.game.ClientboundRespawnPacket;
-import net.minecraft.network.protocol.game.ClientboundSetPassengersPacket;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.TicketType;
 import net.minecraft.server.players.PlayerList;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
@@ -34,15 +34,15 @@ public class TeleportHelper {
                 return false;
 
         Entity lowestEntity = entity.getRootVehicle();
-        if(!entity.level.isClientSide){
-            lowestEntity.level.getServer().tell(new TickTask(0, () -> teleportEntityAndPassengers(lowestEntity, null, target)));
+        if(!entity.level().isClientSide){
+            lowestEntity.level().getServer().tell(new TickTask(0, () -> teleportEntityAndPassengers(lowestEntity, null, target)));
             markEntityAndPassengers(lowestEntity);
         }
         return true;
     }
 
     public static boolean canTeleport(Entity entity, PortalTarget target){
-        if(entity.level.isClientSide || !target.getLevel(entity.getServer()).isPresent())
+        if(entity.level().isClientSide || !target.getLevel(entity.getServer()).isPresent())
             return false;
         if(entity.isPassenger())
             return canTeleport(entity.getRootVehicle(), target);
@@ -61,7 +61,7 @@ public class TeleportHelper {
     }
 
     private static void teleportEntityAndPassengers(Entity entity, Entity entityBeingRidden, PortalTarget target){
-        if(entity.level.isClientSide || !target.getLevel(entity.getServer()).isPresent())
+        if(entity.level().isClientSide || !target.getLevel(entity.getServer()).isPresent())
             return;
         Optional<ServerLevel> targetLevel = target.getLevel(entity.getServer()).filter(ServerLevel.class::isInstance).map(ServerLevel.class::cast);
         if(!targetLevel.isPresent())
@@ -81,7 +81,7 @@ public class TeleportHelper {
     private static Entity teleportEntity(Entity entity, ServerLevel targetLevel, PortalTarget target){
         ChunkPos targetChunkPos = new ChunkPos(target.getPos());
         targetLevel.getChunkSource().addRegionTicket(TicketType.POST_TELEPORT, targetChunkPos, 1, entity.getId());
-        if(targetLevel == entity.level){
+        if(targetLevel == entity.level()){
             if(entity instanceof ServerPlayer)
                 ((ServerPlayer)entity).teleportTo(targetLevel, target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
             else
@@ -93,21 +93,29 @@ public class TeleportHelper {
         }else{
             if(entity instanceof ServerPlayer){
                 ServerPlayer player = ((ServerPlayer)entity);
+                player.isChangingDimension = true;
                 LevelData levelData = targetLevel.getLevelData();
-                player.connection.send(new ClientboundRespawnPacket(targetLevel.dimensionTypeId(), targetLevel.dimension(), BiomeManager.obfuscateSeed(targetLevel.getSeed()), player.gameMode.getGameModeForPlayer(), player.gameMode.getPreviousGameModeForPlayer(), targetLevel.isDebug(), targetLevel.isFlat(), (byte)3, player.getLastDeathLocation()));
+                player.connection.send(new ClientboundRespawnPacket(targetLevel.dimensionTypeId(), targetLevel.dimension(), BiomeManager.obfuscateSeed(targetLevel.getSeed()), player.gameMode.getGameModeForPlayer(), player.gameMode.getPreviousGameModeForPlayer(), targetLevel.isDebug(), targetLevel.isFlat(), (byte)3, player.getLastDeathLocation(), player.getPortalCooldown()));
                 player.connection.send(new ClientboundChangeDifficultyPacket(levelData.getDifficulty(), levelData.isDifficultyLocked()));
                 PlayerList playerList = player.server.getPlayerList();
                 playerList.sendPlayerPermissionLevel(player);
-                ServerLevel oldLevel = player.getLevel();
-                player.remove(Entity.RemovalReason.CHANGED_DIMENSION);
+                ServerLevel oldLevel = player.serverLevel();
+                oldLevel.removePlayerImmediately(player, Entity.RemovalReason.CHANGED_DIMENSION);
                 player.unsetRemoved();
-                player.moveTo(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
-                player.setLevel(targetLevel);
-                targetLevel.addPlayer(player);
-                player.triggerDimensionChangeTriggers(oldLevel);
+                player.setServerLevel(targetLevel);
                 player.connection.teleport(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
+                player.connection.resetPosition();
+                targetLevel.addDuringPortalTeleport(player);
+                player.triggerDimensionChangeTriggers(oldLevel);
+                player.connection.send(new ClientboundPlayerAbilitiesPacket(player.getAbilities()));
                 playerList.sendLevelInfo(player, targetLevel);
                 playerList.sendAllPlayerInfo(player);
+                for (MobEffectInstance effectInstance : player.getActiveEffects())
+                    player.connection.send(new ClientboundUpdateMobEffectPacket(player.getId(), effectInstance));
+                player.connection.send(new ClientboundLevelEventPacket(1032, BlockPos.ZERO, 0, false));
+                player.lastSentExp = -1;
+                player.lastSentHealth = -1.0f;
+                player.lastSentFood = -1;
             }else{
                 Entity newEntity = entity.getType().create(targetLevel);
                 if(newEntity != null){

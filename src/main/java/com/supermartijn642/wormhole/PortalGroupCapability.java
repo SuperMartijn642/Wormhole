@@ -47,11 +47,11 @@ public class PortalGroupCapability {
     }
 
     private static void onRespawn(ServerPlayer player){
-        Wormhole.CHANNEL.sendToPlayer(player, new UpdateGroupsPacket(get(player.level).write()));
+        Wormhole.CHANNEL.sendToPlayer(player, new UpdateGroupsPacket(get(player.level()).write()));
     }
 
     private static void onJoin(ServerPlayer player){
-        Wormhole.CHANNEL.sendToPlayer(player, new UpdateGroupsPacket(get(player.level).write()));
+        Wormhole.CHANNEL.sendToPlayer(player, new UpdateGroupsPacket(get(player.level()).write()));
     }
 
     private final Level level;

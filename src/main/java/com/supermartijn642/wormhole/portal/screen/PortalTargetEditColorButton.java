@@ -1,8 +1,8 @@
 package com.supermartijn642.wormhole.portal.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.core.gui.widget.premade.AbstractButtonWidget;
 import com.supermartijn642.wormhole.WormholeClient;
 import com.supermartijn642.wormhole.portal.PortalTarget;
@@ -35,7 +35,7 @@ public class PortalTargetEditColorButton extends AbstractButtonWidget {
     }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY){
+    public void render(WidgetRenderContext context, int mouseX, int mouseY){
         if(!this.visible)
             return;
 
@@ -44,7 +44,7 @@ public class PortalTargetEditColorButton extends AbstractButtonWidget {
         DyeColor color = this.color.get();
         float x = color == null ? 0 : (color.getId() + 1) * 8f / 136f;
         float y = target != null && this.isFocused() ? 0.5f : 0;
-        ScreenUtils.drawTexture(poseStack, this.x, this.y, this.width, this.height, x, y, 8 / 136f, 0.5f);
+        ScreenUtils.drawTexture(context.poseStack(), this.x, this.y, this.width, this.height, x, y, 8 / 136f, 0.5f);
     }
 
     @Override

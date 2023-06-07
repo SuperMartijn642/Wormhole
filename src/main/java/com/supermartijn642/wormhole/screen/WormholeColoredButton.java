@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.ClientUtils;
 import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.core.gui.widget.premade.ButtonWidget;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
@@ -45,14 +46,14 @@ public class WormholeColoredButton extends ButtonWidget {
     }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY){
+    public void render(WidgetRenderContext context, int mouseX, int mouseY){
         if(this.visible){
             if(this.color == 0)
-                super.render(poseStack, mouseX, mouseY);
+                super.render(context, mouseX, mouseY);
             else{
                 ResourceLocation texture = this.color == 1 ? RED_BUTTONS : GREEN_BUTTONS;
-                drawButtonBackground(poseStack, (float)this.x, (float)this.y, (float)this.width, (float)this.height, (float)(this.isActive() ? (this.isFocused() ? 5 : 0) : 10) / 15f, texture);
-                ScreenUtils.drawCenteredStringWithShadow(poseStack, ClientUtils.getFontRenderer(), this.getText(), (float)this.x + (float)this.width / 2.0F, (float)this.y + (float)this.height / 2.0F - 5.0F, this.isActive() ? -1 : Integer.MAX_VALUE);
+                drawButtonBackground(context.poseStack(), (float)this.x, (float)this.y, (float)this.width, (float)this.height, (float)(this.isActive() ? (this.isFocused() ? 5 : 0) : 10) / 15f, texture);
+                ScreenUtils.drawCenteredStringWithShadow(context.poseStack(), ClientUtils.getFontRenderer(), this.getText(), (float)this.x + (float)this.width / 2.0F, (float)this.y + (float)this.height / 2.0F - 5.0F, this.isActive() ? -1 : Integer.MAX_VALUE);
             }
         }
     }
