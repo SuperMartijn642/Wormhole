@@ -1,8 +1,8 @@
 package com.supermartijn642.wormhole.portal.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.core.gui.widget.premade.AbstractButtonWidget;
 import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.portal.PortalTarget;
@@ -34,11 +34,11 @@ public class PortalTargetSelectColorButton extends AbstractButtonWidget {
     }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY){
+    public void render(WidgetRenderContext context, int mouseX, int mouseY){
         ScreenUtils.bindTexture(BUTTON_OUTLINE);
-        ScreenUtils.drawTexture(poseStack, this.x, this.y, this.width, this.height, 0, this.targetColor.get() == this.color ? 2 / 3f : this.isFocused() ? 1 / 3f : 0, 1, 1 / 3f);
+        ScreenUtils.drawTexture(context.poseStack(), this.x, this.y, this.width, this.height, 0, this.targetColor.get() == this.color ? 2 / 3f : this.isFocused() ? 1 / 3f : 0, 1, 1 / 3f);
         ScreenUtils.bindTexture(this.color == null ? RANDOM_COLOR_PORTAL : new ResourceLocation("wormhole", "textures/portal/portal_" + this.color.getName() + ".png"));
-        ScreenUtils.drawTexture(poseStack, this.x + 2, this.y + 2, this.width - 4, this.height - 4, 0, 0, 1, 16 / 512f);
+        ScreenUtils.drawTexture(context.poseStack(), this.x + 2, this.y + 2, this.width - 4, this.height - 4, 0, 0, 1, 16 / 512f);
     }
 
     @Override

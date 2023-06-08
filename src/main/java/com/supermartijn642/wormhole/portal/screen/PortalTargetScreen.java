@@ -5,6 +5,7 @@ import com.supermartijn642.core.ClientUtils;
 import com.supermartijn642.core.EnergyFormat;
 import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.core.gui.widget.premade.AbstractButtonWidget;
 import com.supermartijn642.core.gui.widget.premade.ButtonWidget;
 import com.supermartijn642.core.gui.widget.premade.LabelWidget;
@@ -137,43 +138,43 @@ public class PortalTargetScreen extends PortalGroupScreen {
     }
 
     @Override
-    protected void renderBackground(PoseStack poseStack, int mouseX, int mouseY, PortalGroup object){
+    protected void renderBackground(WidgetRenderContext context, int mouseX, int mouseY, PortalGroup object){
         ScreenUtils.bindTexture(this.hasTargetDevice ? BACKGROUND_WITH_DEVICE : BACKGROUND);
-        ScreenUtils.drawTexture(poseStack, 0, 0, this.width(), this.height());
+        ScreenUtils.drawTexture(context.poseStack(), 0, 0, this.width(), this.height());
 
         // draw target select highlight
         if(this.selectedPortalTarget >= this.scrollOffset && this.selectedPortalTarget < this.scrollOffset + 10){
             ScreenUtils.bindTexture(SELECT_HIGHLIGHT);
-            ScreenUtils.drawTexture(poseStack, 5, 16 + 16 * (this.selectedPortalTarget - this.scrollOffset), 130, 16);
+            ScreenUtils.drawTexture(context.poseStack(), 5, 16 + 16 * (this.selectedPortalTarget - this.scrollOffset), 130, 16);
         }else if(this.hasTargetDevice && this.selectedDeviceTarget >= 0 && this.selectedDeviceTarget < 10){
             ScreenUtils.bindTexture(SELECT_HIGHLIGHT_DEVICE);
-            ScreenUtils.drawTexture(poseStack, 242, 16 + 16 * this.selectedDeviceTarget, 106, 16);
+            ScreenUtils.drawTexture(context.poseStack(), 242, 16 + 16 * this.selectedDeviceTarget, 106, 16);
         }
 
-        super.renderBackground(poseStack, mouseX, mouseY, object);
+        super.renderBackground(context, mouseX, mouseY, object);
     }
 
     @Override
-    protected void render(PoseStack poseStack, int mouseX, int mouseY, PortalGroup group){
-        super.render(poseStack, mouseX, mouseY, group);
+    protected void render(WidgetRenderContext context, int mouseX, int mouseY, PortalGroup group){
+        super.render(context, mouseX, mouseY, group);
 
         // draw titles
-        ScreenUtils.drawCenteredString(poseStack, TextComponents.translation("wormhole.portal.targets.gui.title").get(), 70, 3, Integer.MAX_VALUE);
+        ScreenUtils.drawCenteredString(context.poseStack(), TextComponents.translation("wormhole.portal.targets.gui.title").get(), 70, 3, Integer.MAX_VALUE);
         if(this.hasTargetDevice)
-            ScreenUtils.drawCenteredString(poseStack, TextComponents.translation("wormhole.target_device.gui.title").get(), 296, 3, Integer.MAX_VALUE);
+            ScreenUtils.drawCenteredString(context.poseStack(), TextComponents.translation("wormhole.target_device.gui.title").get(), 296, 3, Integer.MAX_VALUE);
 
         // draw hover highlight
         if(mouseX > 5 && mouseX < 135 && mouseY > 16 && mouseY < 176){
             int targetIndex = (mouseY - 16) / 16;
             if(group.getTarget(targetIndex + this.scrollOffset) != null){
                 ScreenUtils.bindTexture(HOVER_HIGHLIGHT);
-                ScreenUtils.drawTexture(poseStack, 5, 16 + targetIndex * 16, 130, 16);
+                ScreenUtils.drawTexture(context.poseStack(), 5, 16 + targetIndex * 16, 130, 16);
             }
         }else if(this.hasTargetDevice && mouseX > 242 && mouseX < 348 && mouseY > 16 && mouseY < 176){
             int targetIndex = (mouseY - 16) / 16;
             if(this.getFromDeviceTargets(list -> list.size() > targetIndex && list.get(targetIndex) != null, false)){
                 ScreenUtils.bindTexture(HOVER_HIGHLIGHT_DEVICE);
-                ScreenUtils.drawTexture(poseStack, 242, 16 + targetIndex * 16, 106, 16);
+                ScreenUtils.drawTexture(context.poseStack(), 242, 16 + targetIndex * 16, 106, 16);
             }
         }
 
@@ -181,10 +182,10 @@ public class PortalTargetScreen extends PortalGroupScreen {
         // draw target numbers
         for(int count = 0; count < Math.min(10, this.portalTargetNameLabels.size()); count++){
             if(count + this.scrollOffset != activeTarget)
-                ScreenUtils.drawCenteredString(poseStack, this.scrollOffset + count + 1 + ".", 14, 21 + count * 16);
+                ScreenUtils.drawCenteredString(context.poseStack(), this.scrollOffset + count + 1 + ".", 14, 21 + count * 16);
             else{
                 ScreenUtils.bindTexture(STAR_ICON);
-                ScreenUtils.drawTexture(poseStack, 8, 19 + 16 * count, 10, 10);
+                ScreenUtils.drawTexture(context.poseStack(), 8, 19 + 16 * count, 10, 10);
             }
         }
 
@@ -192,11 +193,11 @@ public class PortalTargetScreen extends PortalGroupScreen {
         if(this.selectedPortalTarget >= 0 && this.selectedPortalTarget < group.getTotalTargetCapacity()){
             PortalTarget target = group.getTarget(this.selectedPortalTarget);
             if(target != null)
-                this.renderTargetInfo(poseStack, group, target, true);
+                this.renderTargetInfo(context.poseStack(), group, target, true);
         }else if(this.hasTargetDevice && this.selectedDeviceTarget >= 0 && this.selectedDeviceTarget < 10){
             PortalTarget target = this.getFromDeviceTargets(list -> this.selectedDeviceTarget < list.size() ? list.get(this.selectedDeviceTarget) : null, null);
             if(target != null)
-                this.renderTargetInfo(poseStack, group, target, false);
+                this.renderTargetInfo(context.poseStack(), group, target, false);
         }
 
         this.updateSelectRemoveColorButtons(group);
@@ -344,21 +345,21 @@ public class PortalTargetScreen extends PortalGroupScreen {
     }
 
     @Override
-    protected void renderTooltips(PoseStack poseStack, int mouseX, int mouseY, PortalGroup group){
+    protected void renderTooltips(WidgetRenderContext context, int mouseX, int mouseY, PortalGroup group){
         // location
         if(mouseX >= 149 && mouseX <= 160 && mouseY >= 46 && mouseY <= 57)
-            ScreenUtils.drawTooltip(poseStack, TextComponents.translation("wormhole.target.location").get(), mouseX, mouseY);
+            ScreenUtils.drawTooltip(context.poseStack(), TextComponents.translation("wormhole.target.location").get(), mouseX, mouseY);
             // dimension
         else if(mouseX >= 149 && mouseX <= 160 && mouseY >= 58 && mouseY <= 69)
-            ScreenUtils.drawTooltip(poseStack, TextComponents.translation("wormhole.target.dimension").get(), mouseX, mouseY);
+            ScreenUtils.drawTooltip(context.poseStack(), TextComponents.translation("wormhole.target.dimension").get(), mouseX, mouseY);
             // direction
         else if(mouseX >= 149 && mouseX <= 160 && mouseY >= 70 && mouseY <= 81)
-            ScreenUtils.drawTooltip(poseStack, TextComponents.translation("wormhole.target.direction").get(), mouseX, mouseY);
+            ScreenUtils.drawTooltip(context.poseStack(), TextComponents.translation("wormhole.target.direction").get(), mouseX, mouseY);
             // energy
         else if(mouseX >= 149 && mouseX <= 160 && (this.selectedPortalTarget >= 0 ? mouseY >= 110 && mouseY <= 121 : mouseY >= 90 && mouseY <= 101))
-            ScreenUtils.drawTooltip(poseStack, TextComponents.translation("wormhole.target.teleport_cost").get(), mouseX, mouseY);
+            ScreenUtils.drawTooltip(context.poseStack(), TextComponents.translation("wormhole.target.teleport_cost").get(), mouseX, mouseY);
 
-        super.renderTooltips(poseStack, mouseX, mouseY, group);
+        super.renderTooltips(context, mouseX, mouseY, group);
     }
 
     public <T> T getFromDeviceTargets(Function<List<PortalTarget>,T> function, T other){

@@ -11,8 +11,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -59,7 +59,7 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
                 if(entity instanceof IPortalGroupEntity && ((IPortalGroupEntity)entity).hasGroup()){
                     this.portalBlocks.add(pos);
                     this.energyBlocks.remove(pos);
-                }else if(entity != null && entity.getCapability(CapabilityEnergy.ENERGY).isPresent()){
+                }else if(entity != null && entity.getCapability(ForgeCapabilities.ENERGY).isPresent()){
                     this.portalBlocks.remove(pos);
                     this.energyBlocks.add(pos);
                 }else{
@@ -108,8 +108,7 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
             BlockPos pos = iterator.next();
             BlockEntity entity = this.level.getBlockEntity(pos);
             LazyOptional<IEnergyStorage> optional;
-            //noinspection removal
-            if(entity != null && (optional = entity.getCapability(CapabilityEnergy.ENERGY)).isPresent()){
+            if(entity != null && (optional = entity.getCapability(ForgeCapabilities.ENERGY)).isPresent()){
                 final int max = toTransfer;
                 int transferred = optional.map(storage -> storage.receiveEnergy(max, false)).orElse(0);
                 toTransfer -= transferred;
@@ -150,8 +149,7 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side){
-        //noinspection removal
-        if(cap == CapabilityEnergy.ENERGY)
+        if(cap == ForgeCapabilities.ENERGY)
             return this.energyCapability.cast();
         return super.getCapability(cap, side);
     }

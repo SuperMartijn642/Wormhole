@@ -10,8 +10,8 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
@@ -69,8 +69,7 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements II
 
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side){
-        //noinspection removal
-        if(cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+        if(cap == ForgeCapabilities.ITEM_HANDLER)
             return this.itemCapability.cast();
         return super.getCapability(cap, side);
     }
@@ -114,8 +113,7 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements II
 
     @Override
     public ItemStack insertItem(int slot, ItemStack stack, boolean simulate){
-        if(stack.isEmpty() || (!this.stack.isEmpty() && (!ItemStack.isSame(this.stack, stack) ||
-            !ItemStack.tagMatches(this.stack, stack))))
+        if(stack.isEmpty() || (!this.stack.isEmpty() && !ItemStack.isSameItemSameTags(this.stack, stack)))
             return stack;
 
         int count = Math.min(stack.getMaxStackSize() - this.stack.getCount(), stack.getCount());

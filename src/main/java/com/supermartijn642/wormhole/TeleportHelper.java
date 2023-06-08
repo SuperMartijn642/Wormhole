@@ -6,8 +6,10 @@ import net.minecraft.network.protocol.game.ClientboundSetPassengersPacket;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.TicketType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.portal.PortalInfo;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.ITeleporter;
@@ -32,15 +34,15 @@ public class TeleportHelper {
                 return false;
 
         Entity lowestEntity = entity.getRootVehicle();
-        if(!entity.level.isClientSide){
-            lowestEntity.level.getServer().tell(new TickTask(0, () -> teleportEntityAndPassengers(lowestEntity, null, target)));
+        if(!entity.level().isClientSide){
+            lowestEntity.level().getServer().tell(new TickTask(0, () -> teleportEntityAndPassengers(lowestEntity, null, target)));
             markEntityAndPassengers(lowestEntity);
         }
         return true;
     }
 
     public static boolean canTeleport(Entity entity, PortalTarget target){
-        if(entity.level.isClientSide || !target.getLevel(entity.getServer()).isPresent())
+        if(entity.level().isClientSide || !target.getLevel(entity.getServer()).isPresent())
             return false;
         if(entity.isPassenger())
             return canTeleport(entity.getRootVehicle(), target);
@@ -61,7 +63,7 @@ public class TeleportHelper {
     }
 
     private static void teleportEntityAndPassengers(Entity entity, Entity entityBeingRidden, PortalTarget target){
-        if(entity.level.isClientSide || !target.getLevel(entity.getServer()).isPresent())
+        if(entity.level().isClientSide || !target.getLevel(entity.getServer()).isPresent())
             return;
         Optional<ServerLevel> targetLevel = target.getLevel(entity.getServer()).filter(ServerLevel.class::isInstance).map(ServerLevel.class::cast);
         if(!targetLevel.isPresent())
@@ -79,7 +81,9 @@ public class TeleportHelper {
     }
 
     private static Entity teleportEntity(Entity entity, ServerLevel targetLevel, PortalTarget target){
-        if(targetLevel == entity.level){
+        ChunkPos targetChunkPos = new ChunkPos(target.getPos());
+        targetLevel.getChunkSource().addRegionTicket(TicketType.POST_TELEPORT, targetChunkPos, 1, entity.getId());
+        if(targetLevel == entity.level()){
             if(entity instanceof ServerPlayer)
                 ((ServerPlayer)entity).teleportTo(targetLevel, target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
             else

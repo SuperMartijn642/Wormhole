@@ -79,7 +79,7 @@ public class PortalGroupCapability {
     @SubscribeEvent
     public static void onJoinWorld(PlayerEvent.PlayerChangedDimensionEvent e){
         ServerPlayer player = (ServerPlayer)e.getEntity();
-        player.level.getCapability(CAPABILITY).ifPresent(groups ->
+        player.level().getCapability(CAPABILITY).ifPresent(groups ->
             Wormhole.CHANNEL.sendToPlayer(player, new UpdateGroupsPacket(groups.write()))
         );
     }
@@ -87,7 +87,7 @@ public class PortalGroupCapability {
     @SubscribeEvent
     public static void onRespawn(PlayerEvent.PlayerRespawnEvent e){
         ServerPlayer player = (ServerPlayer)e.getEntity();
-        player.level.getCapability(CAPABILITY).ifPresent(groups ->
+        player.level().getCapability(CAPABILITY).ifPresent(groups ->
             Wormhole.CHANNEL.sendToPlayer(player, new UpdateGroupsPacket(groups.write()))
         );
     }
@@ -95,7 +95,7 @@ public class PortalGroupCapability {
     @SubscribeEvent
     public static void onJoin(PlayerEvent.PlayerLoggedInEvent e){
         ServerPlayer player = (ServerPlayer)e.getEntity();
-        player.level.getCapability(CAPABILITY).ifPresent(groups ->
+        player.level().getCapability(CAPABILITY).ifPresent(groups ->
             Wormhole.CHANNEL.sendToPlayer(player, new UpdateGroupsPacket(groups.write()))
         );
     }

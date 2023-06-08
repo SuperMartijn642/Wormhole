@@ -14,7 +14,7 @@ import net.minecraftforge.items.SlotItemHandler;
 public class CoalGeneratorContainer extends BlockEntityBaseContainer<CoalGeneratorBlockEntity> {
 
     public CoalGeneratorContainer(Player player, BlockPos pos){
-        super(Wormhole.coal_generator_container, player, player.level, pos);
+        super(Wormhole.coal_generator_container, player, player.level(), pos);
         this.addSlots();
     }
 

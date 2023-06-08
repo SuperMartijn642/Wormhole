@@ -29,8 +29,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -63,7 +62,7 @@ public class CoalGeneratorBlock extends BaseBlock implements EntityHoldingBlock 
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     public CoalGeneratorBlock(){
-        super(true, BlockProperties.create(Material.METAL, MaterialColor.COLOR_GRAY).sound(SoundType.METAL).requiresCorrectTool());
+        super(true, BlockProperties.create().mapColor(MapColor.COLOR_GRAY).sound(SoundType.METAL).requiresCorrectTool());
         this.registerDefaultState(this.defaultBlockState().setValue(LIT, false).setValue(FACING, Direction.NORTH));
     }
 

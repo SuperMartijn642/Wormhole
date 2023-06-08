@@ -9,8 +9,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.material.MapColor;
 
 import java.util.function.Supplier;
 
@@ -27,7 +26,7 @@ public class PortalGroupBlock extends BaseBlock implements EntityHoldingBlock {
     }
 
     public PortalGroupBlock(Supplier<BaseBlockEntityType<?>> blockEntityType){
-        this(BlockProperties.create(Material.METAL, MaterialColor.COLOR_GRAY).sound(SoundType.METAL).requiresCorrectTool().destroyTime(1.5f).explosionResistance(6).noOcclusion(), blockEntityType);
+        this(BlockProperties.create().mapColor(MapColor.COLOR_GRAY).sound(SoundType.METAL).requiresCorrectTool().destroyTime(1.5f).explosionResistance(6).noOcclusion(), blockEntityType);
     }
 
     @Override

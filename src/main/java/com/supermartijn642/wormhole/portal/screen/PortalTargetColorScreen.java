@@ -1,8 +1,8 @@
 package com.supermartijn642.wormhole.portal.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.core.gui.widget.premade.ButtonWidget;
 import com.supermartijn642.wormhole.portal.PortalGroup;
 import net.minecraft.core.BlockPos;
@@ -59,17 +59,17 @@ public class PortalTargetColorScreen extends PortalGroupScreen {
     }
 
     @Override
-    protected void renderBackground(PoseStack poseStack, int mouseX, int mouseY, PortalGroup object){
-        ScreenUtils.drawScreenBackground(poseStack, 0, 0, this.width(), this.height());
-        super.renderBackground(poseStack, mouseX, mouseY, object);
+    protected void renderBackground(WidgetRenderContext context, int mouseX, int mouseY, PortalGroup object){
+        ScreenUtils.drawScreenBackground(context.poseStack(), 0, 0, this.width(), this.height());
+        super.renderBackground(context, mouseX, mouseY, object);
     }
 
     @Override
-    protected void render(PoseStack poseStack, int mouseX, int mouseY, PortalGroup group){
-        super.render(poseStack, mouseX, mouseY, group);
+    protected void render(WidgetRenderContext context, int mouseX, int mouseY, PortalGroup group){
+        super.render(context, mouseX, mouseY, group);
 
-        ScreenUtils.drawString(poseStack, TextComponents.translation("wormhole.portal.color.gui.title").get(), 8, 7);
+        ScreenUtils.drawString(context.poseStack(), TextComponents.translation("wormhole.portal.color.gui.title").get(), 8, 7);
         // target number
-        ScreenUtils.drawString(poseStack, (this.targetIndex + 1) + ".", 8, 22);
+        ScreenUtils.drawString(context.poseStack(), (this.targetIndex + 1) + ".", 8, 22);
     }
 }

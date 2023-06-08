@@ -1,8 +1,8 @@
 package com.supermartijn642.wormhole.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.widget.BaseWidget;
+import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
@@ -23,13 +23,13 @@ public class FlameProgressWidget extends BaseWidget {
     }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY){
+    public void render(WidgetRenderContext context, int mouseX, int mouseY){
         ScreenUtils.bindTexture(FLAME);
         float progress = Math.max(Math.min(this.progress.get(), 1), 0);
         if(progress != 1)
-            ScreenUtils.drawTexture(poseStack, this.x, this.y, this.width, this.height * (1 - progress), 0, 0, 0.5f, (1 - progress));
+            ScreenUtils.drawTexture(context.poseStack(), this.x, this.y, this.width, this.height * (1 - progress), 0, 0, 0.5f, (1 - progress));
         if(progress != 0)
-            ScreenUtils.drawTexture(poseStack, this.x, this.y + this.height * (1 - progress), this.width, this.height * progress, 0.5f, 1 - progress, 0.5f, progress);
+            ScreenUtils.drawTexture(context.poseStack(), this.x, this.y + this.height * (1 - progress), this.width, this.height * progress, 0.5f, 1 - progress, 0.5f, progress);
     }
 
     @Override
