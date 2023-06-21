@@ -140,7 +140,7 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements II
 
     @Override
     public boolean isItemValid(int slot, ItemStack stack){
-        return ForgeHooks.getBurnTime(stack, RecipeType.SMELTING) > 0;
+        return Math.floor(ForgeHooks.getBurnTime(stack, RecipeType.SMELTING) / 2.5) > 0;
     }
 
     @Override
