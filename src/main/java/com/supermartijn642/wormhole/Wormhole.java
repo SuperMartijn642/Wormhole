@@ -68,7 +68,7 @@ public class Wormhole implements ModInitializer {
     @RegistryEntryAcceptor(namespace = "wormhole", identifier = "portal_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
     public static BaseBlockEntityType<?> portal_tile;
     @RegistryEntryAcceptor(namespace = "wormhole", identifier = "stabilizer_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
-    public static BaseBlockEntityType<?> stabilizer_tile;
+    public static BaseBlockEntityType<StabilizerBlockEntity> stabilizer_tile;
     @RegistryEntryAcceptor(namespace = "wormhole", identifier = "basic_energy_cell_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
     public static BaseBlockEntityType<EnergyCellBlockEntity> basic_energy_cell_tile;
     @RegistryEntryAcceptor(namespace = "wormhole", identifier = "advanced_energy_cell_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
@@ -154,6 +154,9 @@ public class Wormhole implements ModInitializer {
 
         // NBT recipe serializer
         handler.registerRecipeSerializer("nbtrecipe", NBTRecipe.SERIALIZER);
+
+        // Register all the api providers
+        handler.registerBlockEntityTypeCallback(helper -> WormholeAPIProviders.registerAPIProviders());
     }
 
     private static void registerGenerators(){
