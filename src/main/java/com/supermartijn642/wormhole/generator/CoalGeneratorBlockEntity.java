@@ -141,6 +141,6 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements II
 
     @Override
     public boolean isItemValid(int slot, ItemStack stack){
-        return TileEntityFurnace.getItemBurnTime(stack) > 0;
+        return Math.floor(TileEntityFurnace.getItemBurnTime(stack) / 2.5) > 0;
     }
 }
