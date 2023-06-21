@@ -57,7 +57,7 @@ public class PortalShape {
     private static PortalShape find(BlockGetter level, BlockPos center, Direction.Axis axis){
         for(BlockPos offset : ALL_OFFSETS.get(axis)){
             Block offsetBlock = level.getBlockState(center.offset(offset)).getBlock();
-            if(offsetBlock == Blocks.AIR || offsetBlock == Blocks.WATER){
+            if(offsetBlock.defaultBlockState().isAir() || offsetBlock == Blocks.WATER){
                 PortalShape shape = findArea(level, center.offset(offset), axis);
                 if(shape != null)
                     return shape;
@@ -81,9 +81,9 @@ public class PortalShape {
                 int frames = 0;
                 for(BlockPos offset : DIRECT_OFFSETS.get(axis)){
                     BlockPos offPos = pos.offset(offset);
-                    Block block = level.getBlockState(offPos).getBlock();
+                    BlockState state = level.getBlockState(offPos);
                     BlockEntity entity = level.getBlockEntity(offPos);
-                    if(block == Blocks.AIR || block == Blocks.WATER){
+                    if(state.isAir() || state.getBlock() == Blocks.WATER){
                         if(!done.contains(offPos) && !current.contains(offPos) && !next.contains(offPos))
                             next.add(offPos);
                     }else if(entity instanceof IPortalGroupEntity && !((IPortalGroupEntity)entity).hasGroup()){
@@ -305,7 +305,7 @@ public class PortalShape {
     public boolean validatePortal(BlockGetter world){
         for(BlockPos pos : this.area){
             BlockState state = world.getBlockState(pos);
-            if(!(state.getBlock() instanceof PortalBlock && state.getValue(PortalBlock.AXIS_PROPERTY) == this.axis) && state.getBlock() != Blocks.AIR && state.getBlock() != Blocks.WATER)
+            if(!(state.getBlock() instanceof PortalBlock && state.getValue(PortalBlock.AXIS_PROPERTY) == this.axis) && !state.isAir() && state.getBlock() != Blocks.WATER)
                 return false;
         }
         return true;
