@@ -5,7 +5,6 @@ import com.supermartijn642.wormhole.PortalBlock;
 import com.supermartijn642.wormhole.StabilizerBlockEntity;
 import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.WormholeConfig;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.EnumDyeColor;
@@ -55,8 +54,8 @@ public class PortalShape {
 
     private static PortalShape find(IBlockAccess level, BlockPos center, EnumFacing.Axis axis){
         for(BlockPos offset : ALL_OFFSETS.get(axis)){
-            Block offsetBlock = level.getBlockState(center.add(offset)).getBlock();
-            if(offsetBlock == Blocks.AIR || offsetBlock == Blocks.WATER){
+            IBlockState offsetBlock = level.getBlockState(center.add(offset));
+            if(offsetBlock.getBlock().isAir(offsetBlock, level, center.add(offset)) || offsetBlock.getBlock() == Blocks.WATER){
                 PortalShape shape = findArea(level, center.add(offset), axis);
                 if(shape != null)
                     return shape;
@@ -80,9 +79,9 @@ public class PortalShape {
                 int frames = 0;
                 for(BlockPos offset : DIRECT_OFFSETS.get(axis)){
                     BlockPos offPos = pos.add(offset);
-                    Block block = level.getBlockState(offPos).getBlock();
+                    IBlockState state = level.getBlockState(offPos);
                     TileEntity entity = level.getTileEntity(offPos);
-                    if(block == Blocks.AIR || block == Blocks.WATER){
+                    if(state.getBlock().isAir(state, level, offPos) || state.getBlock() == Blocks.WATER){
                         if(!done.contains(offPos) && !current.contains(offPos) && !next.contains(offPos))
                             next.add(offPos);
                     }else if(entity instanceof IPortalGroupEntity && !((IPortalGroupEntity)entity).hasGroup()){
@@ -300,7 +299,7 @@ public class PortalShape {
         PortalBlock portalBlock = this.axis == EnumFacing.Axis.X ? Wormhole.portal_x : this.axis == EnumFacing.Axis.Y ? Wormhole.portal_y : Wormhole.portal_z;
         for(BlockPos pos : this.area){
             IBlockState state = world.getBlockState(pos);
-            if(state.getBlock() != portalBlock && state.getBlock() != Blocks.AIR && state.getBlock() != Blocks.WATER)
+            if(state.getBlock() != portalBlock && !state.getBlock().isAir(state, world, pos) && state.getBlock() != Blocks.WATER)
                 return false;
         }
         return true;
