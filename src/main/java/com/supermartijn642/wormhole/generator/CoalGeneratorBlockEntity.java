@@ -100,6 +100,6 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity {
     private int getBurnTime(Item item){
         if(this.burnTimes == null)
             this.burnTimes = AbstractFurnaceBlockEntity.getFuel();
-        return this.burnTimes.getOrDefault(item, 0);
+        return (int)Math.floor(this.burnTimes.getOrDefault(item, 0) / 2.5);
     }
 }
