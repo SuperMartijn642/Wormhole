@@ -164,5 +164,6 @@ public class Wormhole implements ModInitializer {
         handler.addGenerator(WormholeLootTableGenerator::new);
         handler.addGenerator(WormholeRecipeGenerator::new);
         handler.addGenerator(WormholeTagGenerator::new);
+        handler.addGenerator(WormholeAtlasSourceGenerator::new);
     }
 }
