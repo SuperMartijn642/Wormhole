@@ -1,4 +1,4 @@
-// 1.19.2	2023-05-20T03:02:48.2106806	Core Lib Generators
+// 1.19.2	2023-06-22T12:07:53.2647268	Core Lib Generators
 386c9ec8b48e5c94e49da6ccc5db0103a7ccf6c6 data\wormhole\advancements\recipes\wormhole\portal_stabilizer.json
 f0fd8feb28e587b7d9017ceb68bc98882a096984 assets\wormhole\models\block\portals\portal_x_pink.json
 5e2aa42d6def91ba8893c58af3cb79c2b4e60c72 assets\wormhole\models\block\portals\portal_z_green.json
@@ -75,7 +75,7 @@ ba7439e77652bbd3995d458f50ff6932eec946dc assets\wormhole\models\block\energy_cel
 c93ed6e38ba87a091e120e19c10c7bd07c0dda13 assets\wormhole\models\block\energy_cells\advanced_energy_cell_13.json
 7aa53117a521d790bfff1e2707e6e003ad1c8d21 data\wormhole\recipes\basic_target_cell.json
 b772d94bcd3f56e2dec24a7159aade96daffb540 data\wormhole\recipes\advanced_energy_cell.json
-efa50f84070fb12785128ef2906f1f3b578c1fcf assets\wormhole\models\block\portals\portal_z.json
+e08f50935d491f97f4d3f06d7b26fb110af949a7 assets\wormhole\models\block\portals\portal_z.json
 b75c5e085fa626485e0adba87b71361058cdb615 assets\wormhole\models\block\energy_cells\advanced_energy_cell_0.json
 2d803f2f97efa87fa64341b1fc12b85e1d5ad34f data\wormhole\advancements\recipes\wormhole\target_device.json
 46068e38bbc7eab05dd573a2bc034b55862008a3 assets\wormhole\models\block\portals\portal_x.json
@@ -141,7 +141,7 @@ d1a51105aafed62284ff00b0191c40926418e763 assets\wormhole\models\block\portals\po
 584e9920e234cb4047b108706bc003ad4f25a90f assets\wormhole\models\block\portals\portal_y_green.json
 296d9b37ce263dd34987addb6ac6f13594652e62 assets\wormhole\models\block\portals\portal_z_purple.json
 c37a41a5349adda9bcb6e5dd821ed4c677b8cdd7 assets\wormhole\models\block\portals\portal_x_purple.json
-5c93a3abd649d04d9c02cb7fbba2364629816594 assets\wormhole\blockstates\coal_generator.json
+62c3870a06e632235a588bd0e48e004d5e492464 assets\wormhole\blockstates\coal_generator.json
 b57606bff4f106d7aac38fa8e7ae4aca8440bc11 assets\wormhole\models\block\portals\portal_y_black.json
 f3ca6f264add5c2e546cccf7d209dcedcd8c4939 assets\wormhole\models\block\portals\portal_y_yellow.json
 6105a7cdfc79f0be8dca066d8b3a7bc8dcfd862b data\wormhole\loot_tables\blocks\basic_energy_cell.json
