@@ -2,8 +2,6 @@ package com.supermartijn642.wormhole.generator;
 
 import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.WormholeConfig;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.item.base.SingleStackStorage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
@@ -19,24 +17,6 @@ import java.util.Map;
 public class CoalGeneratorBlockEntity extends GeneratorBlockEntity {
 
     private Map<Item,Integer> burnTimes;
-
-    @SuppressWarnings("UnstableApiUsage")
-    public final SingleStackStorage itemCapability = new SingleStackStorage() {
-        @Override
-        protected ItemStack getStack(){
-            return stack;
-        }
-
-        @Override
-        protected void setStack(ItemStack newStack){
-            stack = newStack;
-        }
-
-        @Override
-        protected boolean canInsert(ItemVariant itemVariant){
-            return isItemValid(itemVariant.getItem());
-        }
-    };
     private int burnTime = 0, totalBurnTime = 0;
     private ItemStack stack = ItemStack.EMPTY;
 
@@ -63,7 +43,7 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity {
                     this.totalBurnTime = 0;
                     this.burnItem();
                 }
-                this.setChanged();
+                this.dataChanged();
             }else
                 this.burnItem();
         }
