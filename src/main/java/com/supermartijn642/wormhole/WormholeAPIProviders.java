@@ -11,10 +11,15 @@ public class WormholeAPIProviders {
 
     public static void registerAPIProviders(){
         if(CommonUtils.isModLoaded("team_reborn_energy"))
-            registerEnergyProviders();
+            RebornEnergyProviders.register();
     }
 
-    private static void registerEnergyProviders(){
-        EnergyStorage.SIDED.registerForBlockEntity((entity, direction) -> new EnergyHolderEnergyStorageWrapper((StabilizerBlockEntity)entity), Wormhole.stabilizer_tile);
+    private static class RebornEnergyProviders {
+        public static void register(){
+            EnergyStorage.SIDED.registerForBlockEntity((entity, direction) -> new EnergyHolderEnergyStorageWrapper(entity), Wormhole.stabilizer_tile);
+            EnergyStorage.SIDED.registerForBlockEntity((entity, direction) -> new EnergyHolderEnergyStorageWrapper(entity), Wormhole.basic_energy_cell_tile);
+            EnergyStorage.SIDED.registerForBlockEntity((entity, direction) -> new EnergyHolderEnergyStorageWrapper(entity), Wormhole.advanced_energy_cell_tile);
+            EnergyStorage.SIDED.registerForBlockEntity((entity, direction) -> new EnergyHolderEnergyStorageWrapper(entity), Wormhole.coal_generator_tile);
+        }
     }
 }
