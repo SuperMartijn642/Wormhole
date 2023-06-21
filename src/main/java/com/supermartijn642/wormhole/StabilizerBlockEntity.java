@@ -33,7 +33,7 @@ public class StabilizerBlockEntity extends PortalGroupBlockEntity implements ITa
     @Override
     public void update(){
         super.update();
-        if(this.getBlockState().getBlock() instanceof StabilizerBlock && this.hasGroup() != this.getBlockState().getValue(StabilizerBlock.ON_PROPERTY))
+        if(!this.world.isRemote && this.getBlockState().getBlock() instanceof StabilizerBlock && this.hasGroup() != this.getBlockState().getValue(StabilizerBlock.ON_PROPERTY))
             this.world.setBlockState(this.pos, Wormhole.portal_stabilizer.getDefaultState().withProperty(StabilizerBlock.ON_PROPERTY, this.hasGroup()), 2);
     }
 
