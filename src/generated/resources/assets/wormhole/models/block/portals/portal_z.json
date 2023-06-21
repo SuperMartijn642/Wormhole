@@ -1,8 +1,8 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "particle": "#all",
-    "portal": "#all"
+    "portal": "#all",
+    "particle": "#all"
   },
   "elements": [
     {
@@ -17,10 +17,10 @@
         10.0
       ],
       "faces": {
-        "south": {
+        "north": {
           "texture": "#portal"
         },
-        "north": {
+        "south": {
           "texture": "#portal"
         }
       }

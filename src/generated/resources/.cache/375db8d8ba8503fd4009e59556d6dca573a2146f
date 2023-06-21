@@ -1,10 +1,1 @@
-// 1.19.3	2023-03-30T00:19:48.3520326	Wormhole (Portals)/Wormhole (Portals) Block State Generator
-ac3bacdc976c3eb079e64d65050d4d929c39b6a9 assets\wormhole\blockstates\portal.json
-f7a89be162d73af9c12345474c102e741a349821 assets\wormhole\blockstates\basic_target_cell.json
-020a6dde123bc59eee10be165b353d6fa0a97b63 assets\wormhole\blockstates\portal_stabilizer.json
-2f6f9e98814227c105016f409bf63813d95d6383 assets\wormhole\blockstates\coal_generator.json
-289a16b8e5b5e9ec7c5d1e4745d47f18f612141c assets\wormhole\blockstates\basic_energy_cell.json
-316997da620cbc662833e7711e77eb20f9a06781 assets\wormhole\blockstates\creative_energy_cell.json
-9d8b01bf269b6f1f568e0fdf69d67bd36dc70ce1 assets\wormhole\blockstates\advanced_energy_cell.json
-34598c35cdc03d5a9b98d3cac0d76a6cded455ad assets\wormhole\blockstates\portal_frame.json
-ece7149ade5194bddf40c26ad5d6ea6984eb7a52 assets\wormhole\blockstates\advanced_target_cell.json
+// 1.19.4	2023-06-22T12:04:05.2182738	Wormhole (Portals)/Wormhole (Portals) Block State Generator

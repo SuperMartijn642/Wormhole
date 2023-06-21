@@ -215,6 +215,10 @@
     {
       "type": "minecraft:single",
       "resource": "wormhole:portal/portal_light_gray"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:generators/coal_generator_lit"
     }
   ]
 }
