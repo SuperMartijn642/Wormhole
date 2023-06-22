@@ -44,7 +44,7 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements II
                     this.totalBurnTime = 0;
                     this.burnItem();
                 }
-                this.setChanged();
+                this.dataChanged();
             }else
                 this.burnItem();
         }
