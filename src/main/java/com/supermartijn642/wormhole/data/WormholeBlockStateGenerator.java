@@ -54,7 +54,7 @@ public class WormholeBlockStateGenerator extends BlockStateGenerator {
         // Coal generator
         this.blockState(Wormhole.coal_generator).variantsForAll((state, variant) -> {
             boolean lit = state.get(CoalGeneratorBlock.LIT);
-            int rotation = (int)-state.get(CoalGeneratorBlock.FACING).getHorizontalAngle() % 360;
+            int rotation = ((int)state.get(CoalGeneratorBlock.FACING).getHorizontalAngle() + 180) % 360;
             variant.model(lit ? "block/coal_generator_lit" : "block/coal_generator", 0, rotation);
         });
     }
