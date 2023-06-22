@@ -1,97 +1,16 @@
 {
   "variants": {
-    "axis=z,color=pink": {
-      "model": "wormhole:block/portals/portal_z_pink"
-    },
-    "axis=x,color=blue": {
-      "model": "wormhole:block/portals/portal_x_blue"
-    },
-    "axis=y,color=black": {
-      "model": "wormhole:block/portals/portal_y_black"
-    },
-    "axis=z,color=magenta": {
-      "model": "wormhole:block/portals/portal_z_magenta"
-    },
-    "axis=z,color=light_gray": {
-      "model": "wormhole:block/portals/portal_z_light_gray"
-    },
-    "axis=y,color=light_blue": {
-      "model": "wormhole:block/portals/portal_y_light_blue"
-    },
-    "axis=x,color=brown": {
-      "model": "wormhole:block/portals/portal_x_brown"
-    },
-    "axis=x,color=cyan": {
-      "model": "wormhole:block/portals/portal_x_cyan"
-    },
-    "axis=y,color=magenta": {
-      "model": "wormhole:block/portals/portal_y_magenta"
-    },
-    "axis=z,color=brown": {
-      "model": "wormhole:block/portals/portal_z_brown"
-    },
-    "axis=z,color=orange": {
-      "model": "wormhole:block/portals/portal_z_orange"
-    },
-    "axis=y,color=brown": {
-      "model": "wormhole:block/portals/portal_y_brown"
-    },
-    "axis=y,color=orange": {
-      "model": "wormhole:block/portals/portal_y_orange"
-    },
-    "axis=z,color=gray": {
-      "model": "wormhole:block/portals/portal_z_gray"
-    },
-    "axis=z,color=light_blue": {
-      "model": "wormhole:block/portals/portal_z_light_blue"
-    },
-    "axis=y,color=blue": {
-      "model": "wormhole:block/portals/portal_y_blue"
-    },
-    "axis=z,color=red": {
-      "model": "wormhole:block/portals/portal_z_red"
-    },
-    "axis=z,color=blue": {
-      "model": "wormhole:block/portals/portal_z_blue"
-    },
-    "axis=x,color=light_gray": {
-      "model": "wormhole:block/portals/portal_x_light_gray"
-    },
     "axis=x,color=white": {
       "model": "wormhole:block/portals/portal_x_white"
     },
-    "axis=z,color=yellow": {
-      "model": "wormhole:block/portals/portal_z_yellow"
+    "axis=x,color=orange": {
+      "model": "wormhole:block/portals/portal_x_orange"
     },
-    "axis=z,color=black": {
-      "model": "wormhole:block/portals/portal_z_black"
-    },
-    "axis=x,color=gray": {
-      "model": "wormhole:block/portals/portal_x_gray"
-    },
-    "axis=z,color=lime": {
-      "model": "wormhole:block/portals/portal_z_lime"
-    },
-    "axis=z,color=cyan": {
-      "model": "wormhole:block/portals/portal_z_cyan"
-    },
-    "axis=y,color=light_gray": {
-      "model": "wormhole:block/portals/portal_y_light_gray"
-    },
-    "axis=x,color=purple": {
-      "model": "wormhole:block/portals/portal_x_purple"
-    },
-    "axis=x,color=black": {
-      "model": "wormhole:block/portals/portal_x_black"
-    },
-    "axis=x,color=red": {
-      "model": "wormhole:block/portals/portal_x_red"
+    "axis=x,color=magenta": {
+      "model": "wormhole:block/portals/portal_x_magenta"
     },
     "axis=x,color=light_blue": {
       "model": "wormhole:block/portals/portal_x_light_blue"
-    },
-    "axis=y,color=gray": {
-      "model": "wormhole:block/portals/portal_y_gray"
     },
     "axis=x,color=yellow": {
       "model": "wormhole:block/portals/portal_x_yellow"
@@ -99,26 +18,62 @@
     "axis=x,color=lime": {
       "model": "wormhole:block/portals/portal_x_lime"
     },
-    "axis=y,color=pink": {
-      "model": "wormhole:block/portals/portal_y_pink"
+    "axis=x,color=pink": {
+      "model": "wormhole:block/portals/portal_x_pink"
+    },
+    "axis=x,color=gray": {
+      "model": "wormhole:block/portals/portal_x_gray"
+    },
+    "axis=x,color=light_gray": {
+      "model": "wormhole:block/portals/portal_x_light_gray"
+    },
+    "axis=x,color=cyan": {
+      "model": "wormhole:block/portals/portal_x_cyan"
+    },
+    "axis=x,color=purple": {
+      "model": "wormhole:block/portals/portal_x_purple"
+    },
+    "axis=x,color=blue": {
+      "model": "wormhole:block/portals/portal_x_blue"
+    },
+    "axis=x,color=brown": {
+      "model": "wormhole:block/portals/portal_x_brown"
     },
     "axis=x,color=green": {
       "model": "wormhole:block/portals/portal_x_green"
     },
+    "axis=x,color=red": {
+      "model": "wormhole:block/portals/portal_x_red"
+    },
+    "axis=x,color=black": {
+      "model": "wormhole:block/portals/portal_x_black"
+    },
     "axis=y,color=white": {
       "model": "wormhole:block/portals/portal_y_white"
     },
-    "axis=x,color=pink": {
-      "model": "wormhole:block/portals/portal_x_pink"
+    "axis=y,color=orange": {
+      "model": "wormhole:block/portals/portal_y_orange"
     },
-    "axis=z,color=green": {
-      "model": "wormhole:block/portals/portal_z_green"
+    "axis=y,color=magenta": {
+      "model": "wormhole:block/portals/portal_y_magenta"
     },
-    "axis=x,color=orange": {
-      "model": "wormhole:block/portals/portal_x_orange"
+    "axis=y,color=light_blue": {
+      "model": "wormhole:block/portals/portal_y_light_blue"
     },
-    "axis=y,color=red": {
-      "model": "wormhole:block/portals/portal_y_red"
+    "axis=y,color=yellow": {
+      "model": "wormhole:block/portals/portal_y_yellow"
+    },
+    "axis=y,color=lime": {
+      "model": "wormhole:block/portals/portal_y_lime"
+    },
+    "axis=y,color=pink": {
+      "model": "wormhole:block/portals/portal_y_pink"
+    },
+    "axis=y,color=gray": {
+      "model": "wormhole:block/portals/portal_y_gray"
+    },
+    "axis=y,color=light_gray": {
+      "model": "wormhole:block/portals/portal_y_light_gray"
     },
     "axis=y,color=cyan": {
       "model": "wormhole:block/portals/portal_y_cyan"
@@ -126,23 +81,68 @@
     "axis=y,color=purple": {
       "model": "wormhole:block/portals/portal_y_purple"
     },
-    "axis=z,color=purple": {
-      "model": "wormhole:block/portals/portal_z_purple"
+    "axis=y,color=blue": {
+      "model": "wormhole:block/portals/portal_y_blue"
     },
-    "axis=z,color=white": {
-      "model": "wormhole:block/portals/portal_z_white"
-    },
-    "axis=y,color=yellow": {
-      "model": "wormhole:block/portals/portal_y_yellow"
-    },
-    "axis=x,color=magenta": {
-      "model": "wormhole:block/portals/portal_x_magenta"
+    "axis=y,color=brown": {
+      "model": "wormhole:block/portals/portal_y_brown"
     },
     "axis=y,color=green": {
       "model": "wormhole:block/portals/portal_y_green"
     },
-    "axis=y,color=lime": {
-      "model": "wormhole:block/portals/portal_y_lime"
+    "axis=y,color=red": {
+      "model": "wormhole:block/portals/portal_y_red"
+    },
+    "axis=y,color=black": {
+      "model": "wormhole:block/portals/portal_y_black"
+    },
+    "axis=z,color=white": {
+      "model": "wormhole:block/portals/portal_z_white"
+    },
+    "axis=z,color=orange": {
+      "model": "wormhole:block/portals/portal_z_orange"
+    },
+    "axis=z,color=magenta": {
+      "model": "wormhole:block/portals/portal_z_magenta"
+    },
+    "axis=z,color=light_blue": {
+      "model": "wormhole:block/portals/portal_z_light_blue"
+    },
+    "axis=z,color=yellow": {
+      "model": "wormhole:block/portals/portal_z_yellow"
+    },
+    "axis=z,color=lime": {
+      "model": "wormhole:block/portals/portal_z_lime"
+    },
+    "axis=z,color=pink": {
+      "model": "wormhole:block/portals/portal_z_pink"
+    },
+    "axis=z,color=gray": {
+      "model": "wormhole:block/portals/portal_z_gray"
+    },
+    "axis=z,color=light_gray": {
+      "model": "wormhole:block/portals/portal_z_light_gray"
+    },
+    "axis=z,color=cyan": {
+      "model": "wormhole:block/portals/portal_z_cyan"
+    },
+    "axis=z,color=purple": {
+      "model": "wormhole:block/portals/portal_z_purple"
+    },
+    "axis=z,color=blue": {
+      "model": "wormhole:block/portals/portal_z_blue"
+    },
+    "axis=z,color=brown": {
+      "model": "wormhole:block/portals/portal_z_brown"
+    },
+    "axis=z,color=green": {
+      "model": "wormhole:block/portals/portal_z_green"
+    },
+    "axis=z,color=red": {
+      "model": "wormhole:block/portals/portal_z_red"
+    },
+    "axis=z,color=black": {
+      "model": "wormhole:block/portals/portal_z_black"
     }
   }
 }
