@@ -9,10 +9,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -194,6 +197,13 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
             for(int i = 0; i < energyBlocks.length / 4 * 4; )
                 this.energyBlocks.put(new BlockPos(energyBlocks[i++], energyBlocks[i++], energyBlocks[i++]), EnumFacing.getFront(energyBlocks[i++]));
         }
+    }
+
+    @Override
+    public <T> T getCapability(@Nonnull Capability<T> cap, @Nullable EnumFacing side){
+        if(cap == CapabilityEnergy.ENERGY)
+            return CapabilityEnergy.ENERGY.cast(this);
+        return super.getCapability(cap, side);
     }
 
     @Override
