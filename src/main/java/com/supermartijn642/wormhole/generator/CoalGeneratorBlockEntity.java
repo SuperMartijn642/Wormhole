@@ -14,6 +14,7 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created 12/18/2020 by SuperMartijn642
@@ -68,7 +69,7 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements II
     }
 
     @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side){
+    public @NotNull <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side){
         if(cap == ForgeCapabilities.ITEM_HANDLER)
             return this.itemCapability.cast();
         return super.getCapability(cap, side);

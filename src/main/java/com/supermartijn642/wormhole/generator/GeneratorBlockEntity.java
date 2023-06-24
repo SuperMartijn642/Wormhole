@@ -11,9 +11,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.IEnergyStorage;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -188,6 +191,13 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
             for(int i = 0; i < energyBlocks.length / 4 * 4; )
                 this.energyBlocks.put(new BlockPos(energyBlocks[i++], energyBlocks[i++], energyBlocks[i++]), Direction.from3DDataValue(energyBlocks[i++]));
         }
+    }
+
+    @Override
+    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side){
+        if(cap == ForgeCapabilities.ENERGY)
+            return this.energyCapability.cast();
+        return super.getCapability(cap, side);
     }
 
     @Override
