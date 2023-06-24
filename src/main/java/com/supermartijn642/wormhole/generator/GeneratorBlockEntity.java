@@ -9,11 +9,14 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -187,6 +190,13 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
             for(int i = 0; i < energyBlocks.length / 4 * 4; )
                 this.energyBlocks.put(new BlockPos(energyBlocks[i++], energyBlocks[i++], energyBlocks[i++]), Direction.from3DDataValue(energyBlocks[i++]));
         }
+    }
+
+    @Override
+    public @Nonnull <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side){
+        if(cap == CapabilityEnergy.ENERGY)
+            return this.energyCapability.cast();
+        return super.getCapability(cap, side);
     }
 
     @Override
