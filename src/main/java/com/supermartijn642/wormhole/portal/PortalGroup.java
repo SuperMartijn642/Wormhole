@@ -305,7 +305,7 @@ public class PortalGroup {
 
     public static int getTeleportCostToTarget(World world, BlockPos portalCenter, PortalTarget target){
         return WormholeConfig.travelPowerDrain.get() +
-            (target.dimension.equals(world.provider.getDimensionType()) ?
+            (target.dimension == world.provider.getDimension() ?
                 (int)Math.round(Math.pow(portalCenter.distanceSq(target.getPos()), 1 / 4d) * WormholeConfig.distancePowerDrain.get()) :
                 WormholeConfig.dimensionPowerDrain.get());
     }

@@ -144,16 +144,16 @@ public class TargetDeviceScreen extends ItemBaseWidget {
         if(this.selectedTarget >= 0){
             PortalTarget target = this.getOrDefault(list -> list.size() > this.selectedTarget ? list.get(this.selectedTarget) : null, null);
             if(target != null)
-                this.renderTargetInfo(target.name, target.getPos(), target.dimension, target.dimensionDisplayName, target.yaw);
+                this.renderTargetInfo(target.name, target.getPos(), target.dimension, target.getDimensionDisplayName(), target.yaw);
         }else if(this.selectedCurrentTarget){
-            DimensionType dimension = ClientUtils.getWorld().provider.getDimensionType();
-            this.renderTargetInfo(this.currentTargetNameField.getText().trim(), this.currentPos, dimension, TextComponents.dimension(dimension).get(), this.currentYaw);
+            int dimension = ClientUtils.getWorld().provider.getDimension();
+            this.renderTargetInfo(this.currentTargetNameField.getText().trim(), this.currentPos, dimension, PortalTarget.getDimensionName(dimension), this.currentYaw);
         }
 
         this.updateAddRemoveButton();
     }
 
-    private void renderTargetInfo(String name, BlockPos pos, DimensionType dimension, ITextComponent dimensionName, float yaw){
+    private void renderTargetInfo(String name, BlockPos pos, int dimension, ITextComponent dimensionName, float yaw){
         ScreenUtils.drawCenteredString(name, 162, 31, Integer.MAX_VALUE);
 
         ScreenUtils.bindTexture(SEPARATOR);
@@ -166,11 +166,11 @@ public class TargetDeviceScreen extends ItemBaseWidget {
         ScreenUtils.drawString("(" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")", 132, 48, Integer.MAX_VALUE);
         // dimension
         Block block = null;
-        if(dimension.equals(DimensionType.OVERWORLD))
+        if(dimension == DimensionType.OVERWORLD.getId())
             block = Blocks.GRASS_PATH;
-        else if(dimension.equals(DimensionType.NETHER))
+        else if(dimension == DimensionType.NETHER.getId())
             block = Blocks.NETHERRACK;
-        else if(dimension.equals(DimensionType.THE_END))
+        else if(dimension == DimensionType.THE_END.getId())
             block = Blocks.END_STONE;
         if(block == null){
             ScreenUtils.bindTexture(DIMENSION_ICON);

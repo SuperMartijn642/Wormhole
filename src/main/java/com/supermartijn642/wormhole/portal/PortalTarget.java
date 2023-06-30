@@ -19,30 +19,35 @@ public class PortalTarget {
 
     public static final int MAX_NAME_LENGTH = 10;
 
-    public final DimensionType dimension;
+    public static ITextComponent getDimensionName(int dimension){
+        return dimension == DimensionType.NETHER.getId() ? TextComponents.dimension(DimensionType.NETHER).get()
+            : dimension == DimensionType.OVERWORLD.getId() ? TextComponents.dimension(DimensionType.OVERWORLD).get()
+            : dimension == DimensionType.THE_END.getId() ? TextComponents.dimension(DimensionType.THE_END).get()
+            : TextComponents.translation("wormhole.target.dimension_name", dimension).get();
+    }
+
+    public final int dimension;
     public final int x, y, z;
     public final float yaw;
 
     public String name;
     public EnumDyeColor color = null;
-    public ITextComponent dimensionDisplayName;
 
-    public PortalTarget(DimensionType dimension, int x, int y, int z, float yaw, String name){
+    public PortalTarget(int dimension, int x, int y, int z, float yaw, String name){
         this.dimension = dimension;
         this.x = x;
         this.y = y;
         this.z = z;
         this.yaw = yaw;
         this.name = name;
-        this.dimensionDisplayName = TextComponents.dimension(dimension).get();
     }
 
     public PortalTarget(World level, BlockPos pos, float yaw, String name){
-        this(level.provider.getDimensionType(), pos.getX(), pos.getY(), pos.getZ(), yaw, name);
+        this(level.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), yaw, name);
     }
 
     public PortalTarget(NBTTagCompound tag){
-        this(DimensionType.getById(tag.getInteger("dimension")), tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z"), tag.getFloat("yaw"), tag.hasKey("name") ? tag.getString("name") : "Target Destination");
+        this(tag.getInteger("dimension"), tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z"), tag.getFloat("yaw"), tag.hasKey("name") ? tag.getString("name") : "Target Destination");
         this.color = tag.hasKey("color") ? EnumDyeColor.byDyeDamage(tag.getInteger("color")) : null;
     }
 
@@ -52,7 +57,7 @@ public class PortalTarget {
 
     public NBTTagCompound write(){
         NBTTagCompound tag = new NBTTagCompound();
-        tag.setInteger("dimension", this.dimension.getId());
+        tag.setInteger("dimension", this.dimension);
         tag.setInteger("x", this.x);
         tag.setInteger("y", this.y);
         tag.setInteger("z", this.z);
@@ -64,7 +69,7 @@ public class PortalTarget {
     }
 
     public Optional<World> getLevel(MinecraftServer server){
-        return Optional.of(server.getWorld(this.dimension.getId()));
+        return Optional.of(server.getWorld(this.dimension));
     }
 
     public BlockPos getPos(){
@@ -76,6 +81,6 @@ public class PortalTarget {
     }
 
     public ITextComponent getDimensionDisplayName(){
-        return this.dimensionDisplayName;
+        return getDimensionName(this.dimension);
     }
 }

@@ -129,11 +129,11 @@ public class PortalOverviewScreen extends PortalGroupScreen {
             ScreenUtils.drawString("(" + target.x + ", " + target.y + ", " + target.z + ")", 162, 104, Integer.MAX_VALUE);
             // dimension
             Block block = null;
-            if(target.dimension.equals(DimensionType.OVERWORLD))
+            if(target.dimension == DimensionType.OVERWORLD.getId())
                 block = Blocks.GRASS_PATH;
-            else if(target.dimension.equals(DimensionType.NETHER))
+            else if(target.dimension == DimensionType.NETHER.getId())
                 block = Blocks.NETHERRACK;
-            else if(target.dimension.equals(DimensionType.THE_END))
+            else if(target.dimension == DimensionType.THE_END.getId())
                 block = Blocks.END_STONE;
             if(block == null){
                 ScreenUtils.bindTexture(DIMENSION_ICON);

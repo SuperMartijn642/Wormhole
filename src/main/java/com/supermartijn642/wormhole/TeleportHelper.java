@@ -93,7 +93,7 @@ public class TeleportHelper {
             entity.fallDistance = 0;
             entity.onGround = true;
         }else{
-            Entity newEntity = entity.changeDimension(targetLevel.provider.getDimensionType().getId(), (world, entity1, yaw) -> entity1.moveToBlockPosAndAngles(target.getPos(), target.yaw, entity1.rotationPitch));
+            Entity newEntity = entity.changeDimension(targetLevel.provider.getDimension(), (world, entity1, yaw) -> entity1.moveToBlockPosAndAngles(target.getPos(), target.yaw, entity1.rotationPitch));
             if(entity != null){
                 entity.motionX = 0;
                 entity.motionY = 0;

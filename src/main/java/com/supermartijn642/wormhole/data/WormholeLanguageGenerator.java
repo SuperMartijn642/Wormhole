@@ -111,6 +111,7 @@ public class WormholeLanguageGenerator extends LanguageGenerator {
         this.translation("wormhole.color.random", "Random");
         this.translation("wormhole.target.location", "Location");
         this.translation("wormhole.target.dimension", "Dimension");
+        this.translation("wormhole.target.dimension_name", "Dimension %s");
         this.translation("wormhole.target.direction", "Direction");
         this.translation("wormhole.target.teleport_cost", "Teleport Cost");
     }

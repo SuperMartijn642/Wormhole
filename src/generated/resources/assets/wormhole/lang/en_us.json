@@ -76,6 +76,7 @@
   "wormhole.color.random": "Random",
   "wormhole.target.location": "Location",
   "wormhole.target.dimension": "Dimension",
+  "wormhole.target.dimension_name": "Dimension %s",
   "wormhole.target.direction": "Direction",
   "wormhole.target.teleport_cost": "Teleport Cost"
 }
