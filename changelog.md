@@ -1,3 +1,6 @@
+### Wormhole 1.1.13a
+- Fixed non-vanilla dimensions being identified incorrectly
+
 ### Wormhole 1.1.13
 - Reduced coal generator burn duration by a factor 2.5
 - Fixed portals not forming due to void air or cave air
