@@ -2,6 +2,7 @@ package com.supermartijn642.wormhole;
 
 import com.supermartijn642.core.CommonUtils;
 import com.supermartijn642.wormhole.energycell.EnergyHolderEnergyStorageWrapper;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import team.reborn.energy.api.EnergyStorage;
 
 /**
@@ -10,6 +11,7 @@ import team.reborn.energy.api.EnergyStorage;
 public class WormholeAPIProviders {
 
     public static void registerAPIProviders(){
+        ItemStorage.SIDED.registerForBlockEntity((entity, side) -> entity.getItemCapability(), Wormhole.coal_generator_tile);
         if(CommonUtils.isModLoaded("team_reborn_energy"))
             RebornEnergyProviders.register();
     }
