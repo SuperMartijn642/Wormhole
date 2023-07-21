@@ -2,6 +2,9 @@ package com.supermartijn642.wormhole.generator;
 
 import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.WormholeConfig;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.item.base.SingleStackStorage;
+import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
@@ -16,6 +19,27 @@ import java.util.Map;
  */
 public class CoalGeneratorBlockEntity extends GeneratorBlockEntity {
 
+    private final Storage<ItemVariant> itemCapability = new SingleStackStorage() {
+        @Override
+        protected boolean canInsert(ItemVariant itemVariant){
+            return CoalGeneratorBlockEntity.this.isItemValid(itemVariant.getItem());
+        }
+
+        @Override
+        protected boolean canExtract(ItemVariant itemVariant){
+            return false;
+        }
+
+        @Override
+        protected ItemStack getStack(){
+            return CoalGeneratorBlockEntity.this.getStack();
+        }
+
+        @Override
+        protected void setStack(ItemStack stack){
+            CoalGeneratorBlockEntity.this.setStack(stack);
+        }
+    };
     private Map<Item,Integer> burnTimes;
     private int burnTime = 0, totalBurnTime = 0;
     private ItemStack stack = ItemStack.EMPTY;
@@ -61,6 +85,10 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity {
         boolean lit = this.getBlockState().getValue(CoalGeneratorBlock.LIT);
         if(lit != this.burnTime > 0)
             this.level.setBlockAndUpdate(this.worldPosition, state.setValue(CoalGeneratorBlock.LIT, !lit));
+    }
+
+    public Storage<ItemVariant> getItemCapability(){
+        return this.itemCapability;
     }
 
     @Override
