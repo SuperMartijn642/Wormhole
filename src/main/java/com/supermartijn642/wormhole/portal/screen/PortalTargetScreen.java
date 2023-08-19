@@ -247,7 +247,7 @@ public class PortalTargetScreen extends PortalGroupScreen {
         ScreenUtils.bindTexture(ENERGY_ICON);
         ScreenUtils.drawTexture(poseStack, 150, showColor ? 111 : 91, 9, 9);
         int cost = PortalGroup.getTeleportCostToTarget(ClientUtils.getWorld(), group.getCenterPos(), target);
-        ScreenUtils.drawString(poseStack, EnergyFormat.formatEnergy(cost), 161, showColor ? 112 : 92, Integer.MAX_VALUE);
+        ScreenUtils.drawString(poseStack, EnergyFormat.formatEnergyWithUnit(cost), 161, showColor ? 112 : 92, Integer.MAX_VALUE);
     }
 
     private void addPortalTargetWidgets(PortalGroup group){
