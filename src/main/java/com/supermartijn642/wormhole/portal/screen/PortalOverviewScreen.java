@@ -108,7 +108,7 @@ public class PortalOverviewScreen extends PortalGroupScreen {
         // teleport cost
         ScreenUtils.bindTexture(TELEPORT_ICON);
         ScreenUtils.drawTexture(poseStack, 150, 70, 11, 11);
-        ScreenUtils.drawString(poseStack, target == null ? "--" : EnergyFormat.formatEnergy(teleportCost), 162, 72, Integer.MAX_VALUE);
+        ScreenUtils.drawString(poseStack, target == null ? "--" : EnergyFormat.formatEnergyWithUnit(teleportCost), 162, 72, Integer.MAX_VALUE);
 
         ScreenUtils.bindTexture(SEPARATOR);
         ScreenUtils.drawTexture(poseStack, 154, 85, 77, 1);
