@@ -1,3 +1,6 @@
+### Wormhole 1.1.14
+- Fixed portal targets not working when Lithium is installed
+
 ### Wormhole 1.1.13a
 - Added the relevant energy unit to the teleport cost info inside the gui
 - Fixed teleport cost always being the cross-dimension cost
