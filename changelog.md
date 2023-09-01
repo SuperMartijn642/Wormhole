@@ -1,3 +1,6 @@
+### Wormhole 1.1.14
+- Fixed portal targets not working when Lithium is installed
+
 ### Wormhole 1.1.13a
 - Fixed non-vanilla dimensions being identified incorrectly
 
