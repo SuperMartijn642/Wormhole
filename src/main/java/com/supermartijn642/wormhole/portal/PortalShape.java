@@ -14,6 +14,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 
 import java.util.*;
 
@@ -232,34 +233,54 @@ public class PortalShape {
     public PortalShape(NBTTagCompound tag){
         this.axis = Enum.valueOf(EnumFacing.Axis.class, tag.getString("axis"));
 
-        NBTTagCompound areaTag = tag.getCompoundTag("area");
-        for(String key : areaTag.getKeySet()){
-            NBTTagCompound pos = areaTag.getCompoundTag(key);
-            this.area.add(new BlockPos(pos.getInteger("x"), pos.getInteger("y"), pos.getInteger("z")));
-        }
+        if(tag.hasKey("area", Constants.NBT.TAG_COMPOUND)){
+            // Use old behaviour to load the data
+            NBTTagCompound areaTag = tag.getCompoundTag("area");
+            for(int i = 0; i < areaTag.getSize(); i++){
+                NBTTagCompound pos = areaTag.getCompoundTag("" + i);
+                this.area.add(new BlockPos(pos.getInteger("x"), pos.getInteger("y"), pos.getInteger("z")));
+            }
+            NBTTagCompound frameTag = tag.getCompoundTag("frame");
+            for(int i = 0; i < areaTag.getSize(); i++){
+                NBTTagCompound pos = frameTag.getCompoundTag("" + i);
+                this.frame.add(new BlockPos(pos.getInteger("x"), pos.getInteger("y"), pos.getInteger("z")));
+            }
+            NBTTagCompound stabilizerTag = tag.getCompoundTag("stabilizers");
+            for(int i = 0; i < areaTag.getSize(); i++){
+                NBTTagCompound pos = stabilizerTag.getCompoundTag("" + i);
+                this.stabilizers.add(new BlockPos(pos.getInteger("x"), pos.getInteger("y"), pos.getInteger("z")));
+            }
+            NBTTagCompound energyCellsTag = tag.getCompoundTag("energyCells");
+            for(int i = 0; i < areaTag.getSize(); i++){
+                NBTTagCompound pos = energyCellsTag.getCompoundTag("" + i);
+                this.energyCells.add(new BlockPos(pos.getInteger("x"), pos.getInteger("y"), pos.getInteger("z")));
+            }
+            NBTTagCompound targetCellsTag = tag.getCompoundTag("targetCells");
+            for(int i = 0; i < areaTag.getSize(); i++){
+                NBTTagCompound pos = targetCellsTag.getCompoundTag("" + i);
+                this.targetCells.add(new BlockPos(pos.getInteger("x"), pos.getInteger("y"), pos.getInteger("z")));
+            }
+        }else{
+            // Load blocks
+            int[] area = tag.getIntArray("area");
+            for(int i = 0; i < area.length / 3; i++)
+                this.area.add(new BlockPos(area[i * 3], area[i * 3 + 1], area[i * 3 + 2]));
 
-        NBTTagCompound frameTag = tag.getCompoundTag("frame");
-        for(String key : frameTag.getKeySet()){
-            NBTTagCompound pos = frameTag.getCompoundTag(key);
-            this.frame.add(new BlockPos(pos.getInteger("x"), pos.getInteger("y"), pos.getInteger("z")));
-        }
+            int[] frame = tag.getIntArray("frame");
+            for(int i = 0; i < frame.length / 3; i++)
+                this.frame.add(new BlockPos(frame[i * 3], frame[i * 3 + 1], frame[i * 3 + 2]));
 
-        NBTTagCompound stabilizerTag = tag.getCompoundTag("stabilizers");
-        for(String key : stabilizerTag.getKeySet()){
-            NBTTagCompound pos = stabilizerTag.getCompoundTag(key);
-            this.stabilizers.add(new BlockPos(pos.getInteger("x"), pos.getInteger("y"), pos.getInteger("z")));
-        }
+            int[] stabilizers = tag.getIntArray("stabilizers");
+            for(int i = 0; i < stabilizers.length / 3; i++)
+                this.stabilizers.add(new BlockPos(stabilizers[i * 3], stabilizers[i * 3 + 1], stabilizers[i * 3 + 2]));
 
-        NBTTagCompound energyCellsTag = tag.getCompoundTag("energyCells");
-        for(String key : energyCellsTag.getKeySet()){
-            NBTTagCompound pos = energyCellsTag.getCompoundTag(key);
-            this.energyCells.add(new BlockPos(pos.getInteger("x"), pos.getInteger("y"), pos.getInteger("z")));
-        }
+            int[] energyCells = tag.getIntArray("energyCells");
+            for(int i = 0; i < energyCells.length / 3; i++)
+                this.energyCells.add(new BlockPos(energyCells[i * 3], energyCells[i * 3 + 1], energyCells[i * 3 + 2]));
 
-        NBTTagCompound targetCellsTag = tag.getCompoundTag("targetCells");
-        for(String key : targetCellsTag.getKeySet()){
-            NBTTagCompound pos = targetCellsTag.getCompoundTag(key);
-            this.targetCells.add(new BlockPos(pos.getInteger("x"), pos.getInteger("y"), pos.getInteger("z")));
+            int[] targetCells = tag.getIntArray("targetCells");
+            for(int i = 0; i < targetCells.length / 3; i++)
+                this.targetCells.add(new BlockPos(targetCells[i * 3], targetCells[i * 3 + 1], targetCells[i * 3 + 2]));
         }
 
         this.span = tag.getDouble("span");
@@ -309,55 +330,45 @@ public class PortalShape {
         NBTTagCompound tag = new NBTTagCompound();
         tag.setString("axis", this.axis.name());
 
-        NBTTagCompound areaTag = new NBTTagCompound();
+        int[] areaData = new int[this.area.size() * 3];
         for(int i = 0; i < this.area.size(); i++){
-            NBTTagCompound pos = new NBTTagCompound();
-            pos.setInteger("x", this.area.get(i).getX());
-            pos.setInteger("y", this.area.get(i).getY());
-            pos.setInteger("z", this.area.get(i).getZ());
-            areaTag.setTag("" + i, pos);
+            areaData[i * 3] = this.area.get(i).getX();
+            areaData[i * 3 + 1] = this.area.get(i).getY();
+            areaData[i * 3 + 2] = this.area.get(i).getZ();
         }
-        tag.setTag("area", areaTag);
+        tag.setIntArray("area", areaData);
 
-        NBTTagCompound frameTag = new NBTTagCompound();
+        int[] frameData = new int[this.frame.size() * 3];
         for(int i = 0; i < this.frame.size(); i++){
-            NBTTagCompound pos = new NBTTagCompound();
-            pos.setInteger("x", this.frame.get(i).getX());
-            pos.setInteger("y", this.frame.get(i).getY());
-            pos.setInteger("z", this.frame.get(i).getZ());
-            frameTag.setTag("" + i, pos);
+            frameData[i * 3] = this.frame.get(i).getX();
+            frameData[i * 3 + 1] = this.frame.get(i).getY();
+            frameData[i * 3 + 2] = this.frame.get(i).getZ();
         }
-        tag.setTag("frame", frameTag);
+        tag.setIntArray("frame", frameData);
 
-        NBTTagCompound stabilizerTag = new NBTTagCompound();
+        int[] stabilizersData = new int[this.stabilizers.size() * 3];
         for(int i = 0; i < this.stabilizers.size(); i++){
-            NBTTagCompound pos = new NBTTagCompound();
-            pos.setInteger("x", this.stabilizers.get(i).getX());
-            pos.setInteger("y", this.stabilizers.get(i).getY());
-            pos.setInteger("z", this.stabilizers.get(i).getZ());
-            stabilizerTag.setTag("" + i, pos);
+            stabilizersData[i * 3] = this.stabilizers.get(i).getX();
+            stabilizersData[i * 3 + 1] = this.stabilizers.get(i).getY();
+            stabilizersData[i * 3 + 2] = this.stabilizers.get(i).getZ();
         }
-        tag.setTag("stabilizers", stabilizerTag);
+        tag.setIntArray("stabilizers", stabilizersData);
 
-        NBTTagCompound energyCellsTag = new NBTTagCompound();
+        int[] energyCellsData = new int[this.energyCells.size() * 3];
         for(int i = 0; i < this.energyCells.size(); i++){
-            NBTTagCompound pos = new NBTTagCompound();
-            pos.setInteger("x", this.energyCells.get(i).getX());
-            pos.setInteger("y", this.energyCells.get(i).getY());
-            pos.setInteger("z", this.energyCells.get(i).getZ());
-            energyCellsTag.setTag("" + i, pos);
+            energyCellsData[i * 3] = this.energyCells.get(i).getX();
+            energyCellsData[i * 3 + 1] = this.energyCells.get(i).getY();
+            energyCellsData[i * 3 + 2] = this.energyCells.get(i).getZ();
         }
-        tag.setTag("energyCells", energyCellsTag);
+        tag.setIntArray("energyCells", energyCellsData);
 
-        NBTTagCompound targetCellsTag = new NBTTagCompound();
+        int[] targetCellsData = new int[this.targetCells.size() * 3];
         for(int i = 0; i < this.targetCells.size(); i++){
-            NBTTagCompound pos = new NBTTagCompound();
-            pos.setInteger("x", this.targetCells.get(i).getX());
-            pos.setInteger("y", this.targetCells.get(i).getY());
-            pos.setInteger("z", this.targetCells.get(i).getZ());
-            targetCellsTag.setTag("" + i, pos);
+            targetCellsData[i * 3] = this.targetCells.get(i).getX();
+            targetCellsData[i * 3 + 1] = this.targetCells.get(i).getY();
+            targetCellsData[i * 3 + 2] = this.targetCells.get(i).getZ();
         }
-        tag.setTag("targetCells", targetCellsTag);
+        tag.setIntArray("targetCells", targetCellsData);
 
         tag.setDouble("span", this.span);
 
