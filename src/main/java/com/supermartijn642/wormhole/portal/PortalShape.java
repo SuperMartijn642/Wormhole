@@ -8,6 +8,7 @@ import com.supermartijn642.wormhole.WormholeConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -234,34 +235,54 @@ public class PortalShape {
     public PortalShape(CompoundTag tag){
         this.axis = Enum.valueOf(Direction.Axis.class, tag.getString("axis"));
 
-        CompoundTag areaTag = tag.getCompound("area");
-        for(String key : areaTag.getAllKeys()){
-            CompoundTag pos = areaTag.getCompound(key);
-            this.area.add(new BlockPos(pos.getInt("x"), pos.getInt("y"), pos.getInt("z")));
-        }
+        if(tag.contains("area", Tag.TAG_COMPOUND)){
+            // Use old behaviour to load the data
+            CompoundTag areaTag = tag.getCompound("area");
+            for(int i = 0; i < areaTag.size(); i++){
+                CompoundTag pos = areaTag.getCompound("" + i);
+                this.area.add(new BlockPos(pos.getInt("x"), pos.getInt("y"), pos.getInt("z")));
+            }
+            CompoundTag frameTag = tag.getCompound("frame");
+            for(int i = 0; i < areaTag.size(); i++){
+                CompoundTag pos = frameTag.getCompound("" + i);
+                this.frame.add(new BlockPos(pos.getInt("x"), pos.getInt("y"), pos.getInt("z")));
+            }
+            CompoundTag stabilizerTag = tag.getCompound("stabilizers");
+            for(int i = 0; i < areaTag.size(); i++){
+                CompoundTag pos = stabilizerTag.getCompound("" + i);
+                this.stabilizers.add(new BlockPos(pos.getInt("x"), pos.getInt("y"), pos.getInt("z")));
+            }
+            CompoundTag energyCellsTag = tag.getCompound("energyCells");
+            for(int i = 0; i < areaTag.size(); i++){
+                CompoundTag pos = energyCellsTag.getCompound("" + i);
+                this.energyCells.add(new BlockPos(pos.getInt("x"), pos.getInt("y"), pos.getInt("z")));
+            }
+            CompoundTag targetCellsTag = tag.getCompound("targetCells");
+            for(int i = 0; i < areaTag.size(); i++){
+                CompoundTag pos = targetCellsTag.getCompound("" + i);
+                this.targetCells.add(new BlockPos(pos.getInt("x"), pos.getInt("y"), pos.getInt("z")));
+            }
+        }else{
+            // Load blocks
+            int[] area = tag.getIntArray("area");
+            for(int i = 0; i < area.length / 3; i++)
+                this.area.add(new BlockPos(area[i * 3], area[i * 3 + 1], area[i * 3 + 2]));
 
-        CompoundTag frameTag = tag.getCompound("frame");
-        for(String key : frameTag.getAllKeys()){
-            CompoundTag pos = frameTag.getCompound(key);
-            this.frame.add(new BlockPos(pos.getInt("x"), pos.getInt("y"), pos.getInt("z")));
-        }
+            int[] frame = tag.getIntArray("frame");
+            for(int i = 0; i < frame.length / 3; i++)
+                this.frame.add(new BlockPos(frame[i * 3], frame[i * 3 + 1], frame[i * 3 + 2]));
 
-        CompoundTag stabilizerTag = tag.getCompound("stabilizers");
-        for(String key : stabilizerTag.getAllKeys()){
-            CompoundTag pos = stabilizerTag.getCompound(key);
-            this.stabilizers.add(new BlockPos(pos.getInt("x"), pos.getInt("y"), pos.getInt("z")));
-        }
+            int[] stabilizers = tag.getIntArray("stabilizers");
+            for(int i = 0; i < stabilizers.length / 3; i++)
+                this.stabilizers.add(new BlockPos(stabilizers[i * 3], stabilizers[i * 3 + 1], stabilizers[i * 3 + 2]));
 
-        CompoundTag energyCellsTag = tag.getCompound("energyCells");
-        for(String key : energyCellsTag.getAllKeys()){
-            CompoundTag pos = energyCellsTag.getCompound(key);
-            this.energyCells.add(new BlockPos(pos.getInt("x"), pos.getInt("y"), pos.getInt("z")));
-        }
+            int[] energyCells = tag.getIntArray("energyCells");
+            for(int i = 0; i < energyCells.length / 3; i++)
+                this.energyCells.add(new BlockPos(energyCells[i * 3], energyCells[i * 3 + 1], energyCells[i * 3 + 2]));
 
-        CompoundTag targetCellsTag = tag.getCompound("targetCells");
-        for(String key : targetCellsTag.getAllKeys()){
-            CompoundTag pos = targetCellsTag.getCompound(key);
-            this.targetCells.add(new BlockPos(pos.getInt("x"), pos.getInt("y"), pos.getInt("z")));
+            int[] targetCells = tag.getIntArray("targetCells");
+            for(int i = 0; i < targetCells.length / 3; i++)
+                this.targetCells.add(new BlockPos(targetCells[i * 3], targetCells[i * 3 + 1], targetCells[i * 3 + 2]));
         }
 
         this.span = tag.getDouble("span");
@@ -315,55 +336,45 @@ public class PortalShape {
         CompoundTag tag = new CompoundTag();
         tag.putString("axis", this.axis.name());
 
-        CompoundTag areaTag = new CompoundTag();
+        int[] areaData = new int[this.area.size() * 3];
         for(int i = 0; i < this.area.size(); i++){
-            CompoundTag pos = new CompoundTag();
-            pos.putInt("x", this.area.get(i).getX());
-            pos.putInt("y", this.area.get(i).getY());
-            pos.putInt("z", this.area.get(i).getZ());
-            areaTag.put("" + i, pos);
+            areaData[i * 3] = this.area.get(i).getX();
+            areaData[i * 3 + 1] = this.area.get(i).getY();
+            areaData[i * 3 + 2] = this.area.get(i).getZ();
         }
-        tag.put("area", areaTag);
+        tag.putIntArray("area", areaData);
 
-        CompoundTag frameTag = new CompoundTag();
+        int[] frameData = new int[this.frame.size() * 3];
         for(int i = 0; i < this.frame.size(); i++){
-            CompoundTag pos = new CompoundTag();
-            pos.putInt("x", this.frame.get(i).getX());
-            pos.putInt("y", this.frame.get(i).getY());
-            pos.putInt("z", this.frame.get(i).getZ());
-            frameTag.put("" + i, pos);
+            frameData[i * 3] = this.frame.get(i).getX();
+            frameData[i * 3 + 1] = this.frame.get(i).getY();
+            frameData[i * 3 + 2] = this.frame.get(i).getZ();
         }
-        tag.put("frame", frameTag);
+        tag.putIntArray("frame", frameData);
 
-        CompoundTag stabilizerTag = new CompoundTag();
+        int[] stabilizersData = new int[this.stabilizers.size() * 3];
         for(int i = 0; i < this.stabilizers.size(); i++){
-            CompoundTag pos = new CompoundTag();
-            pos.putInt("x", this.stabilizers.get(i).getX());
-            pos.putInt("y", this.stabilizers.get(i).getY());
-            pos.putInt("z", this.stabilizers.get(i).getZ());
-            stabilizerTag.put("" + i, pos);
+            stabilizersData[i * 3] = this.stabilizers.get(i).getX();
+            stabilizersData[i * 3 + 1] = this.stabilizers.get(i).getY();
+            stabilizersData[i * 3 + 2] = this.stabilizers.get(i).getZ();
         }
-        tag.put("stabilizers", stabilizerTag);
+        tag.putIntArray("stabilizers", stabilizersData);
 
-        CompoundTag energyCellsTag = new CompoundTag();
+        int[] energyCellsData = new int[this.energyCells.size() * 3];
         for(int i = 0; i < this.energyCells.size(); i++){
-            CompoundTag pos = new CompoundTag();
-            pos.putInt("x", this.energyCells.get(i).getX());
-            pos.putInt("y", this.energyCells.get(i).getY());
-            pos.putInt("z", this.energyCells.get(i).getZ());
-            energyCellsTag.put("" + i, pos);
+            energyCellsData[i * 3] = this.energyCells.get(i).getX();
+            energyCellsData[i * 3 + 1] = this.energyCells.get(i).getY();
+            energyCellsData[i * 3 + 2] = this.energyCells.get(i).getZ();
         }
-        tag.put("energyCells", energyCellsTag);
+        tag.putIntArray("energyCells", energyCellsData);
 
-        CompoundTag targetCellsTag = new CompoundTag();
+        int[] targetCellsData = new int[this.targetCells.size() * 3];
         for(int i = 0; i < this.targetCells.size(); i++){
-            CompoundTag pos = new CompoundTag();
-            pos.putInt("x", this.targetCells.get(i).getX());
-            pos.putInt("y", this.targetCells.get(i).getY());
-            pos.putInt("z", this.targetCells.get(i).getZ());
-            targetCellsTag.put("" + i, pos);
+            targetCellsData[i * 3] = this.targetCells.get(i).getX();
+            targetCellsData[i * 3 + 1] = this.targetCells.get(i).getY();
+            targetCellsData[i * 3 + 2] = this.targetCells.get(i).getZ();
         }
-        tag.put("targetCells", targetCellsTag);
+        tag.putIntArray("targetCells", targetCellsData);
 
         tag.putDouble("span", this.span);
 
