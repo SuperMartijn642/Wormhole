@@ -1,3 +1,6 @@
+### Wormhole 1.1.15
+- Fixed coal generator breaking instantly
+
 ### Wormhole 1.1.14
 - Fixed portal targets not working when Lithium is installed
 
