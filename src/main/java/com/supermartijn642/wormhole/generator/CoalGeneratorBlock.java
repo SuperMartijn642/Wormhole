@@ -64,7 +64,7 @@ public class CoalGeneratorBlock extends BaseBlock implements EntityHoldingBlock 
     public static final PropertyEnum<EnumFacing> FACING = BlockHorizontal.FACING;
 
     public CoalGeneratorBlock(){
-        super(true, BlockProperties.create(Material.IRON, MapColor.GRAY).sound(SoundType.METAL).requiresCorrectTool());
+        super(true, BlockProperties.create(Material.IRON, MapColor.GRAY).sound(SoundType.METAL).requiresCorrectTool().destroyTime(1.2f).explosionResistance(6));
         this.setDefaultState(this.getDefaultState().withProperty(LIT, false).withProperty(FACING, EnumFacing.NORTH));
     }
 
