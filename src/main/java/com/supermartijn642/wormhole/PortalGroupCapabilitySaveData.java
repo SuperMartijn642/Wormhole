@@ -14,11 +14,15 @@ public class PortalGroupCapabilitySaveData extends SavedData {
     private final PortalGroupCapability capability;
 
     public static void init(ServerLevel level, PortalGroupCapability capability){
-        level.getDataStorage().computeIfAbsent(tag -> {
-            PortalGroupCapabilitySaveData saveData = new PortalGroupCapabilitySaveData(capability);
-            saveData.load(tag);
-            return saveData;
-        }, () -> new PortalGroupCapabilitySaveData(capability), IDENTIFIER);
+        level.getDataStorage().computeIfAbsent(new Factory<SavedData>(
+            () -> new PortalGroupCapabilitySaveData(capability),
+            tag -> {
+                PortalGroupCapabilitySaveData saveData = new PortalGroupCapabilitySaveData(capability);
+                saveData.load(tag);
+                return saveData;
+            },
+            null
+        ), IDENTIFIER);
     }
 
     public PortalGroupCapabilitySaveData(PortalGroupCapability capability){

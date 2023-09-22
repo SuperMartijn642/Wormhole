@@ -1,11 +1,11 @@
 package com.supermartijn642.wormhole;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -13,6 +13,7 @@ import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -38,8 +39,8 @@ public class NBTRecipe extends ShapedRecipe {
         VALID_ITEMS.add(Item.byBlock(Wormhole.coal_generator));
     }
 
-    public NBTRecipe(ResourceLocation id, String group, CraftingBookCategory category, int recipeWidth, int recipeHeight, NonNullList<Ingredient> recipeItems, ItemStack recipeOutput){
-        super(id, group, category, recipeWidth, recipeHeight, recipeItems, recipeOutput);
+    public NBTRecipe(String group, CraftingBookCategory category, int recipeWidth, int recipeHeight, NonNullList<Ingredient> recipeItems, ItemStack recipeOutput, boolean showNotification){
+        super(group, category, recipeWidth, recipeHeight, recipeItems, recipeOutput, showNotification);
     }
 
     @Override
@@ -72,21 +73,31 @@ public class NBTRecipe extends ShapedRecipe {
 
     private static class Serializer implements RecipeSerializer<NBTRecipe> {
 
-        @Override
-        public NBTRecipe fromJson(ResourceLocation recipeId, JsonObject json){
-            ShapedRecipe recipe = RecipeSerializer.SHAPED_RECIPE.fromJson(recipeId, json);
-            return new NBTRecipe(recipeId, recipe.getGroup(), recipe.category(), recipe.getWidth(), recipe.getHeight(), recipe.getIngredients(), recipe.getResultItem(null));
-        }
+        private static final Codec<NBTRecipe> CODEC = new ShapedRecipe.Serializer().codec()
+            .flatXmap(
+                shapedRecipe -> DataResult.success(fromShapedRecipe(shapedRecipe)),
+                DataResult::success
+            );
 
         @Override
-        public NBTRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer){
-            ShapedRecipe recipe = RecipeSerializer.SHAPED_RECIPE.fromNetwork(recipeId, buffer);
-            return new NBTRecipe(recipeId, recipe.getGroup(), recipe.category(), recipe.getWidth(), recipe.getHeight(), recipe.getIngredients(), recipe.getResultItem(null));
+        public Codec<NBTRecipe> codec(){
+            return CODEC;
+        }
+
+        @Nullable
+        @Override
+        public NBTRecipe fromNetwork(FriendlyByteBuf buffer){
+            //noinspection DataFlowIssue
+            return fromShapedRecipe(RecipeSerializer.SHAPED_RECIPE.fromNetwork(buffer));
         }
 
         @Override
         public void toNetwork(FriendlyByteBuf buffer, NBTRecipe recipe){
             RecipeSerializer.SHAPED_RECIPE.toNetwork(buffer, recipe);
+        }
+
+        private static NBTRecipe fromShapedRecipe(ShapedRecipe recipe){
+            return new NBTRecipe(recipe.getGroup(), recipe.category(), recipe.getWidth(), recipe.getHeight(), recipe.getIngredients(), recipe.getResultItem(null), recipe.showNotification());
         }
     }
 }

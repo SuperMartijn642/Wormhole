@@ -95,7 +95,7 @@ public class TeleportHelper {
                 ServerPlayer player = ((ServerPlayer)entity);
                 player.isChangingDimension = true;
                 LevelData levelData = targetLevel.getLevelData();
-                player.connection.send(new ClientboundRespawnPacket(targetLevel.dimensionTypeId(), targetLevel.dimension(), BiomeManager.obfuscateSeed(targetLevel.getSeed()), player.gameMode.getGameModeForPlayer(), player.gameMode.getPreviousGameModeForPlayer(), targetLevel.isDebug(), targetLevel.isFlat(), (byte)3, player.getLastDeathLocation(), player.getPortalCooldown()));
+                player.connection.send(new ClientboundRespawnPacket(new CommonPlayerSpawnInfo(targetLevel.dimensionTypeId(), targetLevel.dimension(), BiomeManager.obfuscateSeed(targetLevel.getSeed()), player.gameMode.getGameModeForPlayer(), player.gameMode.getPreviousGameModeForPlayer(), targetLevel.isDebug(), targetLevel.isFlat(), player.getLastDeathLocation(), player.getPortalCooldown()), (byte)3));
                 player.connection.send(new ClientboundChangeDifficultyPacket(levelData.getDifficulty(), levelData.isDifficultyLocked()));
                 PlayerList playerList = player.server.getPlayerList();
                 playerList.sendPlayerPermissionLevel(player);
@@ -110,7 +110,7 @@ public class TeleportHelper {
                 player.connection.send(new ClientboundPlayerAbilitiesPacket(player.getAbilities()));
                 playerList.sendLevelInfo(player, targetLevel);
                 playerList.sendAllPlayerInfo(player);
-                for (MobEffectInstance effectInstance : player.getActiveEffects())
+                for(MobEffectInstance effectInstance : player.getActiveEffects())
                     player.connection.send(new ClientboundUpdateMobEffectPacket(player.getId(), effectInstance));
                 player.connection.send(new ClientboundLevelEventPacket(1032, BlockPos.ZERO, 0, false));
                 player.lastSentExp = -1;
