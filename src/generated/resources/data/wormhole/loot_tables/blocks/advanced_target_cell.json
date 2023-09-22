@@ -10,8 +10,8 @@
       ],
       "entries": [
         {
-          "type": "minecraft:item",
-          "name": "wormhole:advanced_target_cell"
+          "name": "wormhole:advanced_target_cell",
+          "type": "minecraft:item"
         }
       ]
     }

@@ -10,8 +10,8 @@
       ],
       "entries": [
         {
-          "type": "minecraft:item",
-          "name": "wormhole:portal_stabilizer"
+          "name": "wormhole:portal_stabilizer",
+          "type": "minecraft:item"
         }
       ]
     }
