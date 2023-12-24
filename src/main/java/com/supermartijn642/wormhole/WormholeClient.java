@@ -18,18 +18,17 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderHighlightEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.client.event.RenderHighlightEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * Created 7/23/2020 by SuperMartijn642
  */
-@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class WormholeClient {
 
     public static void register(){
+        NeoForge.EVENT_BUS.addListener(WormholeClient::onBlockHighlight);
+
         ClientRegistrationHandler handler = ClientRegistrationHandler.get("wormhole");
 
         // Set translucent render type for the portal
@@ -59,7 +58,6 @@ public class WormholeClient {
         ClientUtils.displayScreen(WidgetScreen.of(new PortalOverviewScreen(pos)));
     }
 
-    @SubscribeEvent
     public static void onBlockHighlight(RenderHighlightEvent.Block e){
         Level level = ClientUtils.getWorld();
         BlockEntity entity = level.getBlockEntity(e.getTarget().getBlockPos());

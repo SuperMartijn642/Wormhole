@@ -1,6 +1,6 @@
 package com.supermartijn642.wormhole.portal;
 
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
 /**
  * Created 10/29/2020 by SuperMartijn642

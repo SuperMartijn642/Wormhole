@@ -1,5 +1,6 @@
 package com.supermartijn642.wormhole;
 
+import com.supermartijn642.core.CommonUtils;
 import com.supermartijn642.core.block.BaseBlock;
 import com.supermartijn642.core.block.BaseBlockEntityType;
 import com.supermartijn642.core.gui.BaseContainerType;
@@ -31,9 +32,7 @@ import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceAddPacket;
 import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceMovePacket;
 import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceNamePacket;
 import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceRemovePacket;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.fml.common.Mod;
 
 /**
  * Created 7/7/2020 by SuperMartijn642
@@ -82,7 +81,7 @@ public class Wormhole {
     @RegistryEntryAcceptor(namespace = "wormhole", identifier = "portal_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
     public static BaseBlockEntityType<?> portal_tile;
     @RegistryEntryAcceptor(namespace = "wormhole", identifier = "stabilizer_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
-    public static BaseBlockEntityType<?> stabilizer_tile;
+    public static BaseBlockEntityType<StabilizerBlockEntity> stabilizer_tile;
     @RegistryEntryAcceptor(namespace = "wormhole", identifier = "basic_energy_cell_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
     public static BaseBlockEntityType<EnergyCellBlockEntity> basic_energy_cell_tile;
     @RegistryEntryAcceptor(namespace = "wormhole", identifier = "advanced_energy_cell_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
@@ -117,8 +116,11 @@ public class Wormhole {
         CHANNEL.registerMessage(PortalActivatePacket.class, PortalActivatePacket::new, true);
         CHANNEL.registerMessage(PortalDeactivatePacket.class, PortalDeactivatePacket::new, true);
 
+        PortalGroupCapability.registerListeners();
+
         register();
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> WormholeClient::register);
+        if(CommonUtils.getEnvironmentSide().isClient())
+            WormholeClient.register();
         registerGenerators();
     }
 
@@ -166,6 +168,9 @@ public class Wormhole {
 
         // NBT recipe serializer
         handler.registerRecipeSerializer("nbtrecipe", NBTRecipe.SERIALIZER);
+
+        // Register all the api providers
+        handler.registerBlockEntityTypeCallback(helper -> WormholeAPIProviders.registerAPIProviders());
     }
 
     private static void registerGenerators(){

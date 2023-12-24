@@ -5,7 +5,7 @@ import com.supermartijn642.core.generator.ResourceCache;
 import com.supermartijn642.wormhole.NBTRecipe;
 import com.supermartijn642.wormhole.Wormhole;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
 
 /**
  * Created 06/10/2022 by SuperMartijn642
@@ -90,7 +90,7 @@ public class WormholeRecipeGenerator extends RecipeGenerator {
             .pattern("ACA")
             .pattern("ADA")
             .input('A', Tags.Items.INGOTS_IRON)
-            .input('B',Tags.Items.ENDER_PEARLS)
+            .input('B', Tags.Items.ENDER_PEARLS)
             .input('C', Items.FURNACE)
             .input('D', Tags.Items.DUSTS_REDSTONE)
             .unlockedBy(Tags.Items.INGOTS_IRON);

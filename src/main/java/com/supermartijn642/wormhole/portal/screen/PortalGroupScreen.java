@@ -20,7 +20,7 @@ public abstract class PortalGroupScreen extends ObjectBaseWidget<PortalGroup> {
 
     @Override
     protected PortalGroup getObject(PortalGroup oldObject){
-        return ClientUtils.getWorld().getCapability(PortalGroupCapability.CAPABILITY).map(group -> group.getGroup(this.pos)).get();
+        return PortalGroupCapability.get(ClientUtils.getWorld()).getGroup(this.pos);
     }
 
     @Override

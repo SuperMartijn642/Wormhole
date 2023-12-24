@@ -3,25 +3,18 @@ package com.supermartijn642.wormhole.generator;
 import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.WormholeConfig;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
 /**
  * Created 12/18/2020 by SuperMartijn642
  */
 public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements IItemHandlerModifiable {
 
-    private final LazyOptional<IItemHandler> itemCapability = LazyOptional.of(() -> this);
     private int burnTime = 0, totalBurnTime = 0;
     private ItemStack stack = ItemStack.EMPTY;
 
@@ -55,7 +48,7 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements II
     }
 
     private void burnItem(){
-        int burnTime = this.stack.isEmpty() ? 0 : ForgeHooks.getBurnTime(this.stack, RecipeType.SMELTING);
+        int burnTime = this.stack.isEmpty() ? 0 : CommonHooks.getBurnTime(this.stack, RecipeType.SMELTING);
         if(burnTime > 0){
             this.burnTime = this.totalBurnTime = burnTime;
             this.stack.shrink(1);
@@ -66,13 +59,6 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements II
         boolean lit = this.getBlockState().getValue(CoalGeneratorBlock.LIT);
         if(lit != this.burnTime > 0)
             this.level.setBlockAndUpdate(this.worldPosition, state.setValue(CoalGeneratorBlock.LIT, !lit));
-    }
-
-    @Override
-    public @NotNull <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side){
-        if(cap == ForgeCapabilities.ITEM_HANDLER)
-            return this.itemCapability.cast();
-        return super.getCapability(cap, side);
     }
 
     @Override
@@ -141,12 +127,6 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements II
 
     @Override
     public boolean isItemValid(int slot, ItemStack stack){
-        return Math.floor(ForgeHooks.getBurnTime(stack, RecipeType.SMELTING) / 2.5) > 0;
-    }
-
-    @Override
-    public void invalidateCaps(){
-        super.invalidateCaps();
-        this.itemCapability.invalidate();
+        return Math.floor(CommonHooks.getBurnTime(stack, RecipeType.SMELTING) / 2.5) > 0;
     }
 }

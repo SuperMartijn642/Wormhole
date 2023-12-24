@@ -19,13 +19,12 @@ public class PortalGroupBlockEntity extends BaseBlockEntity implements TickableB
 
     @Override
     public boolean hasGroup(){
-        PortalGroupCapability groups = this.level.getCapability(PortalGroupCapability.CAPABILITY).orElse(null);
-        return groups != null && groups.getGroup(this) != null;
+        return PortalGroupCapability.get(this.level).getGroup(this) != null;
     }
 
     @Override
     public PortalGroup getGroup(){
-        return this.level.getCapability(PortalGroupCapability.CAPABILITY).lazyMap(groups -> groups.getGroup(this)).orElse(null);
+        return PortalGroupCapability.get(this.level).getGroup(this);
     }
 
     @Override

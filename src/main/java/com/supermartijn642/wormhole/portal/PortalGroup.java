@@ -8,7 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
 /**
  * Created 7/24/2020 by SuperMartijn642
@@ -276,7 +276,7 @@ public class PortalGroup {
 
     public void destroy(){
         this.deactivate();
-        this.level.getCapability(PortalGroupCapability.CAPABILITY).ifPresent(groups -> groups.remove(this));
+        PortalGroupCapability.get(this.level).remove(this);
     }
 
     public CompoundTag write(){
@@ -288,7 +288,7 @@ public class PortalGroup {
     }
 
     private void updateGroup(){
-        this.level.getCapability(PortalGroupCapability.CAPABILITY).ifPresent(groups -> groups.updateGroup(this));
+        PortalGroupCapability.get(this.level).updateGroup(this);
     }
 
     public BlockPos getCenterPos(){

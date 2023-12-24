@@ -32,6 +32,6 @@ public class UpdateGroupPacket implements BasePacket {
 
     @Override
     public void handle(PacketContext context){
-        context.getWorld().getCapability(PortalGroupCapability.CAPABILITY).ifPresent(groups -> groups.readGroup(this.groupData));
+        PortalGroupCapability.get(context.getWorld()).readGroup(this.groupData);
     }
 }

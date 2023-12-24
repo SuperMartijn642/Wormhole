@@ -1,103 +1,56 @@
 package com.supermartijn642.wormhole;
 
+import com.supermartijn642.wormhole.extensions.WormholeLevel;
 import com.supermartijn642.wormhole.packet.UpdateGroupPacket;
 import com.supermartijn642.wormhole.packet.UpdateGroupsPacket;
 import com.supermartijn642.wormhole.portal.PortalGroup;
 import com.supermartijn642.wormhole.portal.PortalGroupBlockEntity;
 import com.supermartijn642.wormhole.portal.PortalShape;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.*;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Created 11/9/2020 by SuperMartijn642
  */
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class PortalGroupCapability {
 
-    public static Capability<PortalGroupCapability> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
-    });
-
-    @SubscribeEvent
-    public static void register(RegisterCapabilitiesEvent e){
-        e.register(PortalGroupCapability.class);
-    }
-
-    @SubscribeEvent
-    public static void attachCapabilities(AttachCapabilitiesEvent<Level> e){
-        Level level = e.getObject();
-
-        LazyOptional<PortalGroupCapability> capability = LazyOptional.of(() -> new PortalGroupCapability(level));
-        e.addCapability(new ResourceLocation("wormhole", "portal_groups"), new ICapabilitySerializable<Tag>() {
-            @Nonnull
-            @Override
-            public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side){
-                return cap == CAPABILITY ? capability.cast() : LazyOptional.empty();
-            }
-
-            @Override
-            public Tag serializeNBT(){
-                return capability.map(PortalGroupCapability::write).orElse(null);
-            }
-
-            @Override
-            public void deserializeNBT(Tag nbt){
-                capability.ifPresent(portalGroupCapability -> portalGroupCapability.read(nbt));
-            }
+    public static void registerListeners(){
+        NeoForge.EVENT_BUS.addListener((Consumer<TickEvent.LevelTickEvent>)event -> {
+            if(event.phase == TickEvent.Phase.END)
+                tickLevelCapability(event.level);
         });
-        e.addListener(capability::invalidate);
+        NeoForge.EVENT_BUS.addListener((Consumer<PlayerEvent.PlayerChangedDimensionEvent>)event -> onJoinWorld((ServerPlayer)event.getEntity(), event.getEntity().level()));
+        NeoForge.EVENT_BUS.addListener((Consumer<PlayerEvent.PlayerRespawnEvent>)event -> onRespawn((ServerPlayer)event.getEntity()));
+        NeoForge.EVENT_BUS.addListener((Consumer<PlayerEvent.PlayerLoggedInEvent>)event -> onJoin((ServerPlayer)event.getEntity()));
     }
 
-
-    @SubscribeEvent
-    public static void onTick(TickEvent.LevelTickEvent e){
-        if(e.phase != TickEvent.Phase.END)
-            return;
-
-        tickLevelCapability(e.level);
+    public static PortalGroupCapability get(Level level){
+        return ((WormholeLevel)level).wormholeGetPortalGroupCapability();
     }
 
-    public static void tickLevelCapability(Level level){
-        level.getCapability(CAPABILITY).ifPresent(PortalGroupCapability::tick);
+    private static void tickLevelCapability(Level level){
+        get(level).tick();
     }
 
-    @SubscribeEvent
-    public static void onJoinWorld(PlayerEvent.PlayerChangedDimensionEvent e){
-        ServerPlayer player = (ServerPlayer)e.getEntity();
-        player.level().getCapability(CAPABILITY).ifPresent(groups ->
-            Wormhole.CHANNEL.sendToPlayer(player, new UpdateGroupsPacket(groups.write()))
-        );
+    private static void onJoinWorld(ServerPlayer player, Level level){
+        Wormhole.CHANNEL.sendToPlayer(player, new UpdateGroupsPacket(get(level).write()));
     }
 
-    @SubscribeEvent
-    public static void onRespawn(PlayerEvent.PlayerRespawnEvent e){
-        ServerPlayer player = (ServerPlayer)e.getEntity();
-        player.level().getCapability(CAPABILITY).ifPresent(groups ->
-            Wormhole.CHANNEL.sendToPlayer(player, new UpdateGroupsPacket(groups.write()))
-        );
+    private static void onRespawn(ServerPlayer player){
+        Wormhole.CHANNEL.sendToPlayer(player, new UpdateGroupsPacket(get(player.level()).write()));
     }
 
-    @SubscribeEvent
-    public static void onJoin(PlayerEvent.PlayerLoggedInEvent e){
-        ServerPlayer player = (ServerPlayer)e.getEntity();
-        player.level().getCapability(CAPABILITY).ifPresent(groups ->
-            Wormhole.CHANNEL.sendToPlayer(player, new UpdateGroupsPacket(groups.write()))
-        );
+    private static void onJoin(ServerPlayer player){
+        Wormhole.CHANNEL.sendToPlayer(player, new UpdateGroupsPacket(get(player.level()).write()));
     }
 
     private final Level level;

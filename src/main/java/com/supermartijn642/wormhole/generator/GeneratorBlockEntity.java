@@ -11,12 +11,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -32,7 +28,6 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
     protected final int energyCapacity;
     private final int energyRange;
     private final int energyTransferLimit;
-    private final LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> this);
 
     private final Set<BlockPos> portalBlocks = new LinkedHashSet<>();
     private final HashMap<BlockPos,Direction> energyBlocks = new HashMap<>();
@@ -67,8 +62,8 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
                         Direction inputSide = Direction.UP;
                         if(entity != null){
                             for(Direction side : Direction.values()){
-                                LazyOptional<IEnergyStorage> optional = entity.getCapability(ForgeCapabilities.ENERGY, side);
-                                if(optional.map(IEnergyStorage::canReceive).orElse(false)){
+                                IEnergyStorage storage = this.level.getCapability(Capabilities.EnergyStorage.BLOCK, pos, null, entity, side);
+                                if(storage != null && storage.canReceive()){
                                     isEnergyHolder = true;
                                     inputSide = side;
                                     break;
@@ -128,11 +123,10 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
             }
             for(Map.Entry<BlockPos,Direction> entry : this.energyBlocks.entrySet()){
                 BlockPos pos = entry.getKey();
-                BlockEntity entity = this.level.getBlockEntity(pos);
-                LazyOptional<IEnergyStorage> optional;
-                if(entity != null && (optional = entity.getCapability(ForgeCapabilities.ENERGY, entry.getValue())).isPresent()){
+                IEnergyStorage storage = this.level.getCapability(Capabilities.EnergyStorage.BLOCK, pos, entry.getValue());
+                if(storage != null && storage.canReceive()){
                     final int max = toTransfer;
-                    int transferred = optional.map(storage -> storage.receiveEnergy(max, false)).orElse(0);
+                    int transferred = storage.receiveEnergy(max, false);
                     toTransfer -= transferred;
                     this.energy -= transferred;
                     this.dataChanged();
@@ -194,13 +188,6 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side){
-        if(cap == ForgeCapabilities.ENERGY)
-            return this.energyCapability.cast();
-        return super.getCapability(cap, side);
-    }
-
-    @Override
     public int receiveEnergy(int maxReceive, boolean simulate){
         return 0;
     }
@@ -233,11 +220,5 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
     @Override
     public boolean canReceive(){
         return false;
-    }
-
-    @Override
-    public void invalidateCaps(){
-        super.invalidateCaps();
-        this.energyCapability.invalidate();
     }
 }

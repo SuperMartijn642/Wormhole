@@ -5,12 +5,9 @@ import com.supermartijn642.wormhole.portal.PortalGroupBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
 /**
  * Created 11/16/2020 by SuperMartijn642
@@ -66,9 +63,9 @@ public class EnergyCellBlockEntity extends PortalGroupBlockEntity implements IEn
         public void update(){
             super.update();
             for(Direction direction : Direction.values()){
-                BlockEntity entity = this.level.getBlockEntity(this.worldPosition.relative(direction));
-                if(entity != null)
-                    entity.getCapability(ForgeCapabilities.ENERGY).ifPresent(this::pushEnergy);
+                IEnergyStorage storage = this.level.getCapability(Capabilities.EnergyStorage.BLOCK, this.worldPosition.relative(direction), direction.getOpposite());
+                if(storage != null)
+                    this.pushEnergy(storage);
             }
         }
 
@@ -79,7 +76,6 @@ public class EnergyCellBlockEntity extends PortalGroupBlockEntity implements IEn
     }
 
     protected final EnergyCellType type;
-    private final LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> this);
     protected int energy = 0;
     private int ticks = 40;
 
@@ -156,19 +152,6 @@ public class EnergyCellBlockEntity extends PortalGroupBlockEntity implements IEn
     @Override
     public boolean canReceive(){
         return true;
-    }
-
-    @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side){
-        if(cap == ForgeCapabilities.ENERGY)
-            return this.energyCapability.cast();
-        return super.getCapability(cap, side);
-    }
-
-    @Override
-    public void invalidateCaps(){
-        super.invalidateCaps();
-        this.energyCapability.invalidate();
     }
 
     @Override
