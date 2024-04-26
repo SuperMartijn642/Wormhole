@@ -2,7 +2,6 @@ package com.supermartijn642.wormhole;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -10,9 +9,9 @@ import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
@@ -39,8 +38,8 @@ public class NBTRecipe extends ShapedRecipe {
         VALID_ITEMS.add(Item.byBlock(Wormhole.coal_generator));
     }
 
-    public NBTRecipe(String group, CraftingBookCategory category, int recipeWidth, int recipeHeight, NonNullList<Ingredient> recipeItems, ItemStack recipeOutput, boolean showNotification){
-        super(group, category, recipeWidth, recipeHeight, recipeItems, recipeOutput, showNotification);
+    public NBTRecipe(String group, CraftingBookCategory category, ShapedRecipePattern pattern, ItemStack recipeOutput, boolean showNotification){
+        super(group, category, pattern, recipeOutput, showNotification);
     }
 
     @Override
@@ -87,7 +86,6 @@ public class NBTRecipe extends ShapedRecipe {
         @Nullable
         @Override
         public NBTRecipe fromNetwork(FriendlyByteBuf buffer){
-            //noinspection DataFlowIssue
             return fromShapedRecipe(RecipeSerializer.SHAPED_RECIPE.fromNetwork(buffer));
         }
 
@@ -97,7 +95,7 @@ public class NBTRecipe extends ShapedRecipe {
         }
 
         private static NBTRecipe fromShapedRecipe(ShapedRecipe recipe){
-            return new NBTRecipe(recipe.getGroup(), recipe.category(), recipe.getWidth(), recipe.getHeight(), recipe.getIngredients(), recipe.getResultItem(null), recipe.showNotification());
+            return new NBTRecipe(recipe.getGroup(), recipe.category(), recipe.pattern, recipe.getResultItem(null), recipe.showNotification());
         }
     }
 }

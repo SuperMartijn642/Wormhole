@@ -11,3 +11,5 @@ accessible field net/minecraft/server/level/ServerPlayer lastSentExp I
 accessible field net/minecraft/server/level/ServerPlayer lastSentHealth F
 accessible field net/minecraft/server/level/ServerPlayer lastSentFood I
 accessible method net/minecraft/server/level/ServerPlayer triggerDimensionChangeTriggers (Lnet/minecraft/server/level/ServerLevel;)V
+# ShapedRecipe
+accessible field net/minecraft/world/item/crafting/ShapedRecipe pattern Lnet/minecraft/world/item/crafting/ShapedRecipePattern;
