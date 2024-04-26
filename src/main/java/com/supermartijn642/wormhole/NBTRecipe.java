@@ -1,10 +1,11 @@
 package com.supermartijn642.wormhole;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -12,7 +13,6 @@ import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -38,8 +38,19 @@ public class NBTRecipe extends ShapedRecipe {
         VALID_ITEMS.add(Item.byBlock(Wormhole.coal_generator));
     }
 
+    private final String group;
+    private final CraftingBookCategory category;
+    private final ShapedRecipePattern pattern;
+    private final ItemStack result;
+    private final boolean showNotification;
+
     public NBTRecipe(String group, CraftingBookCategory category, ShapedRecipePattern pattern, ItemStack recipeOutput, boolean showNotification){
         super(group, category, pattern, recipeOutput, showNotification);
+        this.group = group;
+        this.category = category;
+        this.pattern = pattern;
+        this.result = recipeOutput;
+        this.showNotification = showNotification;
     }
 
     @Override
@@ -72,18 +83,20 @@ public class NBTRecipe extends ShapedRecipe {
 
     private static class Serializer implements RecipeSerializer<NBTRecipe> {
 
-        private static final Codec<NBTRecipe> CODEC = new ShapedRecipe.Serializer().codec()
-            .flatXmap(
-                shapedRecipe -> DataResult.success(fromShapedRecipe(shapedRecipe)),
-                DataResult::success
-            );
+        private static final Codec<NBTRecipe> CODEC = RecordCodecBuilder.create(instance ->
+            instance.group(
+                ExtraCodecs.strictOptionalField(Codec.STRING, "group", "").forGetter(recipe -> recipe.group),
+                CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(recipe -> recipe.category),
+                ShapedRecipePattern.MAP_CODEC.forGetter(recipe -> recipe.pattern),
+                ItemStack.ITEM_WITH_COUNT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
+                ExtraCodecs.strictOptionalField(Codec.BOOL, "show_notification", true).forGetter(recipe -> recipe.showNotification)
+            ).apply(instance, NBTRecipe::new));
 
         @Override
         public Codec<NBTRecipe> codec(){
             return CODEC;
         }
 
-        @Nullable
         @Override
         public NBTRecipe fromNetwork(FriendlyByteBuf buffer){
             return fromShapedRecipe(RecipeSerializer.SHAPED_RECIPE.fromNetwork(buffer));
