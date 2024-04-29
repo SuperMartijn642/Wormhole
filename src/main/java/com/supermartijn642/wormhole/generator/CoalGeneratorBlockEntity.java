@@ -77,7 +77,11 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity {
         int burnTime = this.stack.isEmpty() ? 0 : this.getBurnTime(this.stack.getItem());
         if(burnTime > 0){
             this.burnTime = this.totalBurnTime = burnTime;
-            this.stack.shrink(1);
+            if(this.stack.getCount() == 1){
+                ItemStack remainder = this.stack.getRecipeRemainder();
+                this.stack = remainder == null ? ItemStack.EMPTY : remainder;
+            }else
+                this.stack.shrink(1);
             this.dataChanged();
         }
 
