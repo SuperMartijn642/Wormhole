@@ -156,23 +156,24 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
     protected NBTTagCompound writeData(){
         NBTTagCompound data = new NBTTagCompound();
         data.setInteger("energy", this.energy);
-        data.setInteger("searchX", this.searchX);
-        data.setInteger("searchY", this.searchY);
-        data.setInteger("searchZ", this.searchZ);
+        BlockPos self = this.pos;
+        data.setInteger("searchX", this.searchX - self.getX());
+        data.setInteger("searchY", this.searchY - self.getY());
+        data.setInteger("searchZ", this.searchZ - self.getZ());
         int[] portalBlocks = new int[this.portalBlocks.size() * 3];
         int index = 0;
         for(BlockPos pos : this.portalBlocks){
-            portalBlocks[index++] = pos.getX();
-            portalBlocks[index++] = pos.getY();
-            portalBlocks[index++] = pos.getZ();
+            portalBlocks[index++] = pos.getX() - self.getX();
+            portalBlocks[index++] = pos.getY() - self.getY();
+            portalBlocks[index++] = pos.getZ() - self.getZ();
         }
         data.setIntArray("portalBlocks", portalBlocks);
         int[] energyBlocks = new int[this.energyBlocks.size() * 4];
         index = 0;
         for(Map.Entry<BlockPos,EnumFacing> entry : this.energyBlocks.entrySet()){
-            energyBlocks[index++] = entry.getKey().getX();
-            energyBlocks[index++] = entry.getKey().getY();
-            energyBlocks[index++] = entry.getKey().getZ();
+            energyBlocks[index++] = entry.getKey().getX() - self.getX();
+            energyBlocks[index++] = entry.getKey().getY() - self.getY();
+            energyBlocks[index++] = entry.getKey().getZ() - self.getZ();
             energyBlocks[index++] = entry.getValue().getIndex();
         }
         data.setIntArray("energyBlocks", energyBlocks);
@@ -180,22 +181,34 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
     }
 
     @Override
+    protected NBTTagCompound writeItemStackData(){
+        NBTTagCompound data = super.writeItemStackData();
+        data.removeTag("searchX");
+        data.removeTag("searchY");
+        data.removeTag("searchZ");
+        data.removeTag("portalBlocks");
+        data.removeTag("energyBlocks");
+        return data;
+    }
+
+    @Override
     protected void readData(NBTTagCompound tag){
         this.energy = tag.hasKey("energy") ? tag.getInteger("energy") : 0;
-        this.searchX = tag.hasKey("searchX") ? Math.min(Math.max(tag.getInteger("searchX"), -this.energyRange), this.energyRange) : 0;
-        this.searchY = tag.hasKey("searchY") ? Math.min(Math.max(tag.getInteger("searchY"), -this.energyRange), this.energyRange) : 0;
-        this.searchZ = tag.hasKey("searchZ") ? Math.min(Math.max(tag.getInteger("searchZ"), -this.energyRange), this.energyRange) : 0;
+        BlockPos self = this.pos;
+        this.searchX = tag.hasKey("searchX") ? Math.min(Math.max(tag.getInteger("searchX") + self.getX(), -this.energyRange), this.energyRange) : 0;
+        this.searchY = tag.hasKey("searchY") ? Math.min(Math.max(tag.getInteger("searchY") + self.getY(), -this.energyRange), this.energyRange) : 0;
+        this.searchZ = tag.hasKey("searchZ") ? Math.min(Math.max(tag.getInteger("searchZ") + self.getZ(), -this.energyRange), this.energyRange) : 0;
         this.portalBlocks.clear();
         if(tag.hasKey("portalBlocks", Constants.NBT.TAG_INT_ARRAY)){
             int[] portalBlocks = tag.getIntArray("portalBlocks");
             for(int i = 0; i < portalBlocks.length / 3 * 3; )
-                this.portalBlocks.add(new BlockPos(portalBlocks[i++], portalBlocks[i++], portalBlocks[i++]));
+                this.portalBlocks.add(new BlockPos(portalBlocks[i++] + self.getX(), portalBlocks[i++] + self.getY(), portalBlocks[i++] + self.getZ()));
         }
         this.energyBlocks.clear();
         if(tag.hasKey("energyBlocks", Constants.NBT.TAG_INT_ARRAY)){
             int[] energyBlocks = tag.getIntArray("energyBlocks");
             for(int i = 0; i < energyBlocks.length / 4 * 4; )
-                this.energyBlocks.put(new BlockPos(energyBlocks[i++], energyBlocks[i++], energyBlocks[i++]), EnumFacing.getFront(energyBlocks[i++]));
+                this.energyBlocks.put(new BlockPos(energyBlocks[i++] + self.getX(), energyBlocks[i++] + self.getY(), energyBlocks[i++] + self.getZ()), EnumFacing.getFront(energyBlocks[i++]));
         }
     }
 
