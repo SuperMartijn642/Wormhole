@@ -59,7 +59,11 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements II
         int burnTime = this.stack.isEmpty() ? 0 : ForgeHooks.getBurnTime(this.stack, RecipeType.SMELTING);
         if(burnTime > 0){
             this.burnTime = this.totalBurnTime = burnTime;
-            this.stack.shrink(1);
+            if(this.stack.getCount() == 1){
+                ItemStack remainder = this.stack.getContainerItem();
+                this.stack = remainder == null ? ItemStack.EMPTY : remainder;
+            }else
+                this.stack.shrink(1);
             this.dataChanged();
         }
 
