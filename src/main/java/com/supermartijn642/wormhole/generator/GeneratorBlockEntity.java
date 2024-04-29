@@ -160,16 +160,17 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
     protected CompoundTag writeData(){
         CompoundTag data = new CompoundTag();
         data.putInt("energy", this.energy);
-        data.putInt("searchX", this.searchX);
-        data.putInt("searchY", this.searchY);
-        data.putInt("searchZ", this.searchZ);
-        data.putLongArray("portalBlocks", this.portalBlocks.stream().map(BlockPos::asLong).collect(Collectors.toList()));
+        BlockPos self = this.worldPosition;
+        data.putInt("searchX", this.searchX - self.getX());
+        data.putInt("searchY", this.searchY - self.getY());
+        data.putInt("searchZ", this.searchZ - self.getZ());
+        data.putLongArray("portalBlocks", this.portalBlocks.stream().map(pos -> pos.subtract(self)).map(BlockPos::asLong).collect(Collectors.toList()));
         int[] energyBlocks = new int[this.energyBlocks.size() * 4];
         int index = 0;
         for(Map.Entry<BlockPos,Direction> entry : this.energyBlocks.entrySet()){
-            energyBlocks[index++] = entry.getKey().getX();
-            energyBlocks[index++] = entry.getKey().getY();
-            energyBlocks[index++] = entry.getKey().getZ();
+            energyBlocks[index++] = entry.getKey().getX() - self.getX();
+            energyBlocks[index++] = entry.getKey().getY() - self.getY();
+            energyBlocks[index++] = entry.getKey().getZ() - self.getZ();
             energyBlocks[index++] = entry.getValue().get3DDataValue();
         }
         data.putIntArray("energyBlocks", energyBlocks);
@@ -177,19 +178,34 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
     }
 
     @Override
+    protected CompoundTag writeItemStackData(){
+        CompoundTag data = super.writeItemStackData();
+        data.remove("searchX");
+        data.remove("searchY");
+        data.remove("searchZ");
+        data.remove("portalBlocks");
+        data.remove("energyBlocks");
+        return data;
+    }
+
+    @Override
     protected void readData(CompoundTag tag){
         this.energy = tag.contains("energy") ? tag.getInt("energy") : 0;
-        this.searchX = tag.contains("searchX") ? Math.min(Math.max(tag.getInt("searchX"), -this.energyRange), this.energyRange) : 0;
-        this.searchY = tag.contains("searchY") ? Math.min(Math.max(tag.getInt("searchY"), -this.energyRange), this.energyRange) : 0;
-        this.searchZ = tag.contains("searchZ") ? Math.min(Math.max(tag.getInt("searchZ"), -this.energyRange), this.energyRange) : 0;
+        BlockPos self = this.worldPosition;
+        this.searchX = tag.contains("searchX") ? Math.min(Math.max(tag.getInt("searchX") + self.getX(), -this.energyRange), this.energyRange) : 0;
+        this.searchY = tag.contains("searchY") ? Math.min(Math.max(tag.getInt("searchY") + self.getY(), -this.energyRange), this.energyRange) : 0;
+        this.searchZ = tag.contains("searchZ") ? Math.min(Math.max(tag.getInt("searchZ") + self.getZ(), -this.energyRange), this.energyRange) : 0;
         this.portalBlocks.clear();
         if(tag.contains("portalBlocks", Tag.TAG_LONG_ARRAY))
-            Arrays.stream(tag.getLongArray("portalBlocks")).mapToObj(BlockPos::of).forEach(this.portalBlocks::add);
+            Arrays.stream(tag.getLongArray("portalBlocks")).mapToObj(BlockPos::of).map(pos -> pos.offset(self)).forEach(this.portalBlocks::add);
         this.energyBlocks.clear();
         if(tag.contains("energyBlocks", Tag.TAG_INT_ARRAY)){
             int[] energyBlocks = tag.getIntArray("energyBlocks");
             for(int i = 0; i < energyBlocks.length / 4 * 4; )
-                this.energyBlocks.put(new BlockPos(energyBlocks[i++], energyBlocks[i++], energyBlocks[i++]), Direction.from3DDataValue(energyBlocks[i++]));
+                this.energyBlocks.put(
+                    new BlockPos(energyBlocks[i++] + self.getX(), energyBlocks[i++] + self.getY(), energyBlocks[i++] + self.getZ()),
+                    Direction.from3DDataValue(energyBlocks[i++])
+                );
         }
     }
 
