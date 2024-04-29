@@ -52,7 +52,11 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements II
         int burnTime = this.stack.isEmpty() ? 0 : TileEntityFurnace.getItemBurnTime(this.stack);
         if(burnTime > 0){
             this.burnTime = this.totalBurnTime = burnTime;
-            this.stack.shrink(1);
+            if(this.stack.getCount() == 1){
+                ItemStack remainder = this.stack.getItem().getContainerItem(this.stack);
+                this.stack = remainder == null ? ItemStack.EMPTY : remainder;
+            }else
+                this.stack.shrink(1);
             this.dataChanged();
         }
 
