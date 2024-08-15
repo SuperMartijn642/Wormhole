@@ -15,8 +15,8 @@ import net.minecraft.resources.ResourceLocation;
  */
 public class WormholeColoredButton extends ButtonWidget {
 
-    private final ResourceLocation RED_BUTTONS = new ResourceLocation("wormhole", "textures/gui/red_buttons.png");
-    private final ResourceLocation GREEN_BUTTONS = new ResourceLocation("wormhole", "textures/gui/green_buttons.png");
+    private final ResourceLocation RED_BUTTONS = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/red_buttons.png");
+    private final ResourceLocation GREEN_BUTTONS = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/green_buttons.png");
 
     private int color; // 1 is red, 2 is green, other is default
     private boolean visible = true;

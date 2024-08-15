@@ -7,10 +7,10 @@
   ],
   "key": {
     "A": {
-      "tag": "c:iron_ingots"
+      "tag": "c:ingots/iron"
     },
     "B": {
-      "item": "minecraft:cobblestone"
+      "tag": "c:cobblestones"
     },
     "C": {
       "item": "minecraft:obsidian"

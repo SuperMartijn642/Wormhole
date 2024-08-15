@@ -4,7 +4,7 @@ import com.supermartijn642.core.generator.RecipeGenerator;
 import com.supermartijn642.core.generator.ResourceCache;
 import com.supermartijn642.wormhole.NBTRecipe;
 import com.supermartijn642.wormhole.Wormhole;
-import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.minecraft.world.item.Items;
 
 /**
@@ -24,7 +24,7 @@ public class WormholeRecipeGenerator extends RecipeGenerator {
             .pattern("BCB")
             .pattern("ABA")
             .input('A', ConventionalItemTags.IRON_INGOTS)
-            .input('B', Items.COBBLESTONE)
+            .input('B', ConventionalItemTags.COBBLESTONES)
             .input('C', Items.OBSIDIAN)
             .unlockedBy(ConventionalItemTags.IRON_INGOTS);
 
@@ -34,11 +34,11 @@ public class WormholeRecipeGenerator extends RecipeGenerator {
             .pattern("CDC")
             .pattern("AEA")
             .input('A', ConventionalItemTags.IRON_INGOTS)
-            .input('B', Items.LAPIS_BLOCK)
-            .input('C', Items.GLOWSTONE_DUST)
-            .input('D', Items.ENDER_PEARL)
-            .input('E', Items.REDSTONE_BLOCK)
-            .unlockedBy(Items.ENDER_PEARL);
+            .input('B', ConventionalItemTags.STORAGE_BLOCKS_LAPIS)
+            .input('C', ConventionalItemTags.GLOWSTONE_DUSTS)
+            .input('D', ConventionalItemTags.ENDER_PEARLS)
+            .input('E', ConventionalItemTags.STORAGE_BLOCKS_REDSTONE)
+            .unlockedBy(ConventionalItemTags.ENDER_PEARLS);
 
         // Basic energy cell
         this.shaped(Wormhole.basic_energy_cell)
@@ -47,7 +47,7 @@ public class WormholeRecipeGenerator extends RecipeGenerator {
             .pattern("ABA")
             .input('A', ConventionalItemTags.IRON_INGOTS)
             .input('B', ConventionalItemTags.REDSTONE_DUSTS)
-            .input('C', Items.REDSTONE_BLOCK)
+            .input('C', ConventionalItemTags.STORAGE_BLOCKS_REDSTONE)
             .unlockedBy(ConventionalItemTags.IRON_INGOTS);
 
         // Advanced energy cell
@@ -57,7 +57,7 @@ public class WormholeRecipeGenerator extends RecipeGenerator {
             .pattern("CDC")
             .pattern("ABA")
             .input('A', ConventionalItemTags.IRON_INGOTS)
-            .input('B', ConventionalItemTags.QUARTZ)
+            .input('B', ConventionalItemTags.QUARTZ_GEMS)
             .input('C', Items.REPEATER)
             .input('D', Wormhole.basic_energy_cell)
             .unlockedBy(Wormhole.basic_energy_cell);
@@ -68,7 +68,7 @@ public class WormholeRecipeGenerator extends RecipeGenerator {
             .pattern("BCB")
             .pattern("ABA")
             .input('A', ConventionalItemTags.IRON_INGOTS)
-            .input('B', ConventionalItemTags.LAPIS)
+            .input('B', ConventionalItemTags.LAPIS_GEMS)
             .input('C', Items.COMPASS)
             .unlockedBy(ConventionalItemTags.IRON_INGOTS);
 
@@ -79,8 +79,8 @@ public class WormholeRecipeGenerator extends RecipeGenerator {
             .pattern("CDC")
             .pattern("ABA")
             .input('A', ConventionalItemTags.IRON_INGOTS)
-            .input('B', ConventionalItemTags.LAPIS)
-            .input('C', Items.GLOWSTONE_DUST)
+            .input('B', ConventionalItemTags.LAPIS_GEMS)
+            .input('C', ConventionalItemTags.GLOWSTONE_DUSTS)
             .input('D', Wormhole.basic_target_cell)
             .unlockedBy(Wormhole.basic_target_cell);
 
@@ -90,7 +90,7 @@ public class WormholeRecipeGenerator extends RecipeGenerator {
             .pattern("ACA")
             .pattern("ADA")
             .input('A', ConventionalItemTags.IRON_INGOTS)
-            .input('B', Items.ENDER_PEARL)
+            .input('B', ConventionalItemTags.ENDER_PEARLS)
             .input('C', Items.FURNACE)
             .input('D', ConventionalItemTags.REDSTONE_DUSTS)
             .unlockedBy(ConventionalItemTags.IRON_INGOTS);
@@ -102,7 +102,7 @@ public class WormholeRecipeGenerator extends RecipeGenerator {
             .pattern("BDB")
             .input('A', ConventionalItemTags.REDSTONE_DUSTS)
             .input('B', ConventionalItemTags.IRON_INGOTS)
-            .input('C', Items.ENDER_PEARL)
+            .input('C', ConventionalItemTags.ENDER_PEARLS)
             .input('D', Items.COMPASS)
             .unlockedBy(ConventionalItemTags.IRON_INGOTS);
 
@@ -112,7 +112,7 @@ public class WormholeRecipeGenerator extends RecipeGenerator {
             .pattern("  A")
             .pattern("BCD")
             .pattern("BBB")
-            .input('A', Items.GLOWSTONE_DUST)
+            .input('A', ConventionalItemTags.GLOWSTONE_DUSTS)
             .input('B', ConventionalItemTags.IRON_INGOTS)
             .input('C', Wormhole.target_device)
             .input('D', ConventionalItemTags.GOLD_INGOTS)

@@ -129,7 +129,7 @@ public class PortalRendererHelper {
                 poseStack.pushPose();
                 poseStack.translate(pos.getX() - 0.5, pos.getY() - 0.5, pos.getZ() - 0.5);
 
-                entityRenderer.render(entity, ClientUtils.getMinecraft().getFrameTime(), poseStack, bufferSource, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+                entityRenderer.render(entity, ClientUtils.getPartialTicks(), poseStack, bufferSource, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
 
                 poseStack.popPose();
             }

@@ -45,7 +45,7 @@ public class TargetDeviceScreen extends ItemBaseWidget {
     private static final ResourceLocation SEPARATOR = getTexture("select_target_screen/separator");
 
     private static ResourceLocation getTexture(String name){
-        return new ResourceLocation("wormhole", "textures/gui/" + name + ".png");
+        return ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/" + name + ".png");
     }
 
     private static final int WIDTH = 324, HEIGHT = 185;

@@ -18,8 +18,8 @@ import java.util.function.Supplier;
  */
 public class PortalTargetSelectColorButton extends AbstractButtonWidget {
 
-    public static final ResourceLocation BUTTON_OUTLINE = new ResourceLocation("wormhole", "textures/gui/large_color_buttons.png");
-    public static final ResourceLocation RANDOM_COLOR_PORTAL = new ResourceLocation("wormhole", "textures/gui/random_color_portal.png");
+    public static final ResourceLocation BUTTON_OUTLINE = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/large_color_buttons.png");
+    public static final ResourceLocation RANDOM_COLOR_PORTAL = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/random_color_portal.png");
 
     private final DyeColor color;
     private final Supplier<DyeColor> targetColor;
@@ -37,7 +37,7 @@ public class PortalTargetSelectColorButton extends AbstractButtonWidget {
     public void render(WidgetRenderContext context, int mouseX, int mouseY){
         ScreenUtils.bindTexture(BUTTON_OUTLINE);
         ScreenUtils.drawTexture(context.poseStack(), this.x, this.y, this.width, this.height, 0, this.targetColor.get() == this.color ? 2 / 3f : this.isFocused() ? 1 / 3f : 0, 1, 1 / 3f);
-        ScreenUtils.bindTexture(this.color == null ? RANDOM_COLOR_PORTAL : new ResourceLocation("wormhole", "textures/portal/portal_" + this.color.getName() + ".png"));
+        ScreenUtils.bindTexture(this.color == null ? RANDOM_COLOR_PORTAL : ResourceLocation.fromNamespaceAndPath("wormhole", "textures/portal/portal_" + this.color.getName() + ".png"));
         ScreenUtils.drawTexture(context.poseStack(), this.x + 2, this.y + 2, this.width - 4, this.height - 4, 0, 0, 1, 16 / 512f);
     }
 

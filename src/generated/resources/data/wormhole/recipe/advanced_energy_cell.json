@@ -7,10 +7,10 @@
   ],
   "key": {
     "A": {
-      "tag": "c:iron_ingots"
+      "tag": "c:ingots/iron"
     },
     "B": {
-      "tag": "c:quartz"
+      "tag": "c:gems/quartz"
     },
     "C": {
       "item": "minecraft:repeater"

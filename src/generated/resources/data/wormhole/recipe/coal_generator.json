@@ -7,16 +7,16 @@
   ],
   "key": {
     "A": {
-      "tag": "c:iron_ingots"
+      "tag": "c:ingots/iron"
     },
     "B": {
-      "item": "minecraft:ender_pearl"
+      "tag": "c:ender_pearls"
     },
     "C": {
       "item": "minecraft:furnace"
     },
     "D": {
-      "tag": "c:redstone_dusts"
+      "tag": "c:dusts/redstone"
     }
   },
   "result": {

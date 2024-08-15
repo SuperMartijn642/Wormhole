@@ -29,16 +29,16 @@ import java.util.function.Supplier;
  */
 public class PortalOverviewScreen extends PortalGroupScreen {
 
-    private static final ResourceLocation BACKGROUND = new ResourceLocation("wormhole", "textures/gui/portal_overview_screen.png");
-    private static final ResourceLocation LOCATION_ICON = new ResourceLocation("wormhole", "textures/gui/select_target_screen/location_icon.png");
-    private static final ResourceLocation ENERGY_ICON = new ResourceLocation("wormhole", "textures/gui/select_target_screen/lightning_icon.png");
-    private static final ResourceLocation TELEPORT_ICON = new ResourceLocation("wormhole", "textures/gui/select_target_screen/teleport_icon.png");
-    private static final ResourceLocation STAR_ICON = new ResourceLocation("wormhole", "textures/gui/select_target_screen/star_icon.png");
-    private static final ResourceLocation DIMENSION_ICON = new ResourceLocation("wormhole", "textures/gui/select_target_screen/dimension_icon.png");
-    private static final ResourceLocation CHECKMARK_ICON = new ResourceLocation("wormhole", "textures/gui/select_target_screen/checkmark_icon.png");
-    private static final ResourceLocation CROSS_ICON = new ResourceLocation("wormhole", "textures/gui/select_target_screen/cross_icon.png");
-    private static final ResourceLocation WARNING_ICON = new ResourceLocation("wormhole", "textures/gui/select_target_screen/warning_icon.png");
-    private static final ResourceLocation SEPARATOR = new ResourceLocation("wormhole", "textures/gui/select_target_screen/separator.png");
+    private static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/portal_overview_screen.png");
+    private static final ResourceLocation LOCATION_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/select_target_screen/location_icon.png");
+    private static final ResourceLocation ENERGY_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/select_target_screen/lightning_icon.png");
+    private static final ResourceLocation TELEPORT_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/select_target_screen/teleport_icon.png");
+    private static final ResourceLocation STAR_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/select_target_screen/star_icon.png");
+    private static final ResourceLocation DIMENSION_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/select_target_screen/dimension_icon.png");
+    private static final ResourceLocation CHECKMARK_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/select_target_screen/checkmark_icon.png");
+    private static final ResourceLocation CROSS_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/select_target_screen/cross_icon.png");
+    private static final ResourceLocation WARNING_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/select_target_screen/warning_icon.png");
+    private static final ResourceLocation SEPARATOR = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/select_target_screen/separator.png");
     private static final int WIDTH = 280, HEIGHT = 185;
 
     private WormholeColoredButton activateButton;

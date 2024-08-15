@@ -1,25 +1,22 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "  A",
+    "ABA",
     "BCB",
-    "BDB"
+    "ABA"
   ],
   "key": {
     "A": {
-      "tag": "c:redstone_dusts"
+      "tag": "c:ingots/iron"
     },
     "B": {
-      "tag": "c:iron_ingots"
+      "tag": "c:gems/lapis"
     },
     "C": {
-      "item": "minecraft:ender_pearl"
-    },
-    "D": {
       "item": "minecraft:compass"
     }
   },
   "result": {
-    "id": "wormhole:target_device"
+    "id": "wormhole:basic_target_cell"
   }
 }

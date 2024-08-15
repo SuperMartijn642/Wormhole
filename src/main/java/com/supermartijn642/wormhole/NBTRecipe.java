@@ -8,13 +8,9 @@ import com.supermartijn642.wormhole.targetdevice.TargetDeviceItem;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.ShapedRecipe;
-import net.minecraft.world.item.crafting.ShapedRecipePattern;
+import net.minecraft.world.item.crafting.*;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -57,12 +53,12 @@ public class NBTRecipe extends ShapedRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer inventory, HolderLookup.Provider provider){
+    public ItemStack assemble(CraftingInput input, HolderLookup.Provider provider){
         ItemStack result = this.getResultItem(provider).copy();
         loop:
-        for(int i = 0; i < inventory.getHeight(); i++){
-            for(int j = 0; j < inventory.getWidth(); j++){
-                ItemStack stack = inventory.getItem(i * inventory.getWidth() + j);
+        for(int i = 0; i < input.height(); i++){
+            for(int j = 0; j < input.width(); j++){
+                ItemStack stack = input.getItem(i * input.width() + j);
                 if(!VALID_ITEMS.contains(stack.getItem()))
                     continue;
                 if(stack.has(BaseBlock.TILE_DATA)){

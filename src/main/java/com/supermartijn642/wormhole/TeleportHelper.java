@@ -1,14 +1,15 @@
 package com.supermartijn642.wormhole;
 
 import com.supermartijn642.wormhole.portal.PortalTarget;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.protocol.game.*;
+import net.minecraft.network.protocol.game.ClientboundChangeDifficultyPacket;
+import net.minecraft.network.protocol.game.ClientboundPlayerAbilitiesPacket;
+import net.minecraft.network.protocol.game.ClientboundRespawnPacket;
+import net.minecraft.network.protocol.game.ClientboundSetPassengersPacket;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.TicketType;
 import net.minecraft.server.players.PlayerList;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
@@ -107,14 +108,12 @@ public class TeleportHelper {
                 player.setServerLevel(targetLevel);
                 player.connection.teleport(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
                 player.connection.resetPosition();
-                targetLevel.addDuringPortalTeleport(player);
+                targetLevel.addDuringTeleport(player);
                 player.triggerDimensionChangeTriggers(oldLevel);
                 player.connection.send(new ClientboundPlayerAbilitiesPacket(player.getAbilities()));
                 playerList.sendLevelInfo(player, targetLevel);
                 playerList.sendAllPlayerInfo(player);
-                for(MobEffectInstance effectInstance : player.getActiveEffects())
-                    player.connection.send(new ClientboundUpdateMobEffectPacket(player.getId(), effectInstance, false));
-                player.connection.send(new ClientboundLevelEventPacket(1032, BlockPos.ZERO, 0, false));
+                playerList.sendActivePlayerEffects(player);
                 player.lastSentExp = -1;
                 player.lastSentHealth = -1.0f;
                 player.lastSentFood = -1;

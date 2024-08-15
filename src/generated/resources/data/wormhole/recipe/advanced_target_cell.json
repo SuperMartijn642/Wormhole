@@ -7,13 +7,13 @@
   ],
   "key": {
     "A": {
-      "tag": "c:iron_ingots"
+      "tag": "c:ingots/iron"
     },
     "B": {
-      "tag": "c:lapis"
+      "tag": "c:gems/lapis"
     },
     "C": {
-      "item": "minecraft:glowstone_dust"
+      "tag": "c:dusts/glowstone"
     },
     "D": {
       "item": "wormhole:basic_target_cell"

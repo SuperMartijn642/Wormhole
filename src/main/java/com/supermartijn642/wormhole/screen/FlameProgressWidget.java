@@ -13,7 +13,7 @@ import java.util.function.Supplier;
  */
 public class FlameProgressWidget extends BaseWidget {
 
-    private static final ResourceLocation FLAME = new ResourceLocation("wormhole", "textures/gui/progress_flame.png");
+    private static final ResourceLocation FLAME = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/progress_flame.png");
 
     private final Supplier<Float> progress;
 
