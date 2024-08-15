@@ -67,6 +67,6 @@ public class ScreenBlockRenderer {
         PoseStack.Pose matrix = poseStack.last();
 
         for(BakedQuad bakedquad : quads)
-            buffer.putBulkData(matrix, bakedquad, 1, 1, 1, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+            buffer.putBulkData(matrix, bakedquad, 1, 1, 1, 1, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
     }
 }

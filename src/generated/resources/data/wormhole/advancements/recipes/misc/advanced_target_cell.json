@@ -2,7 +2,7 @@
   "parent": "minecraft:recipes/root",
   "display": {
     "icon": {
-      "item": "wormhole:advanced_target_cell"
+      "id": "wormhole:advanced_target_cell"
     },
     "title": {
       "translate": "wormhole.advancement.recipes/misc/advanced_target_cell.title"
@@ -27,9 +27,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "wormhole:basic_target_cell"
-            ]
+            "items": "wormhole:basic_target_cell"
           }
         ]
       }

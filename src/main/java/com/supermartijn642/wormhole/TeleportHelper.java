@@ -12,7 +12,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.biome.BiomeManager;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.phys.Vec3;
 
@@ -95,13 +95,15 @@ public class TeleportHelper {
                 ServerPlayer player = ((ServerPlayer)entity);
                 player.isChangingDimension = true;
                 LevelData levelData = targetLevel.getLevelData();
-                player.connection.send(new ClientboundRespawnPacket(new CommonPlayerSpawnInfo(targetLevel.dimensionTypeId(), targetLevel.dimension(), BiomeManager.obfuscateSeed(targetLevel.getSeed()), player.gameMode.getGameModeForPlayer(), player.gameMode.getPreviousGameModeForPlayer(), targetLevel.isDebug(), targetLevel.isFlat(), player.getLastDeathLocation(), player.getPortalCooldown()), (byte)3));
+                player.connection.send(new ClientboundRespawnPacket(player.createCommonSpawnInfo(targetLevel), (byte)3));
                 player.connection.send(new ClientboundChangeDifficultyPacket(levelData.getDifficulty(), levelData.isDifficultyLocked()));
                 PlayerList playerList = player.server.getPlayerList();
                 playerList.sendPlayerPermissionLevel(player);
                 ServerLevel oldLevel = player.serverLevel();
                 oldLevel.removePlayerImmediately(player, Entity.RemovalReason.CHANGED_DIMENSION);
                 player.unsetRemoved();
+                if(targetLevel.dimension() == Level.NETHER)
+                    player.enteredNetherPosition = new Vec3(target.x + .5, target.y + .2, target.z + .5);
                 player.setServerLevel(targetLevel);
                 player.connection.teleport(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
                 player.connection.resetPosition();
@@ -111,7 +113,7 @@ public class TeleportHelper {
                 playerList.sendLevelInfo(player, targetLevel);
                 playerList.sendAllPlayerInfo(player);
                 for(MobEffectInstance effectInstance : player.getActiveEffects())
-                    player.connection.send(new ClientboundUpdateMobEffectPacket(player.getId(), effectInstance));
+                    player.connection.send(new ClientboundUpdateMobEffectPacket(player.getId(), effectInstance, false));
                 player.connection.send(new ClientboundLevelEventPacket(1032, BlockPos.ZERO, 0, false));
                 player.lastSentExp = -1;
                 player.lastSentHealth = -1.0f;

@@ -1,5 +1,6 @@
 package com.supermartijn642.wormhole;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -16,7 +17,7 @@ public class PortalGroupCapabilitySaveData extends SavedData {
     public static void init(ServerLevel level, PortalGroupCapability capability){
         level.getDataStorage().computeIfAbsent(new Factory<SavedData>(
             () -> new PortalGroupCapabilitySaveData(capability),
-            tag -> {
+            (tag, provider) -> {
                 PortalGroupCapabilitySaveData saveData = new PortalGroupCapabilitySaveData(capability);
                 saveData.load(tag);
                 return saveData;
@@ -30,7 +31,7 @@ public class PortalGroupCapabilitySaveData extends SavedData {
     }
 
     @Override
-    public CompoundTag save(CompoundTag tag){
+    public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider){
         return this.capability.write();
     }
 

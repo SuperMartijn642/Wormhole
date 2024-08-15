@@ -10,8 +10,8 @@
       ],
       "entries": [
         {
-          "type": "minecraft:item",
-          "name": "wormhole:portal_frame"
+          "name": "wormhole:portal_frame",
+          "type": "minecraft:item"
         }
       ]
     }

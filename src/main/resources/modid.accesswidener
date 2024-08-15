@@ -6,6 +6,7 @@ accessible method net/minecraft/world/entity/Entity unsetRemoved ()V
 # ServerLevel
 accessible method net/minecraft/server/level/ServerLevel addPlayer (Lnet/minecraft/server/level/ServerPlayer;)V
 # ServerPlayer
+accessible field net/minecraft/server/level/ServerPlayer enteredNetherPosition Lnet/minecraft/world/phys/Vec3;
 accessible field net/minecraft/server/level/ServerPlayer isChangingDimension Z
 accessible field net/minecraft/server/level/ServerPlayer lastSentExp I
 accessible field net/minecraft/server/level/ServerPlayer lastSentHealth F

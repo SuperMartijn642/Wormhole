@@ -10,8 +10,8 @@
       ],
       "entries": [
         {
-          "type": "minecraft:item",
-          "name": "wormhole:coal_generator"
+          "name": "wormhole:coal_generator",
+          "type": "minecraft:item"
         }
       ]
     }

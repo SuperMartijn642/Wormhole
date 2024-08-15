@@ -116,7 +116,7 @@ public class PortalRendererHelper {
         PoseStack.Pose matrix = poseStack.last();
 
         for(BakedQuad bakedquad : quads)
-            buffer.putBulkData(matrix, bakedquad, 1, valid ? 1 : 0.5f, valid ? 1 : 0.5f, combinedLight, combinedOverlay);
+            buffer.putBulkData(matrix, bakedquad, 1, valid ? 1 : 0.5f, valid ? 1 : 0.5f, valid ? 1 : 0.8f, combinedLight, combinedOverlay);
     }
 
     private static void renderBlockEntity(Level level, BlockPos pos, PoseStack poseStack, MultiBufferSource bufferSource){

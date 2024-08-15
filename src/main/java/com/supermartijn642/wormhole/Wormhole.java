@@ -151,6 +151,7 @@ public class Wormhole implements ModInitializer {
         // Target devices
         handler.registerItem("target_device", () -> new TargetDeviceItem(WormholeConfig.basicDeviceTargetCount));
         handler.registerItem("advanced_target_device", () -> new TargetDeviceItem(WormholeConfig.advancedDeviceTargetCount));
+        handler.registerDataComponentType("target_device_targets", TargetDeviceItem.TARGETS);
 
         // NBT recipe serializer
         handler.registerRecipeSerializer("nbtrecipe", NBTRecipe.SERIALIZER);

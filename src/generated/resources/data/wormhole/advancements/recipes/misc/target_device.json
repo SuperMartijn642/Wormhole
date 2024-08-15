@@ -2,7 +2,7 @@
   "parent": "minecraft:recipes/root",
   "display": {
     "icon": {
-      "item": "wormhole:target_device"
+      "id": "wormhole:target_device"
     },
     "title": {
       "translate": "wormhole.advancement.recipes/misc/target_device.title"
@@ -27,7 +27,7 @@
       "conditions": {
         "items": [
           {
-            "tag": "c:iron_ingots"
+            "items": "#c:iron_ingots"
           }
         ]
       }

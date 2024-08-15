@@ -10,8 +10,8 @@
       ],
       "entries": [
         {
-          "type": "minecraft:item",
-          "name": "wormhole:creative_energy_cell"
+          "name": "wormhole:creative_energy_cell",
+          "type": "minecraft:item"
         }
       ]
     }
