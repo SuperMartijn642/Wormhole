@@ -7,16 +7,16 @@
   ],
   "key": {
     "A": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     "B": {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     },
     "C": {
       "item": "minecraft:compass"
     }
   },
   "result": {
-    "item": "wormhole:basic_target_cell"
+    "id": "wormhole:basic_target_cell"
   }
 }

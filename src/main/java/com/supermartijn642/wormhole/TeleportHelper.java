@@ -72,7 +72,7 @@ public class TeleportHelper {
         Collection<Entity> passengers = entity.getPassengers();
         entity.ejectPassengers();
         Entity newEntity = teleportEntity(entity, targetLevel.get(), target);
-        if(entityBeingRidden != null){
+        if(newEntity != null && entityBeingRidden != null){
             newEntity.startRiding(entityBeingRidden);
             if(newEntity instanceof ServerPlayer)
                 ((ServerPlayer)newEntity).connection.send(new ClientboundSetPassengersPacket(entityBeingRidden));

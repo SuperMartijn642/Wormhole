@@ -7,19 +7,19 @@
   ],
   "key": {
     "A": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     "B": {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     "C": {
       "item": "minecraft:furnace"
     },
     "D": {
-      "tag": "forge:dusts/redstone"
+      "tag": "c:dusts/redstone"
     }
   },
   "result": {
-    "item": "wormhole:coal_generator"
+    "id": "wormhole:coal_generator"
   }
 }

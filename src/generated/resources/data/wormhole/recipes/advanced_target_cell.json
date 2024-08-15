@@ -7,19 +7,19 @@
   ],
   "key": {
     "A": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     "B": {
-      "tag": "forge:gems/lapis"
+      "tag": "c:gems/lapis"
     },
     "C": {
-      "tag": "forge:dusts/glowstone"
+      "tag": "c:dusts/glowstone"
     },
     "D": {
       "item": "wormhole:basic_target_cell"
     }
   },
   "result": {
-    "item": "wormhole:advanced_target_cell"
+    "id": "wormhole:advanced_target_cell"
   }
 }

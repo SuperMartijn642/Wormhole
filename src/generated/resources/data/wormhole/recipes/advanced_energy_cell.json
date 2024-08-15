@@ -7,10 +7,10 @@
   ],
   "key": {
     "A": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     "B": {
-      "tag": "forge:gems/quartz"
+      "tag": "c:gems/quartz"
     },
     "C": {
       "item": "minecraft:repeater"
@@ -20,6 +20,6 @@
     }
   },
   "result": {
-    "item": "wormhole:advanced_energy_cell"
+    "id": "wormhole:advanced_energy_cell"
   }
 }

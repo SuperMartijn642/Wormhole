@@ -7,17 +7,17 @@
   ],
   "key": {
     "A": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     "B": {
-      "tag": "forge:cobblestone"
+      "tag": "c:cobblestones"
     },
     "C": {
-      "tag": "forge:obsidian"
+      "tag": "c:obsidians"
     }
   },
   "result": {
-    "item": "wormhole:portal_frame",
+    "id": "wormhole:portal_frame",
     "count": 2
   }
 }

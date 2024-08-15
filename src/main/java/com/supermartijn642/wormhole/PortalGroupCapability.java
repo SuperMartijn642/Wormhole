@@ -12,8 +12,8 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -24,10 +24,7 @@ import java.util.function.Consumer;
 public class PortalGroupCapability {
 
     public static void registerListeners(){
-        NeoForge.EVENT_BUS.addListener((Consumer<TickEvent.LevelTickEvent>)event -> {
-            if(event.phase == TickEvent.Phase.END)
-                tickLevelCapability(event.level);
-        });
+        NeoForge.EVENT_BUS.addListener((Consumer<LevelTickEvent.Post>)event -> tickLevelCapability(event.getLevel()));
         NeoForge.EVENT_BUS.addListener((Consumer<PlayerEvent.PlayerChangedDimensionEvent>)event -> onJoinWorld((ServerPlayer)event.getEntity(), event.getEntity().level()));
         NeoForge.EVENT_BUS.addListener((Consumer<PlayerEvent.PlayerRespawnEvent>)event -> onRespawn((ServerPlayer)event.getEntity()));
         NeoForge.EVENT_BUS.addListener((Consumer<PlayerEvent.PlayerLoggedInEvent>)event -> onJoin((ServerPlayer)event.getEntity()));

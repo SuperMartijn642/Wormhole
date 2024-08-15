@@ -1,5 +1,6 @@
 package com.supermartijn642.wormhole.generator;
 
+import com.supermartijn642.core.CommonUtils;
 import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.WormholeConfig;
 import net.minecraft.core.BlockPos;
@@ -7,7 +8,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
 /**
@@ -48,7 +48,7 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements II
     }
 
     private void burnItem(){
-        int burnTime = this.stack.isEmpty() ? 0 : CommonHooks.getBurnTime(this.stack, RecipeType.SMELTING);
+        int burnTime = this.stack.isEmpty() ? 0 : this.stack.getBurnTime(RecipeType.SMELTING);
         if(burnTime > 0){
             this.burnTime = this.totalBurnTime = burnTime;
             if(this.stack.getCount() == 1){
@@ -70,7 +70,7 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements II
         CompoundTag data = super.writeData();
         data.putInt("burnTime", this.burnTime);
         data.putInt("totalBurnTime", this.totalBurnTime);
-        data.put("stack", this.stack.save(new CompoundTag()));
+        data.put("stack", this.stack.saveOptional(this.level.registryAccess()));
         return data;
     }
 
@@ -79,7 +79,7 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements II
         super.readData(tag);
         this.burnTime = tag.contains("burnTime") ? tag.getInt("burnTime") : 0;
         this.totalBurnTime = tag.contains("totalBurnTime") ? tag.getInt("totalBurnTime") : 0;
-        this.stack = ItemStack.of(tag.getCompound("stack"));
+        this.stack = ItemStack.parseOptional(CommonUtils.getRegistryAccess(), tag.getCompound("stack"));
     }
 
     public float getProgress(){
@@ -104,7 +104,7 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements II
 
     @Override
     public ItemStack insertItem(int slot, ItemStack stack, boolean simulate){
-        if(stack.isEmpty() || (!this.stack.isEmpty() && !ItemStack.isSameItemSameTags(this.stack, stack)))
+        if(stack.isEmpty() || (!this.stack.isEmpty() && !ItemStack.isSameItemSameComponents(this.stack, stack)))
             return stack;
 
         int count = Math.min(stack.getMaxStackSize() - this.stack.getCount(), stack.getCount());
@@ -131,6 +131,6 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements II
 
     @Override
     public boolean isItemValid(int slot, ItemStack stack){
-        return Math.floor(CommonHooks.getBurnTime(stack, RecipeType.SMELTING) / 2.5) > 0;
+        return Math.floor(stack.getBurnTime(RecipeType.SMELTING) / 2.5) > 0;
     }
 }

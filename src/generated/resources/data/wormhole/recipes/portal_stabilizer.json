@@ -7,22 +7,22 @@
   ],
   "key": {
     "A": {
-      "tag": "forge:ingots/iron"
+      "tag": "c:ingots/iron"
     },
     "B": {
-      "tag": "forge:storage_blocks/lapis"
+      "tag": "c:storage_blocks/lapis"
     },
     "C": {
-      "tag": "forge:dusts/glowstone"
+      "tag": "c:dusts/glowstone"
     },
     "D": {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     "E": {
-      "tag": "forge:storage_blocks/redstone"
+      "tag": "c:storage_blocks/redstone"
     }
   },
   "result": {
-    "item": "wormhole:portal_stabilizer"
+    "id": "wormhole:portal_stabilizer"
   }
 }

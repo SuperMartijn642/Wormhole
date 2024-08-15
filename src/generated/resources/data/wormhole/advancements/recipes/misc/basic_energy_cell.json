@@ -2,7 +2,7 @@
   "parent": "minecraft:recipes/root",
   "display": {
     "icon": {
-      "item": "wormhole:basic_energy_cell"
+      "id": "wormhole:basic_energy_cell"
     },
     "title": {
       "translate": "wormhole.advancement.recipes/misc/basic_energy_cell.title"
@@ -27,7 +27,7 @@
       "conditions": {
         "items": [
           {
-            "tag": "forge:ingots/iron"
+            "items": "#c:ingots/iron"
           }
         ]
       }

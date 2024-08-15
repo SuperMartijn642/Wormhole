@@ -1,18 +1,17 @@
 package com.supermartijn642.wormhole.targetcell;
 
 import com.supermartijn642.core.TextComponents;
+import com.supermartijn642.core.block.BaseBlock;
 import com.supermartijn642.wormhole.portal.PortalGroupBlock;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -41,10 +40,10 @@ public class TargetCellBlock extends PortalGroupBlock {
     }
 
     @Override
-    protected void appendItemInformation(ItemStack stack, @Nullable BlockGetter level, Consumer<Component> info, boolean advanced){
+    protected void appendItemInformation(ItemStack stack, Consumer<Component> info, boolean advanced){
         info.accept(TextComponents.translation("wormhole.target_cell.info").color(ChatFormatting.AQUA).get());
 
-        CompoundTag tag = stack.hasTag() && stack.getTag().contains("tileData", Tag.TAG_COMPOUND) ? stack.getTag().getCompound("tileData") : null;
+        CompoundTag tag = stack.get(BaseBlock.TILE_DATA);
 
         int targets = tag == null || tag.isEmpty() || !tag.contains("targetCount", Tag.TAG_INT) ? 0 : tag.getInt("targetCount");
         int targetCapacity = this.type.getCapacity();

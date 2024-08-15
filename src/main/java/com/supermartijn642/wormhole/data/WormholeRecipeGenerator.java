@@ -24,8 +24,8 @@ public class WormholeRecipeGenerator extends RecipeGenerator {
             .pattern("BCB")
             .pattern("ABA")
             .input('A', Tags.Items.INGOTS_IRON)
-            .input('B', Tags.Items.COBBLESTONE)
-            .input('C', Tags.Items.OBSIDIAN)
+            .input('B', Tags.Items.COBBLESTONES)
+            .input('C', Tags.Items.OBSIDIANS)
             .unlockedBy(Tags.Items.INGOTS_IRON);
 
         // Portal stabilizer

@@ -2,17 +2,16 @@ package com.supermartijn642.wormhole.energycell;
 
 import com.supermartijn642.core.EnergyFormat;
 import com.supermartijn642.core.TextComponents;
+import com.supermartijn642.core.block.BaseBlock;
 import com.supermartijn642.wormhole.portal.PortalGroupBlock;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -32,10 +31,10 @@ public class EnergyCellBlock extends PortalGroupBlock {
     }
 
     @Override
-    protected void appendItemInformation(ItemStack stack, @Nullable BlockGetter level, Consumer<Component> info, boolean advanced){
+    protected void appendItemInformation(ItemStack stack, Consumer<Component> info, boolean advanced){
         info.accept(TextComponents.translation("wormhole.energy_cell.info").color(ChatFormatting.AQUA).get());
 
-        CompoundTag tag = stack.getOrCreateTag().contains("tileData") ? stack.getOrCreateTag().getCompound("tileData") : null;
+        CompoundTag tag = stack.get(BaseBlock.TILE_DATA);
 
         int energy = this.type == EnergyCellType.CREATIVE ? this.type.getCapacity() :
             tag == null || tag.isEmpty() || !tag.contains("energy") ? 0 : tag.getInt("energy");
