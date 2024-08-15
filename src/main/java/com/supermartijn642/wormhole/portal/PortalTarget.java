@@ -45,7 +45,7 @@ public class PortalTarget {
     }
 
     public PortalTarget(CompoundTag tag){
-        this(ResourceKey.create(Registries.DIMENSION, new ResourceLocation(tag.getString("dimension"))), tag.getInt("x"), tag.getInt("y"), tag.getInt("z"), tag.getFloat("yaw"), tag.contains("name") ? tag.getString("name") : "Target Destination", tag.contains("color") ? DyeColor.byId(tag.getInt("color")) : null);
+        this(ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(tag.getString("dimension"))), tag.getInt("x"), tag.getInt("y"), tag.getInt("z"), tag.getFloat("yaw"), tag.contains("name") ? tag.getString("name") : "Target Destination", tag.contains("color") ? DyeColor.byId(tag.getInt("color")) : null);
     }
 
     public static PortalTarget read(CompoundTag tag){
