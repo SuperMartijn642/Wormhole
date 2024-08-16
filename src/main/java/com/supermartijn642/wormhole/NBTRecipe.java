@@ -1,11 +1,13 @@
 package com.supermartijn642.wormhole;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.util.ExtraCodecs;
+import com.supermartijn642.core.block.BaseBlock;
+import com.supermartijn642.wormhole.targetdevice.TargetDeviceItem;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -16,6 +18,7 @@ import net.minecraft.world.item.crafting.ShapedRecipePattern;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Created 2/8/2020 by SuperMartijn642
@@ -54,26 +57,25 @@ public class NBTRecipe extends ShapedRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer inventory, RegistryAccess registryAccess){
-        CompoundTag compound = null;
+    public ItemStack assemble(CraftingContainer inventory, HolderLookup.Provider provider){
+        ItemStack result = this.getResultItem(provider).copy();
         loop:
         for(int i = 0; i < inventory.getHeight(); i++){
             for(int j = 0; j < inventory.getWidth(); j++){
                 ItemStack stack = inventory.getItem(i * inventory.getWidth() + j);
-                if(stack.hasTag() && VALID_ITEMS.contains(stack.getItem())){
-                    compound = stack.getTag();
+                if(!VALID_ITEMS.contains(stack.getItem()))
+                    continue;
+                if(stack.has(BaseBlock.TILE_DATA)){
+                    result.set(BaseBlock.TILE_DATA, stack.get(BaseBlock.TILE_DATA));
+                    break loop;
+                }
+                if(stack.has(TargetDeviceItem.TARGETS)){
+                    result.set(TargetDeviceItem.TARGETS, stack.get(TargetDeviceItem.TARGETS));
                     break loop;
                 }
             }
         }
-
-        if(compound != null){
-            ItemStack result = this.getResultItem(registryAccess).copy();
-            result.getOrCreateTag().merge(compound);
-            return result;
-        }
-
-        return this.getResultItem(registryAccess).copy();
+        return result;
     }
 
     @Override
@@ -83,29 +85,27 @@ public class NBTRecipe extends ShapedRecipe {
 
     private static class Serializer implements RecipeSerializer<NBTRecipe> {
 
-        private static final Codec<NBTRecipe> CODEC = RecordCodecBuilder.create(instance ->
+        private static final MapCodec<NBTRecipe> CODEC = RecordCodecBuilder.mapCodec(instance ->
             instance.group(
-                ExtraCodecs.strictOptionalField(Codec.STRING, "group", "").forGetter(recipe -> recipe.group),
+                Codec.STRING.optionalFieldOf("group", "").forGetter(recipe -> recipe.group),
                 CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(recipe -> recipe.category),
                 ShapedRecipePattern.MAP_CODEC.forGetter(recipe -> recipe.pattern),
-                ItemStack.ITEM_WITH_COUNT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
-                ExtraCodecs.strictOptionalField(Codec.BOOL, "show_notification", true).forGetter(recipe -> recipe.showNotification)
+                ItemStack.STRICT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
+                Codec.BOOL.optionalFieldOf("show_notification", true).forGetter(recipe -> recipe.showNotification)
             ).apply(instance, NBTRecipe::new));
+        private static final StreamCodec<RegistryFriendlyByteBuf,NBTRecipe> STREAM_CODEC = ShapedRecipe.Serializer.STREAM_CODEC.map(
+            Serializer::fromShapedRecipe,
+            Function.identity()
+        );
 
         @Override
-        public Codec<NBTRecipe> codec(){
+        public MapCodec<NBTRecipe> codec(){
             return CODEC;
         }
 
         @Override
-        public NBTRecipe fromNetwork(FriendlyByteBuf buffer){
-            //noinspection DataFlowIssue
-            return fromShapedRecipe(RecipeSerializer.SHAPED_RECIPE.fromNetwork(buffer));
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf buffer, NBTRecipe recipe){
-            RecipeSerializer.SHAPED_RECIPE.toNetwork(buffer, recipe);
+        public StreamCodec<RegistryFriendlyByteBuf,NBTRecipe> streamCodec(){
+            return STREAM_CODEC;
         }
 
         private static NBTRecipe fromShapedRecipe(ShapedRecipe recipe){

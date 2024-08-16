@@ -34,7 +34,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 /**
@@ -74,11 +73,11 @@ public class CoalGeneratorBlock extends BaseBlock implements EntityHoldingBlock 
     }
 
     @Override
-    protected void appendItemInformation(ItemStack stack, @Nullable BlockGetter level, Consumer<Component> info, boolean advanced){
+    protected void appendItemInformation(ItemStack stack, Consumer<Component> info, boolean advanced){
         int range = 2 * WormholeConfig.coalGeneratorRange.get() + 1;
         info.accept(TextComponents.translation("wormhole.coal_generator.info", range, EnergyFormat.formatEnergyPerTick(WormholeConfig.coalGeneratorPower.get())).color(ChatFormatting.AQUA).get());
 
-        CompoundTag tag = stack.hasTag() && stack.getTag().contains("tileData", Tag.TAG_COMPOUND) ? stack.getTag().getCompound("tileData") : null;
+        CompoundTag tag = stack.get(BaseBlock.TILE_DATA);
         int energy = tag == null || tag.isEmpty() || !tag.contains("energy", Tag.TAG_INT) ? 0 : tag.getInt("energy");
         info.accept(TextComponents.string(EnergyFormat.formatCapacityWithUnit(energy, WormholeConfig.coalGeneratorCapacity.get())).color(ChatFormatting.YELLOW).get());
     }

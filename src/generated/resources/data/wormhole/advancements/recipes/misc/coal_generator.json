@@ -2,7 +2,7 @@
   "parent": "minecraft:recipes/root",
   "display": {
     "icon": {
-      "item": "wormhole:coal_generator"
+      "id": "wormhole:coal_generator"
     },
     "title": {
       "translate": "wormhole.advancement.recipes/misc/coal_generator.title"
@@ -27,7 +27,7 @@
       "conditions": {
         "items": [
           {
-            "tag": "forge:ingots/iron"
+            "items": "#forge:ingots/iron"
           }
         ]
       }

@@ -17,7 +17,7 @@
     }
   },
   "result": {
-    "item": "wormhole:portal_frame",
+    "id": "wormhole:portal_frame",
     "count": 2
   }
 }

@@ -26,26 +26,26 @@ public class PortalTarget {
     public final float yaw;
 
     public String name;
-    public DyeColor color = null;
+    public DyeColor color;
     public Component dimensionDisplayName;
 
-    public PortalTarget(ResourceKey<Level> dimension, int x, int y, int z, float yaw, String name){
+    public PortalTarget(ResourceKey<Level> dimension, int x, int y, int z, float yaw, String name, DyeColor color){
         this.dimension = dimension;
         this.x = x;
         this.y = y;
         this.z = z;
         this.yaw = yaw;
         this.name = name;
+        this.color = color;
         this.dimensionDisplayName = TextComponents.dimension(dimension).get();
     }
 
     public PortalTarget(Level level, BlockPos pos, float yaw, String name){
-        this(level.dimension(), pos.getX(), pos.getY(), pos.getZ(), yaw, name);
+        this(level.dimension(), pos.getX(), pos.getY(), pos.getZ(), yaw, name, null);
     }
 
     public PortalTarget(CompoundTag tag){
-        this(ResourceKey.create(Registries.DIMENSION, new ResourceLocation(tag.getString("dimension"))), tag.getInt("x"), tag.getInt("y"), tag.getInt("z"), tag.getFloat("yaw"), tag.contains("name") ? tag.getString("name") : "Target Destination");
-        this.color = tag.contains("color") ? DyeColor.byId(tag.getInt("color")) : null;
+        this(ResourceKey.create(Registries.DIMENSION, new ResourceLocation(tag.getString("dimension"))), tag.getInt("x"), tag.getInt("y"), tag.getInt("z"), tag.getFloat("yaw"), tag.contains("name") ? tag.getString("name") : "Target Destination", tag.contains("color") ? DyeColor.byId(tag.getInt("color")) : null);
     }
 
     public static PortalTarget read(CompoundTag tag){

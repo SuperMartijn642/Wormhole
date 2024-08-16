@@ -82,7 +82,7 @@ public class Wormhole {
     @RegistryEntryAcceptor(namespace = "wormhole", identifier = "portal_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
     public static BaseBlockEntityType<?> portal_tile;
     @RegistryEntryAcceptor(namespace = "wormhole", identifier = "stabilizer_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
-    public static BaseBlockEntityType<?> stabilizer_tile;
+    public static BaseBlockEntityType<StabilizerBlockEntity> stabilizer_tile;
     @RegistryEntryAcceptor(namespace = "wormhole", identifier = "basic_energy_cell_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
     public static BaseBlockEntityType<EnergyCellBlockEntity> basic_energy_cell_tile;
     @RegistryEntryAcceptor(namespace = "wormhole", identifier = "advanced_energy_cell_tile", registry = RegistryEntryAcceptor.Registry.BLOCK_ENTITY_TYPES)
@@ -163,6 +163,7 @@ public class Wormhole {
         // Target devices
         handler.registerItem("target_device", () -> new TargetDeviceItem(WormholeConfig.basicDeviceTargetCount));
         handler.registerItem("advanced_target_device", () -> new TargetDeviceItem(WormholeConfig.advancedDeviceTargetCount));
+        handler.registerDataComponentType("target_device_targets", TargetDeviceItem.TARGETS);
 
         // NBT recipe serializer
         handler.registerRecipeSerializer("nbtrecipe", NBTRecipe.SERIALIZER);
