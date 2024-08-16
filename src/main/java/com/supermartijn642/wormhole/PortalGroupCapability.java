@@ -7,12 +7,16 @@ import com.supermartijn642.wormhole.portal.PortalGroupBlockEntity;
 import com.supermartijn642.wormhole.portal.PortalShape;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.*;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
@@ -31,19 +35,14 @@ import java.util.*;
 public class PortalGroupCapability {
 
     public static Capability<PortalGroupCapability> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
-    });
-
-    @SubscribeEvent
-    public static void register(RegisterCapabilitiesEvent e){
-        e.register(PortalGroupCapability.class);
-    }
+    }, ResourceLocation.fromNamespaceAndPath("wormhole", "portal_group_capability"));
 
     @SubscribeEvent
     public static void attachCapabilities(AttachCapabilitiesEvent<Level> e){
         Level level = e.getObject();
 
         LazyOptional<PortalGroupCapability> capability = LazyOptional.of(() -> new PortalGroupCapability(level));
-        e.addCapability(new ResourceLocation("wormhole", "portal_groups"), new ICapabilitySerializable<Tag>() {
+        e.addCapability(ResourceLocation.fromNamespaceAndPath("wormhole", "portal_groups"), new ICapabilitySerializable<Tag>() {
             @Nonnull
             @Override
             public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side){
@@ -51,13 +50,13 @@ public class PortalGroupCapability {
             }
 
             @Override
-            public Tag serializeNBT(){
+            public Tag serializeNBT(HolderLookup.Provider provider){
                 return capability.map(PortalGroupCapability::write).orElse(null);
             }
 
             @Override
-            public void deserializeNBT(Tag nbt){
-                capability.ifPresent(portalGroupCapability -> portalGroupCapability.read(nbt));
+            public void deserializeNBT(HolderLookup.Provider provider, Tag tag){
+                capability.ifPresent(portalGroupCapability -> portalGroupCapability.read(tag));
             }
         });
         e.addListener(capability::invalidate);

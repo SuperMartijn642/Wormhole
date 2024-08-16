@@ -14,7 +14,7 @@ import java.util.function.Consumer;
  */
 public class ArrowButton extends AbstractButtonWidget {
 
-    private final ResourceLocation BUTTONS = new ResourceLocation("wormhole", "textures/gui/arrow_buttons.png");
+    private final ResourceLocation BUTTONS = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/arrow_buttons.png");
 
     private final boolean up;
     public boolean active = true;

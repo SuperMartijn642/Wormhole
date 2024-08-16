@@ -2,22 +2,25 @@ package com.supermartijn642.wormhole;
 
 import com.supermartijn642.wormhole.portal.PortalTarget;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundChangeDifficultyPacket;
+import net.minecraft.network.protocol.game.ClientboundPlayerAbilitiesPacket;
+import net.minecraft.network.protocol.game.ClientboundRespawnPacket;
 import net.minecraft.network.protocol.game.ClientboundSetPassengersPacket;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.TicketType;
+import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.portal.PortalInfo;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.ITeleporter;
+import net.minecraftforge.event.ForgeEventFactory;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * Created 12/10/2020 by SuperMartijn642
@@ -72,7 +75,7 @@ public class TeleportHelper {
         Collection<Entity> passengers = entity.getPassengers();
         entity.ejectPassengers();
         Entity newEntity = teleportEntity(entity, targetLevel.get(), target);
-        if(entityBeingRidden != null){
+        if(newEntity != null && entityBeingRidden != null){
             newEntity.startRiding(entityBeingRidden);
             if(newEntity instanceof ServerPlayer)
                 ((ServerPlayer)newEntity).connection.send(new ClientboundSetPassengersPacket(entityBeingRidden));
@@ -92,27 +95,51 @@ public class TeleportHelper {
             entity.setDeltaMovement(Vec3.ZERO);
             entity.fallDistance = 0;
             entity.setOnGround(true);
-            return entity;
-        }else
-            return entity.changeDimension(targetLevel, new WormholeTeleporter(target));
-    }
-
-    private static class WormholeTeleporter implements ITeleporter {
-        private final PortalTarget target;
-
-        public WormholeTeleporter(PortalTarget target){
-            this.target = target;
+        }else{
+            //noinspection UnstableApiUsage
+            if(!ForgeEventFactory.onTravelToDimension(entity, targetLevel.dimension())) return null;
+            if(entity instanceof ServerPlayer){
+                ServerPlayer player = ((ServerPlayer)entity);
+                player.isChangingDimension = true;
+                LevelData levelData = targetLevel.getLevelData();
+                player.connection.send(new ClientboundRespawnPacket(player.createCommonSpawnInfo(targetLevel), (byte)3));
+                player.connection.send(new ClientboundChangeDifficultyPacket(levelData.getDifficulty(), levelData.isDifficultyLocked()));
+                PlayerList playerList = player.server.getPlayerList();
+                playerList.sendPlayerPermissionLevel(player);
+                ServerLevel oldLevel = player.serverLevel();
+                oldLevel.removePlayerImmediately(player, Entity.RemovalReason.CHANGED_DIMENSION);
+                player.unsetRemoved();
+                if(targetLevel.dimension() == Level.NETHER)
+                    player.enteredNetherPosition = new Vec3(target.x + .5, target.y + .2, target.z + .5);
+                player.setServerLevel(targetLevel);
+                player.connection.teleport(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
+                player.connection.resetPosition();
+                targetLevel.addDuringTeleport(player);
+                player.triggerDimensionChangeTriggers(oldLevel);
+                player.connection.send(new ClientboundPlayerAbilitiesPacket(player.getAbilities()));
+                playerList.sendLevelInfo(player, targetLevel);
+                playerList.sendAllPlayerInfo(player);
+                playerList.sendActivePlayerEffects(player);
+                player.lastSentExp = -1;
+                player.lastSentHealth = -1.0f;
+                player.lastSentFood = -1;
+                //noinspection UnstableApiUsage
+                ForgeEventFactory.onPlayerChangedDimension(player, oldLevel.dimension(), targetLevel.dimension());
+            }else{
+                Entity newEntity = entity.getType().create(targetLevel);
+                if(newEntity != null){
+                    newEntity.restoreFrom(entity);
+                    newEntity.moveTo(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
+                    newEntity.setYHeadRot(target.yaw);
+                    newEntity.setDeltaMovement(Vec3.ZERO);
+                    newEntity.fallDistance = 0;
+                    newEntity.setOnGround(true);
+                    entity.setRemoved(Entity.RemovalReason.CHANGED_DIMENSION);
+                    targetLevel.addDuringTeleport(newEntity);
+                    return newEntity;
+                }
+            }
         }
-
-        @Override
-        public Entity placeEntity(Entity entity, ServerLevel currentLevel, ServerLevel destLevel, float yaw, Function<Boolean,Entity> repositionEntity){
-            return repositionEntity.apply(false);
-        }
-
-        @Nullable
-        @Override
-        public PortalInfo getPortalInfo(Entity entity, ServerLevel destLevel, Function<ServerLevel,PortalInfo> defaultPortalInfo){
-            return new PortalInfo(this.target.getCenteredPos(), Vec3.ZERO, this.target.yaw, 0);
-        }
+        return entity;
     }
 }

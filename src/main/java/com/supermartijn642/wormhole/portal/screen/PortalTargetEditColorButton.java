@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  */
 public class PortalTargetEditColorButton extends AbstractButtonWidget {
 
-    private static final ResourceLocation BUTTONS = new ResourceLocation("wormhole", "textures/gui/small_color_buttons.png");
+    private static final ResourceLocation BUTTONS = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/small_color_buttons.png");
 
     public boolean visible = true;
     private final Supplier<PortalTarget> target;

@@ -19,7 +19,7 @@ public class WormholeModelGenerator extends ModelGenerator {
     @Override
     public void generate(){
         // Portal frame
-        this.cubeAll("block/portal_frame", new ResourceLocation("wormhole", "portal_frame"));
+        this.cubeAll("block/portal_frame", ResourceLocation.fromNamespaceAndPath("wormhole", "portal_frame"));
         this.model("item/portal_frame").parent("block/portal_frame");
 
         // Portal templates
@@ -60,16 +60,16 @@ public class WormholeModelGenerator extends ModelGenerator {
         this.model("item/portal").parent("block/portals/portal_x_red");
 
         // Portal stabilizer
-        this.cubeAll("block/portal_stabilizer_off", new ResourceLocation("wormhole", "portal_stabilizer_off"));
-        this.cubeAll("block/portal_stabilizer_on", new ResourceLocation("wormhole", "portal_stabilizer_on"));
+        this.cubeAll("block/portal_stabilizer_off", ResourceLocation.fromNamespaceAndPath("wormhole", "portal_stabilizer_off"));
+        this.cubeAll("block/portal_stabilizer_on", ResourceLocation.fromNamespaceAndPath("wormhole", "portal_stabilizer_on"));
         this.model("item/portal_stabilizer").parent("block/portal_stabilizer_off");
 
         // Energy cells
         for(int i = 0; i < 16; i++){
-            this.cubeAll("block/energy_cells/basic_energy_cell_" + i, new ResourceLocation("wormhole", "energy_cells/basic_energy_cell_" + i));
-            this.cubeAll("block/energy_cells/advanced_energy_cell_" + i, new ResourceLocation("wormhole", "energy_cells/basic_energy_cell_" + i));
+            this.cubeAll("block/energy_cells/basic_energy_cell_" + i, ResourceLocation.fromNamespaceAndPath("wormhole", "energy_cells/basic_energy_cell_" + i));
+            this.cubeAll("block/energy_cells/advanced_energy_cell_" + i, ResourceLocation.fromNamespaceAndPath("wormhole", "energy_cells/basic_energy_cell_" + i));
         }
-        this.cubeAll("block/energy_cells/creative_energy_cell", new ResourceLocation("wormhole", "energy_cells/basic_energy_cell_15"));
+        this.cubeAll("block/energy_cells/creative_energy_cell", ResourceLocation.fromNamespaceAndPath("wormhole", "energy_cells/basic_energy_cell_15"));
         this.model("item/basic_energy_cell").parent("block/energy_cells/basic_energy_cell_0");
         this.model("item/advanced_energy_cell").parent("block/energy_cells/advanced_energy_cell_0");
         this.model("item/creative_energy_cell").parent("block/energy_cells/creative_energy_cell");
@@ -77,7 +77,7 @@ public class WormholeModelGenerator extends ModelGenerator {
         // Target cells
         for(TargetCellType type : TargetCellType.values()){
             for(int i = 0; i <= type.getVisualCapacity(); i++)
-                this.cubeAll("block/target_cells/" + type.getRegistryName() + "_" + i, new ResourceLocation("wormhole", "target_cells/" + type.getRegistryName() + "_" + i));
+                this.cubeAll("block/target_cells/" + type.getRegistryName() + "_" + i, ResourceLocation.fromNamespaceAndPath("wormhole", "target_cells/" + type.getRegistryName() + "_" + i));
             this.model("item/" + type.getRegistryName()).parent("block/target_cells/" + type.getRegistryName() + "_0");
         }
 
@@ -85,7 +85,7 @@ public class WormholeModelGenerator extends ModelGenerator {
         this.model("item/coal_generator").parent("block/coal_generator");
 
         // Target devices
-        this.itemGenerated("item/target_device", new ResourceLocation("wormhole", "target_device"));
-        this.itemGenerated("item/advanced_target_device", new ResourceLocation("wormhole", "advanced_target_device"));
+        this.itemGenerated("item/target_device", ResourceLocation.fromNamespaceAndPath("wormhole", "target_device"));
+        this.itemGenerated("item/advanced_target_device", ResourceLocation.fromNamespaceAndPath("wormhole", "advanced_target_device"));
     }
 }

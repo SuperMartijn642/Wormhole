@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  */
 public class EnergyBarWidget extends AbstractButtonWidget {
 
-    private static final ResourceLocation BARS = new ResourceLocation("wormhole", "textures/gui/energy_bars.png");
+    private static final ResourceLocation BARS = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/energy_bars.png");
 
     private final Supplier<Integer> energy, capacity;
 
