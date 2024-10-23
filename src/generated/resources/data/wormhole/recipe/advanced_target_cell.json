@@ -6,18 +6,10 @@
     "ABA"
   ],
   "key": {
-    "A": {
-      "tag": "c:ingots/iron"
-    },
-    "B": {
-      "tag": "c:gems/lapis"
-    },
-    "C": {
-      "tag": "c:dusts/glowstone"
-    },
-    "D": {
-      "item": "wormhole:basic_target_cell"
-    }
+    "A": "#c:ingots/iron",
+    "B": "#c:gems/lapis",
+    "C": "#c:dusts/glowstone",
+    "D": "wormhole:basic_target_cell"
   },
   "result": {
     "id": "wormhole:advanced_target_cell"

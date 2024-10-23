@@ -42,7 +42,7 @@ public class ScreenBlockRenderer {
         BakedModel model = ClientUtils.getBlockRenderer().getBlockModel(state);
 
         poseStack.translate(-0.5, -0.5, -0.5);
-        RenderType renderType = ItemBlockRenderTypes.getRenderType(state, true);
+        RenderType renderType = ItemBlockRenderTypes.getRenderType(state);
         renderModel(model, state, poseStack, bufferSource.getBuffer(renderType), renderType);
 
         bufferSource.endBatch();

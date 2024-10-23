@@ -35,10 +35,9 @@ public class PortalTargetSelectColorButton extends AbstractButtonWidget {
 
     @Override
     public void render(WidgetRenderContext context, int mouseX, int mouseY){
-        ScreenUtils.bindTexture(BUTTON_OUTLINE);
-        ScreenUtils.drawTexture(context.poseStack(), this.x, this.y, this.width, this.height, 0, this.targetColor.get() == this.color ? 2 / 3f : this.isFocused() ? 1 / 3f : 0, 1, 1 / 3f);
-        ScreenUtils.bindTexture(this.color == null ? RANDOM_COLOR_PORTAL : ResourceLocation.fromNamespaceAndPath("wormhole", "textures/portal/portal_" + this.color.getName() + ".png"));
-        ScreenUtils.drawTexture(context.poseStack(), this.x + 2, this.y + 2, this.width - 4, this.height - 4, 0, 0, 1, 16 / 512f);
+        ScreenUtils.drawTexture(BUTTON_OUTLINE, context.poseStack(), this.x, this.y, this.width, this.height, 0, this.targetColor.get() == this.color ? 2 / 3f : this.isFocused() ? 1 / 3f : 0, 1, 1 / 3f);
+        ResourceLocation texture = this.color == null ? RANDOM_COLOR_PORTAL : ResourceLocation.fromNamespaceAndPath("wormhole", "textures/portal/portal_" + this.color.getName() + ".png");
+        ScreenUtils.drawTexture(texture, context.poseStack(), this.x + 2, this.y + 2, this.width - 4, this.height - 4, 0, 0, 1, 16 / 512f);
     }
 
     @Override

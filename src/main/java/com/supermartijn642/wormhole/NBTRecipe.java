@@ -54,7 +54,7 @@ public class NBTRecipe extends ShapedRecipe {
 
     @Override
     public ItemStack assemble(CraftingInput input, HolderLookup.Provider provider){
-        ItemStack result = this.getResultItem(provider).copy();
+        ItemStack result = this.result.copy();
         loop:
         for(int i = 0; i < input.height(); i++){
             for(int j = 0; j < input.width(); j++){
@@ -75,8 +75,8 @@ public class NBTRecipe extends ShapedRecipe {
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer(){
-        return super.getSerializer();
+    public RecipeSerializer<? extends ShapedRecipe> getSerializer(){
+        return SERIALIZER;
     }
 
     private static class Serializer implements RecipeSerializer<NBTRecipe> {
@@ -105,7 +105,7 @@ public class NBTRecipe extends ShapedRecipe {
         }
 
         private static NBTRecipe fromShapedRecipe(ShapedRecipe recipe){
-            return new NBTRecipe(recipe.getGroup(), recipe.category(), recipe.pattern, recipe.getResultItem(null), recipe.showNotification());
+            return new NBTRecipe(recipe.group(), recipe.category(), recipe.pattern, recipe.assemble(null, null), recipe.showNotification());
         }
     }
 }

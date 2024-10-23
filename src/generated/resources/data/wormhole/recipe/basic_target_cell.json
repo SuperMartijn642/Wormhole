@@ -6,15 +6,9 @@
     "ABA"
   ],
   "key": {
-    "A": {
-      "tag": "c:ingots/iron"
-    },
-    "B": {
-      "tag": "c:gems/lapis"
-    },
-    "C": {
-      "item": "minecraft:compass"
-    }
+    "A": "#c:ingots/iron",
+    "B": "#c:gems/lapis",
+    "C": "minecraft:compass"
   },
   "result": {
     "id": "wormhole:basic_target_cell"

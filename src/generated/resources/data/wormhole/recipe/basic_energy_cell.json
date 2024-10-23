@@ -6,15 +6,9 @@
     "ABA"
   ],
   "key": {
-    "A": {
-      "tag": "c:ingots/iron"
-    },
-    "B": {
-      "tag": "c:dusts/redstone"
-    },
-    "C": {
-      "tag": "c:storage_blocks/redstone"
-    }
+    "A": "#c:ingots/iron",
+    "B": "#c:dusts/redstone",
+    "C": "#c:storage_blocks/redstone"
   },
   "result": {
     "id": "wormhole:basic_energy_cell"

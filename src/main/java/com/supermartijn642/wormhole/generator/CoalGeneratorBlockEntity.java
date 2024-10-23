@@ -10,7 +10,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Map;
@@ -23,7 +22,7 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity {
     private final Storage<ItemVariant> itemCapability = new SingleStackStorage() {
         @Override
         protected boolean canInsert(ItemVariant itemVariant){
-            return CoalGeneratorBlockEntity.this.isItemValid(itemVariant.getItem());
+            return CoalGeneratorBlockEntity.this.isItemValid(itemVariant.toStack());
         }
 
         @Override
@@ -75,7 +74,7 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity {
     }
 
     private void burnItem(){
-        int burnTime = this.stack.isEmpty() ? 0 : this.getBurnTime(this.stack.getItem());
+        int burnTime = this.stack.isEmpty() ? 0 : this.getBurnTime(this.stack);
         if(burnTime > 0){
             this.burnTime = this.totalBurnTime = burnTime;
             if(this.stack.getCount() == 1){
@@ -126,13 +125,11 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity {
         this.dataChanged();
     }
 
-    public boolean isItemValid(Item item){
-        return this.getBurnTime(item) > 0;
+    public boolean isItemValid(ItemStack stack){
+        return this.getBurnTime(stack) > 0;
     }
 
-    private int getBurnTime(Item item){
-        if(this.burnTimes == null)
-            this.burnTimes = AbstractFurnaceBlockEntity.getFuel();
-        return (int)Math.floor(this.burnTimes.getOrDefault(item, 0) / 2.5);
+    private int getBurnTime(ItemStack stack){
+        return (int)Math.floor(this.level.fuelValues().burnDuration(stack) / 2.5);
     }
 }

@@ -11,6 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.TicketType;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -19,6 +20,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Created 12/10/2020 by SuperMartijn642
@@ -36,7 +38,7 @@ public class TeleportHelper {
 
         Entity lowestEntity = entity.getRootVehicle();
         if(!entity.level().isClientSide){
-            lowestEntity.level().getServer().tell(new TickTask(0, () -> teleportEntityAndPassengers(lowestEntity, null, target)));
+            lowestEntity.level().getServer().schedule(new TickTask(0, () -> teleportEntityAndPassengers(lowestEntity, null, target)));
             markEntityAndPassengers(lowestEntity);
         }
         return true;
@@ -83,9 +85,9 @@ public class TeleportHelper {
         ChunkPos targetChunkPos = new ChunkPos(target.getPos());
         targetLevel.getChunkSource().addRegionTicket(TicketType.POST_TELEPORT, targetChunkPos, 1, entity.getId());
         if(targetLevel == entity.level()){
-            if(entity instanceof ServerPlayer)
-                ((ServerPlayer)entity).teleportTo(targetLevel, target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
-            else
+            if(entity instanceof ServerPlayer){
+                entity.teleportTo(targetLevel, target.x, target.y, target.z, Set.of(), target.yaw, 0, true);
+            }else
                 entity.teleportTo(target.x + .5, target.y + .2, target.z + .5);
             entity.setYHeadRot(target.yaw);
             entity.setDeltaMovement(Vec3.ZERO);
@@ -118,7 +120,7 @@ public class TeleportHelper {
                 player.lastSentHealth = -1.0f;
                 player.lastSentFood = -1;
             }else{
-                Entity newEntity = entity.getType().create(targetLevel);
+                Entity newEntity = entity.getType().create(targetLevel, EntitySpawnReason.DIMENSION_TRAVEL);
                 if(newEntity != null){
                     newEntity.restoreFrom(entity);
                     newEntity.moveTo(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);

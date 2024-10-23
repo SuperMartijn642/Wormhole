@@ -6,18 +6,10 @@
     "ADA"
   ],
   "key": {
-    "A": {
-      "tag": "c:ingots/iron"
-    },
-    "B": {
-      "tag": "c:ender_pearls"
-    },
-    "C": {
-      "item": "minecraft:furnace"
-    },
-    "D": {
-      "tag": "c:dusts/redstone"
-    }
+    "A": "#c:ingots/iron",
+    "B": "#c:ender_pearls",
+    "C": "minecraft:furnace",
+    "D": "#c:dusts/redstone"
   },
   "result": {
     "id": "wormhole:coal_generator"

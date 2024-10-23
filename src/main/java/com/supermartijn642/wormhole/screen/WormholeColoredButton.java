@@ -1,12 +1,10 @@
 package com.supermartijn642.wormhole.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.ClientUtils;
 import com.supermartijn642.core.gui.ScreenUtils;
 import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.core.gui.widget.premade.ButtonWidget;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
@@ -65,16 +63,14 @@ public class WormholeColoredButton extends ButtonWidget {
     }
 
     public static void drawButtonBackground(PoseStack poseStack, float x, float y, float width, float height, float yOffset, ResourceLocation texture){
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        ScreenUtils.bindTexture(texture);
-        ScreenUtils.drawTexture(poseStack, x, y, 2.0F, 2.0F, 0.0F, yOffset, 0.4F, 0.13333334F);
-        ScreenUtils.drawTexture(poseStack, x + width - 2.0F, y, 2.0F, 2.0F, 0.6F, yOffset, 0.4F, 0.13333334F);
-        ScreenUtils.drawTexture(poseStack, x + width - 2.0F, y + height - 2.0F, 2.0F, 2.0F, 0.6F, yOffset + 0.2F, 0.4F, 0.13333334F);
-        ScreenUtils.drawTexture(poseStack, x, y + height - 2.0F, 2.0F, 2.0F, 0.0F, yOffset + 0.2F, 0.4F, 0.13333334F);
-        ScreenUtils.drawTexture(poseStack, x + 2.0F, y, width - 4.0F, 2.0F, 0.4F, yOffset, 0.2F, 0.13333334F);
-        ScreenUtils.drawTexture(poseStack, x + 2.0F, y + height - 2.0F, width - 4.0F, 2.0F, 0.4F, yOffset + 0.2F, 0.2F, 0.13333334F);
-        ScreenUtils.drawTexture(poseStack, x, y + 2.0F, 2.0F, height - 4.0F, 0.0F, yOffset + 0.13333334F, 0.4F, 0.06666667F);
-        ScreenUtils.drawTexture(poseStack, x + width - 2.0F, y + 2.0F, 2.0F, height - 4.0F, 0.6F, yOffset + 0.13333334F, 0.4F, 0.06666667F);
-        ScreenUtils.drawTexture(poseStack, x + 2.0F, y + 2.0F, width - 4.0F, height - 4.0F, 0.4F, yOffset + 0.13333334F, 0.2F, 0.06666667F);
+        ScreenUtils.drawTexture(texture, poseStack, x, y, 2.0F, 2.0F, 0.0F, yOffset, 0.4F, 0.13333334F);
+        ScreenUtils.drawTexture(texture, poseStack, x + width - 2.0F, y, 2.0F, 2.0F, 0.6F, yOffset, 0.4F, 0.13333334F);
+        ScreenUtils.drawTexture(texture, poseStack, x + width - 2.0F, y + height - 2.0F, 2.0F, 2.0F, 0.6F, yOffset + 0.2F, 0.4F, 0.13333334F);
+        ScreenUtils.drawTexture(texture, poseStack, x, y + height - 2.0F, 2.0F, 2.0F, 0.0F, yOffset + 0.2F, 0.4F, 0.13333334F);
+        ScreenUtils.drawTexture(texture, poseStack, x + 2.0F, y, width - 4.0F, 2.0F, 0.4F, yOffset, 0.2F, 0.13333334F);
+        ScreenUtils.drawTexture(texture, poseStack, x + 2.0F, y + height - 2.0F, width - 4.0F, 2.0F, 0.4F, yOffset + 0.2F, 0.2F, 0.13333334F);
+        ScreenUtils.drawTexture(texture, poseStack, x, y + 2.0F, 2.0F, height - 4.0F, 0.0F, yOffset + 0.13333334F, 0.4F, 0.06666667F);
+        ScreenUtils.drawTexture(texture, poseStack, x + width - 2.0F, y + 2.0F, 2.0F, height - 4.0F, 0.6F, yOffset + 0.13333334F, 0.4F, 0.06666667F);
+        ScreenUtils.drawTexture(texture, poseStack, x + 2.0F, y + 2.0F, width - 4.0F, height - 4.0F, 0.4F, yOffset + 0.13333334F, 0.2F, 0.06666667F);
     }
 }

@@ -94,7 +94,7 @@ public class PortalRendererHelper {
         poseStack.pushPose();
 
         poseStack.translate(-0.5D, -0.5D, -0.5D);
-        RenderType renderType = ItemBlockRenderTypes.getRenderType(state, true);
+        RenderType renderType = ItemBlockRenderTypes.getRenderType(state);
         renderModel(model, state, combinedLight, combinedOverlay, poseStack, bufferSource.getBuffer(renderType), renderType, valid);
 
         poseStack.popPose();

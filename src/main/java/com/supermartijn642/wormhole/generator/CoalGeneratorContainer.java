@@ -32,7 +32,7 @@ public class CoalGeneratorContainer extends BlockEntityBaseContainer<CoalGenerat
 
             @Override
             public boolean mayPlace(ItemStack stack){
-                return object.isItemValid(stack.getItem());
+                return object.isItemValid(stack);
             }
         });
 

@@ -6,18 +6,10 @@
     "ABA"
   ],
   "key": {
-    "A": {
-      "tag": "c:ingots/iron"
-    },
-    "B": {
-      "tag": "c:gems/quartz"
-    },
-    "C": {
-      "item": "minecraft:repeater"
-    },
-    "D": {
-      "item": "wormhole:basic_energy_cell"
-    }
+    "A": "#c:ingots/iron",
+    "B": "#c:gems/quartz",
+    "C": "minecraft:repeater",
+    "D": "wormhole:basic_energy_cell"
   },
   "result": {
     "id": "wormhole:advanced_energy_cell"
