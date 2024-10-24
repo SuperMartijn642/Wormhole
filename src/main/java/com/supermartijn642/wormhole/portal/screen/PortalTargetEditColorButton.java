@@ -40,11 +40,10 @@ public class PortalTargetEditColorButton extends AbstractButtonWidget {
             return;
 
         PortalTarget target = this.target.get();
-        ScreenUtils.bindTexture(BUTTONS);
         DyeColor color = this.color.get();
         float x = color == null ? 0 : (color.getId() + 1) * 8f / 136f;
         float y = target != null && this.isFocused() ? 0.5f : 0;
-        ScreenUtils.drawTexture(context.poseStack(), this.x, this.y, this.width, this.height, x, y, 8 / 136f, 0.5f);
+        ScreenUtils.drawTexture(BUTTONS, context.poseStack(), this.x, this.y, this.width, this.height, x, y, 8 / 136f, 0.5f);
     }
 
     @Override

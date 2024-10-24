@@ -8,13 +8,58 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.IItemHandler;
 
 /**
  * Created 12/18/2020 by SuperMartijn642
  */
-public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements IItemHandlerModifiable {
+public class CoalGeneratorBlockEntity extends GeneratorBlockEntity {
 
+    private final IItemHandler itemCapability = new IItemHandler() {
+        @Override
+        public int getSlots(){
+            return 1;
+        }
+
+        @Override
+        public ItemStack getStackInSlot(int slot){
+            return CoalGeneratorBlockEntity.this.getStack();
+        }
+
+        @Override
+        public ItemStack insertItem(int slot, ItemStack stack, boolean simulate){
+            ItemStack current = CoalGeneratorBlockEntity.this.getStack();
+            if(stack.isEmpty() || (!current.isEmpty() && !ItemStack.isSameItemSameComponents(current, stack)))
+                return stack;
+
+            int count = Math.min(stack.getMaxStackSize() - current.getCount(), stack.getCount());
+            if(!simulate){
+                ItemStack newStack = stack.copy();
+                newStack.setCount(current.getCount() + count);
+                CoalGeneratorBlockEntity.this.setStack(newStack);
+            }
+
+            ItemStack result = stack.copy();
+            result.shrink(count);
+            return result;
+        }
+
+        @Override
+        public ItemStack extractItem(int slot, int amount, boolean simulate){
+            return ItemStack.EMPTY;
+        }
+
+        @Override
+        public int getSlotLimit(int slot){
+            ItemStack current = CoalGeneratorBlockEntity.this.getStack();
+            return current.isEmpty() ? 64 : current.getMaxStackSize();
+        }
+
+        @Override
+        public boolean isItemValid(int slot, ItemStack stack){
+            return CoalGeneratorBlockEntity.this.isItemValid(stack);
+        }
+    };
     private int burnTime = 0, totalBurnTime = 0;
     private ItemStack stack = ItemStack.EMPTY;
 
@@ -48,11 +93,11 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements II
     }
 
     private void burnItem(){
-        int burnTime = this.stack.isEmpty() ? 0 : this.stack.getBurnTime(RecipeType.SMELTING);
+        int burnTime = this.stack.isEmpty() ? 0 : this.getBurnTime(this.stack);
         if(burnTime > 0){
             this.burnTime = this.totalBurnTime = burnTime;
             if(this.stack.getCount() == 1){
-                ItemStack remainder = this.stack.getCraftingRemainingItem();
+                ItemStack remainder = this.stack.getCraftingRemainder();
                 this.stack = remainder == null ? ItemStack.EMPTY : remainder;
             }else
                 this.stack.shrink(1);
@@ -63,6 +108,10 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements II
         boolean lit = this.getBlockState().getValue(CoalGeneratorBlock.LIT);
         if(lit != this.burnTime > 0)
             this.level.setBlockAndUpdate(this.worldPosition, state.setValue(CoalGeneratorBlock.LIT, !lit));
+    }
+
+    public IItemHandler getItemCapability(){
+        return this.itemCapability;
     }
 
     @Override
@@ -86,51 +135,20 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements II
         return this.totalBurnTime == 0 ? 0 : (float)this.burnTime / this.totalBurnTime;
     }
 
-    @Override
-    public int getSlots(){
-        return 1;
+    public ItemStack getStack(){
+        return stack;
     }
 
-    @Override
-    public void setStackInSlot(int slot, ItemStack stack){
-        if(slot == 0)
-            this.stack = stack.copy();
+    public void setStack(ItemStack stack){
+        this.stack = stack;
+        this.dataChanged();
     }
 
-    @Override
-    public ItemStack getStackInSlot(int slot){
-        return this.stack;
+    public boolean isItemValid(ItemStack stack){
+        return this.getBurnTime(stack) > 0;
     }
 
-    @Override
-    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate){
-        if(stack.isEmpty() || (!this.stack.isEmpty() && !ItemStack.isSameItemSameComponents(this.stack, stack)))
-            return stack;
-
-        int count = Math.min(stack.getMaxStackSize() - this.stack.getCount(), stack.getCount());
-        if(!simulate){
-            ItemStack newStack = stack.copy();
-            newStack.setCount(this.stack.getCount() + count);
-            this.stack = newStack;
-        }
-
-        ItemStack result = stack.copy();
-        result.shrink(count);
-        return result;
-    }
-
-    @Override
-    public ItemStack extractItem(int slot, int amount, boolean simulate){
-        return ItemStack.EMPTY;
-    }
-
-    @Override
-    public int getSlotLimit(int slot){
-        return this.stack.isEmpty() ? 64 : this.stack.getMaxStackSize();
-    }
-
-    @Override
-    public boolean isItemValid(int slot, ItemStack stack){
-        return Math.floor(stack.getBurnTime(RecipeType.SMELTING) / 2.5) > 0;
+    private int getBurnTime(ItemStack stack){
+        return (int)Math.floor(stack.getBurnTime(RecipeType.SMELTING, this.level.fuelValues()) / 2.5);
     }
 }

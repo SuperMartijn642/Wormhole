@@ -6,7 +6,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.SlotItemHandler;
 
 /**
  * Created 12/21/2020 by SuperMartijn642
@@ -20,23 +19,20 @@ public class CoalGeneratorContainer extends BlockEntityBaseContainer<CoalGenerat
 
     @Override
     protected void addSlots(Player player, CoalGeneratorBlockEntity entity){
-        this.addSlot(new SlotItemHandler(entity, 0, 79, 52) {
+        this.addSlot(new DummySlot(0, 79, 52) {
             @Override
-            public boolean mayPickup(Player player){
-                return true;
+            public ItemStack getItem(){
+                return object.getStack();
             }
 
             @Override
-            public ItemStack remove(int amount){
-                ItemStack stack = entity.getStackInSlot(0);
-                if(amount >= stack.getCount()){
-                    entity.setStackInSlot(0, ItemStack.EMPTY);
-                    return stack;
-                }
-                ItemStack result = stack.copy();
-                result.setCount(Math.min(amount, stack.getCount()));
-                stack.shrink(amount);
-                return result;
+            public void set(ItemStack stack){
+                object.setStack(stack);
+            }
+
+            @Override
+            public boolean mayPlace(ItemStack stack){
+                return object.isItemValid(stack);
             }
         });
 

@@ -1,12 +1,12 @@
 {
   "replace": false,
   "values": [
-    "wormhole:basic_target_cell",
     "wormhole:portal_stabilizer",
-    "wormhole:advanced_energy_cell",
+    "wormhole:portal_frame",
+    "wormhole:basic_target_cell",
     "wormhole:advanced_target_cell",
     "wormhole:basic_energy_cell",
     "wormhole:coal_generator",
-    "wormhole:portal_frame"
+    "wormhole:advanced_energy_cell"
   ]
 }

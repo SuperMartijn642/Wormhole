@@ -73,9 +73,7 @@ public class PortalOverviewScreen extends PortalGroupScreen {
 
     @Override
     protected void renderBackground(WidgetRenderContext context, int mouseX, int mouseY, PortalGroup object){
-        ScreenUtils.bindTexture(BACKGROUND);
-        ScreenUtils.drawTexture(context.poseStack(), 0, 0, this.width(), this.height());
-
+        ScreenUtils.drawTexture(BACKGROUND, context.poseStack(), 0, 0, this.width(), this.height());
         super.renderBackground(context, mouseX, mouseY, object);
     }
 
@@ -95,33 +93,26 @@ public class PortalOverviewScreen extends PortalGroupScreen {
 
         ScreenUtils.drawCenteredString(poseStack, TextComponents.translation("wormhole.portal.gui.information").get(), 192, 31, Integer.MAX_VALUE);
 
-        ScreenUtils.bindTexture(SEPARATOR);
-        ScreenUtils.drawTexture(poseStack, 154, 41, 77, 1);
+        ScreenUtils.drawTexture(SEPARATOR, poseStack, 154, 41, 77, 1);
 
         // status
-        ScreenUtils.bindTexture(status.getIcon());
-        ScreenUtils.drawTexture(poseStack, 151, 47, 9, 9);
+        ScreenUtils.drawTexture(status.getIcon(), poseStack, 151, 47, 9, 9);
         ScreenUtils.drawString(poseStack, status.getStatus(), 162, 48, Integer.MAX_VALUE);
         // idle cost
-        ScreenUtils.bindTexture(ENERGY_ICON);
-        ScreenUtils.drawTexture(poseStack, 151, 59, 9, 9);
+        ScreenUtils.drawTexture(ENERGY_ICON, poseStack, 151, 59, 9, 9);
         ScreenUtils.drawString(poseStack, EnergyFormat.formatEnergyPerTick(idleCost), 162, 60, Integer.MAX_VALUE);
         // teleport cost
-        ScreenUtils.bindTexture(TELEPORT_ICON);
-        ScreenUtils.drawTexture(poseStack, 150, 70, 11, 11);
+        ScreenUtils.drawTexture(TELEPORT_ICON, poseStack, 150, 70, 11, 11);
         ScreenUtils.drawString(poseStack, target == null ? "--" : EnergyFormat.formatEnergyWithUnit(teleportCost), 162, 72, Integer.MAX_VALUE);
 
-        ScreenUtils.bindTexture(SEPARATOR);
-        ScreenUtils.drawTexture(poseStack, 154, 85, 77, 1);
+        ScreenUtils.drawTexture(SEPARATOR, poseStack, 154, 85, 77, 1);
 
         // target
-        ScreenUtils.bindTexture(STAR_ICON);
-        ScreenUtils.drawTexture(poseStack, 151, 91, 9, 9);
+        ScreenUtils.drawTexture(STAR_ICON, poseStack, 151, 91, 9, 9);
         ScreenUtils.drawString(poseStack, target == null ? "--" : target.name, 162, 92, Integer.MAX_VALUE);
         if(target != null){
             // location
-            ScreenUtils.bindTexture(LOCATION_ICON);
-            ScreenUtils.drawTexture(poseStack, 151, 103, 9, 9);
+            ScreenUtils.drawTexture(LOCATION_ICON, poseStack, 151, 103, 9, 9);
             ScreenUtils.drawString(poseStack, "(" + target.x + ", " + target.y + ", " + target.z + ")", 162, 104, Integer.MAX_VALUE);
             // dimension
             Block block = null;
@@ -131,12 +122,10 @@ public class PortalOverviewScreen extends PortalGroupScreen {
                 block = Blocks.NETHERRACK;
             else if(target.dimension.equals(Level.END))
                 block = Blocks.END_STONE;
-            if(block == null){
-                ScreenUtils.bindTexture(DIMENSION_ICON);
-                ScreenUtils.drawTexture(poseStack, 151, 115, 9, 9);
-            }else{
+            if(block == null)
+                ScreenUtils.drawTexture(DIMENSION_ICON, poseStack, 151, 115, 9, 9);
+            else
                 ScreenBlockRenderer.drawBlock(poseStack, block, 155.5, 119.5, 5.5, 45, 40);
-            }
             ScreenUtils.drawString(poseStack, target.getDimensionDisplayName(), 162, 116, Integer.MAX_VALUE);
         }
     }

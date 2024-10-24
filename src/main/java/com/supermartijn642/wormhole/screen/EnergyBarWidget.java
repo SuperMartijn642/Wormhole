@@ -29,13 +29,12 @@ public class EnergyBarWidget extends AbstractButtonWidget {
 
     @Override
     public void render(WidgetRenderContext context, int mouseX, int mouseY){
-        ScreenUtils.bindTexture(BARS);
-        ScreenUtils.drawTexture(context.poseStack(), this.x, this.y, this.width, this.height, this.isFocused() ? 1 / 11f : 0, 0, 1 / 11f, 1);
+        ScreenUtils.drawTexture(BARS, context.poseStack(), this.x, this.y, this.width, this.height, this.isFocused() ? 1 / 11f : 0, 0, 1 / 11f, 1);
         int energy = this.energy.get();
         int capacity = this.capacity.get();
         float percentage = capacity == 0 ? 1 : Math.max(Math.min(energy / (float)capacity, 1), 0);
         if(percentage != 0)
-            ScreenUtils.drawTexture(context.poseStack(), this.x, this.y + this.height * (1 - percentage), this.width, this.height * percentage, 3 / 11f, 1 - percentage, 1 / 11f, percentage);
+            ScreenUtils.drawTexture(BARS, context.poseStack(), this.x, this.y + this.height * (1 - percentage), this.width, this.height * percentage, 3 / 11f, 1 - percentage, 1 / 11f, percentage);
     }
 
     @Override

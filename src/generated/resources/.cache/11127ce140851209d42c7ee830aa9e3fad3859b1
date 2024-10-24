@@ -1,4 +1,4 @@
-// 1.21.1	2024-08-15T22:31:35.8912303	Core Lib Generators
+// 1.21.3	2024-10-24T14:05:30.9267638	Core Lib Generators
 825330af94fb38edc405ab20819db1a62a332976 assets/minecraft/atlases/blocks.json
 acd0b247f8470cfa1c4e2c581c3a44b915bfca23 assets/wormhole/blockstates/advanced_energy_cell.json
 38a6df0f702c2fa02db9e371f67e85c92cf11484 assets/wormhole/blockstates/advanced_target_cell.json
@@ -77,7 +77,7 @@ c648532b9139677c5626e430698f5c425486152d assets/wormhole/models/block/portals/po
 58b5a6250495715f0f0f2e1978d1920c1ce85f7f assets/wormhole/models/block/portals/portal_y_red.json
 1eb5b31244f84ff65fe3b0e11e540c317036b1b5 assets/wormhole/models/block/portals/portal_y_white.json
 f3ca6f264add5c2e546cccf7d209dcedcd8c4939 assets/wormhole/models/block/portals/portal_y_yellow.json
-efa50f84070fb12785128ef2906f1f3b578c1fcf assets/wormhole/models/block/portals/portal_z.json
+e08f50935d491f97f4d3f06d7b26fb110af949a7 assets/wormhole/models/block/portals/portal_z.json
 1d53268fe138a42db4c15fa8ca6dc1f22f5e5ed2 assets/wormhole/models/block/portals/portal_z_black.json
 bde6cbca92777e4348130243ca1f09a1f4eed76c assets/wormhole/models/block/portals/portal_z_blue.json
 4cfa937915661d9b60777627468a698c023ec271 assets/wormhole/models/block/portals/portal_z_brown.json
@@ -122,7 +122,7 @@ f41623745b3375c46b962e977ce07e80834dfc71 assets/wormhole/models/item/portal.json
 d743daa4ebf6e2b0c1920d259a074c3daea3d1b7 assets/wormhole/models/item/portal_frame.json
 488491c68dddfaeb1ae210598e6dc8ce860f2de6 assets/wormhole/models/item/portal_stabilizer.json
 a3a1d85872bca04a8e6481ca211df783c30684c3 assets/wormhole/models/item/target_device.json
-7301ff2eba341d1cece409232bd56f6b7137a8fc data/minecraft/tags/block/mineable/pickaxe.json
+0032f0333209a618959b28bac2001709c9ece806 data/minecraft/tags/block/mineable/pickaxe.json
 0a9c02e0f0fe4001329d270e671dc27849dce07f data/wormhole/advancement/recipes/misc/advanced_energy_cell.json
 4cc1604f78a5d5915390fa3e995ed1ab6e25a25a data/wormhole/advancement/recipes/misc/advanced_target_cell.json
 111c6ca4065aa4dedb2cae43b4a5c6cb15b35046 data/wormhole/advancement/recipes/misc/advanced_target_device.json
@@ -140,12 +140,12 @@ ea4f4c15070c3cc1ba9f1ae424f4b49f6629d0c1 data/wormhole/advancement/recipes/misc/
 a95050f8259975e34c174ecbf2f3772486aae8ec data/wormhole/loot_table/blocks/creative_energy_cell.json
 a7ebe8c27982c06bca6f155826aa16e3bdc00a57 data/wormhole/loot_table/blocks/portal_frame.json
 41303a93cce545d85c70f3c6b6648b7467b5ca5b data/wormhole/loot_table/blocks/portal_stabilizer.json
-1a91b9abe2f9b95c0b8abc30163df8b9f6ffa471 data/wormhole/recipe/advanced_energy_cell.json
-4ccf1a4ef2bc260344ef9d2aef921aac44b0bd1e data/wormhole/recipe/advanced_target_cell.json
-8cf60d8b9ea2171998193f98b825248ae836a47d data/wormhole/recipe/advanced_target_device.json
-dc6b325d3122a21b91df361a96d675b0c330159c data/wormhole/recipe/basic_energy_cell.json
-d33ec5a39789873d16593ad2ff632f24849bb8ee data/wormhole/recipe/basic_target_cell.json
-bc796729cf0239060e558de4db130f318c22345e data/wormhole/recipe/coal_generator.json
-4574e79859e07dcfcc882e05266e8cc810ce4806 data/wormhole/recipe/portal_frame.json
-86350d86c50197e92e65cfe1ca29cd9a6de2c29a data/wormhole/recipe/portal_stabilizer.json
-abb5f5deed5196ef9ab9ae614f05e163c030d6b0 data/wormhole/recipe/target_device.json
+6fd50eb0bd87706db18b7ffcf21a04b5a2d32f02 data/wormhole/recipe/advanced_energy_cell.json
+f6e881dc0f08b6b400365f6766b62e5a4bf539c8 data/wormhole/recipe/advanced_target_cell.json
+cf9e2e898559c9d32e2e814992438fdd4e5c3941 data/wormhole/recipe/advanced_target_device.json
+016f0cad9730d1da460be47ced03e5a36b870dd4 data/wormhole/recipe/basic_energy_cell.json
+8990129720c2007391b14bb32cbaae0cdb2d060d data/wormhole/recipe/basic_target_cell.json
+c31db4beaa1b1d13ac50867064b939aefbc11fec data/wormhole/recipe/coal_generator.json
+e9d5349ae3ac2e81595464e0a8a659af25fe66c6 data/wormhole/recipe/portal_frame.json
+3e01cd77c6c4fb0b798a623b8650ebc670c52ec1 data/wormhole/recipe/portal_stabilizer.json
+3b6a910ac8c2c1d7751e55bc0dc29a560c7b6742 data/wormhole/recipe/target_device.json

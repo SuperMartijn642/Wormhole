@@ -6,21 +6,11 @@
     "AEA"
   ],
   "key": {
-    "A": {
-      "tag": "c:ingots/iron"
-    },
-    "B": {
-      "tag": "c:storage_blocks/lapis"
-    },
-    "C": {
-      "tag": "c:dusts/glowstone"
-    },
-    "D": {
-      "tag": "c:ender_pearls"
-    },
-    "E": {
-      "tag": "c:storage_blocks/redstone"
-    }
+    "A": "#c:ingots/iron",
+    "B": "#c:storage_blocks/lapis",
+    "C": "#c:dusts/glowstone",
+    "D": "#c:ender_pearls",
+    "E": "#c:storage_blocks/redstone"
   },
   "result": {
     "id": "wormhole:portal_stabilizer"
