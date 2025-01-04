@@ -149,7 +149,7 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements II
     }
 
     private int getBurnTime(ItemStack stack){
-        return (int)Math.floor(stack.getBurnTime(RecipeType.SMELTING) / 2.5);
+        return (int)Math.floor(this.level.fuelValues().burnDuration(stack, RecipeType.SMELTING) / 2.5);
     }
 
     @Override
