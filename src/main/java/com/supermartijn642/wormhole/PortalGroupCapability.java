@@ -116,9 +116,9 @@ public class PortalGroupCapability {
         if(tag instanceof CompoundTag compound){
             this.groups.clear();
             this.groupsByPosition.clear();
-            CompoundTag groupsTag = compound.getCompound("groups");
-            for(String key : groupsTag.getAllKeys()){
-                PortalGroup group = new PortalGroup(this.level, groupsTag.getCompound(key));
+            CompoundTag groupsTag = compound.getCompoundOrEmpty("groups");
+            for(String key : groupsTag.keySet()){
+                PortalGroup group = new PortalGroup(this.level, groupsTag.getCompoundOrEmpty(key));
                 this.groups.add(group);
                 group.shape.frame.forEach(pos -> this.groupsByPosition.put(pos, group));
                 group.shape.area.forEach(pos -> this.groupsByPosition.put(pos, group));
@@ -133,11 +133,11 @@ public class PortalGroupCapability {
     }
 
     public void readGroup(CompoundTag tag){
-        if(tag.contains("group")){
-            PortalGroup group = new PortalGroup(this.level, tag.getCompound("group"));
+        tag.getCompound("group").ifPresent(data -> {
+            PortalGroup group = new PortalGroup(this.level, data);
             this.groups.add(group);
             group.shape.frame.forEach(pos -> this.groupsByPosition.put(pos, group));
             group.shape.area.forEach(pos -> this.groupsByPosition.put(pos, group));
-        }
+        });
     }
 }

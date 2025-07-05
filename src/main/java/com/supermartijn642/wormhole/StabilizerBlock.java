@@ -48,18 +48,18 @@ public class StabilizerBlock extends PortalGroupBlock {
     }
 
     @Override
-    protected void appendItemInformation(ItemStack stack, Consumer<Component> info, boolean advanced){
+    public void appendItemInformation(ItemStack stack, Consumer<Component> info, boolean advanced){
         info.accept(TextComponents.translation("wormhole.portal_stabilizer.info").color(ChatFormatting.AQUA).get());
 
         CompoundTag tag = stack.get(BaseBlock.TILE_DATA);
 
-        int targets = tag == null || tag.isEmpty() || !tag.contains("targetCount") ? 0 : tag.getInt("targetCount");
+        int targets = tag == null || tag.isEmpty() ? 0 : tag.getIntOr("targetCount", 0);
         int targetCapacity = WormholeConfig.stabilizerTargetCapacity.get();
 
         if(targetCapacity > 0)
             info.accept(TextComponents.translation("wormhole.portal_stabilizer.info.targets", targets, targetCapacity).color(ChatFormatting.YELLOW).get());
 
-        int energy = tag == null || tag.isEmpty() || !tag.contains("energy") ? 0 : tag.getInt("energy");
+        int energy = tag == null || tag.isEmpty() ? 0 : tag.getIntOr("energy", 0);
         int energyCapacity = WormholeConfig.stabilizerEnergyCapacity.get();
 
         if(energyCapacity > 0)

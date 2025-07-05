@@ -8,7 +8,6 @@ import com.supermartijn642.wormhole.WormholeConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -233,62 +232,35 @@ public class PortalShape {
     }
 
     public PortalShape(CompoundTag tag){
-        this.axis = Enum.valueOf(Direction.Axis.class, tag.getString("axis"));
+        this.axis = tag.getString("axis").map(Direction.Axis::valueOf)
+            .or(() -> tag.getInt("axis").filter(i -> i >= 0 && i < Direction.Axis.values().length).map(i -> Direction.Axis.values()[i]))
+            .orElse(Direction.Axis.X);
 
-        if(tag.contains("area", Tag.TAG_COMPOUND)){
-            // Use old behaviour to load the data
-            CompoundTag areaTag = tag.getCompound("area");
-            for(int i = 0; i < areaTag.size(); i++){
-                CompoundTag pos = areaTag.getCompound("" + i);
-                this.area.add(new BlockPos(pos.getInt("x"), pos.getInt("y"), pos.getInt("z")));
-            }
-            CompoundTag frameTag = tag.getCompound("frame");
-            for(int i = 0; i < areaTag.size(); i++){
-                CompoundTag pos = frameTag.getCompound("" + i);
-                this.frame.add(new BlockPos(pos.getInt("x"), pos.getInt("y"), pos.getInt("z")));
-            }
-            CompoundTag stabilizerTag = tag.getCompound("stabilizers");
-            for(int i = 0; i < areaTag.size(); i++){
-                CompoundTag pos = stabilizerTag.getCompound("" + i);
-                this.stabilizers.add(new BlockPos(pos.getInt("x"), pos.getInt("y"), pos.getInt("z")));
-            }
-            CompoundTag energyCellsTag = tag.getCompound("energyCells");
-            for(int i = 0; i < areaTag.size(); i++){
-                CompoundTag pos = energyCellsTag.getCompound("" + i);
-                this.energyCells.add(new BlockPos(pos.getInt("x"), pos.getInt("y"), pos.getInt("z")));
-            }
-            CompoundTag targetCellsTag = tag.getCompound("targetCells");
-            for(int i = 0; i < areaTag.size(); i++){
-                CompoundTag pos = targetCellsTag.getCompound("" + i);
-                this.targetCells.add(new BlockPos(pos.getInt("x"), pos.getInt("y"), pos.getInt("z")));
-            }
-        }else{
-            // Load blocks
-            int[] area = tag.getIntArray("area");
-            for(int i = 0; i < area.length / 3; i++)
-                this.area.add(new BlockPos(area[i * 3], area[i * 3 + 1], area[i * 3 + 2]));
+        // Load blocks
+        int[] area = tag.getIntArray("area").orElseGet(() -> new int[0]);
+        for(int i = 0; i < area.length / 3; i++)
+            this.area.add(new BlockPos(area[i * 3], area[i * 3 + 1], area[i * 3 + 2]));
 
-            int[] frame = tag.getIntArray("frame");
-            for(int i = 0; i < frame.length / 3; i++)
-                this.frame.add(new BlockPos(frame[i * 3], frame[i * 3 + 1], frame[i * 3 + 2]));
+        int[] frame = tag.getIntArray("frame").orElseGet(() -> new int[0]);
+        for(int i = 0; i < frame.length / 3; i++)
+            this.frame.add(new BlockPos(frame[i * 3], frame[i * 3 + 1], frame[i * 3 + 2]));
 
-            int[] stabilizers = tag.getIntArray("stabilizers");
-            for(int i = 0; i < stabilizers.length / 3; i++)
-                this.stabilizers.add(new BlockPos(stabilizers[i * 3], stabilizers[i * 3 + 1], stabilizers[i * 3 + 2]));
+        int[] stabilizers = tag.getIntArray("stabilizers").orElseGet(() -> new int[0]);
+        for(int i = 0; i < stabilizers.length / 3; i++)
+            this.stabilizers.add(new BlockPos(stabilizers[i * 3], stabilizers[i * 3 + 1], stabilizers[i * 3 + 2]));
 
-            int[] energyCells = tag.getIntArray("energyCells");
-            for(int i = 0; i < energyCells.length / 3; i++)
-                this.energyCells.add(new BlockPos(energyCells[i * 3], energyCells[i * 3 + 1], energyCells[i * 3 + 2]));
+        int[] energyCells = tag.getIntArray("energyCells").orElseGet(() -> new int[0]);
+        for(int i = 0; i < energyCells.length / 3; i++)
+            this.energyCells.add(new BlockPos(energyCells[i * 3], energyCells[i * 3 + 1], energyCells[i * 3 + 2]));
 
-            int[] targetCells = tag.getIntArray("targetCells");
-            for(int i = 0; i < targetCells.length / 3; i++)
-                this.targetCells.add(new BlockPos(targetCells[i * 3], targetCells[i * 3 + 1], targetCells[i * 3 + 2]));
-        }
+        int[] targetCells = tag.getIntArray("targetCells").orElseGet(() -> new int[0]);
+        for(int i = 0; i < targetCells.length / 3; i++)
+            this.targetCells.add(new BlockPos(targetCells[i * 3], targetCells[i * 3 + 1], targetCells[i * 3 + 2]));
 
-        this.span = tag.getDouble("span");
+        this.span = tag.getDoubleOr("span", 1);
 
-        this.minCorner = new BlockPos(tag.getInt("minCornerX"), tag.getInt("minCornerY"), tag.getInt("minCornerZ"));
-        this.maxCorner = new BlockPos(tag.getInt("maxCornerX"), tag.getInt("maxCornerY"), tag.getInt("maxCornerZ"));
+        this.minCorner = new BlockPos(tag.getIntOr("minCornerX", 0), tag.getIntOr("minCornerY", 0), tag.getIntOr("minCornerZ", 0));
+        this.maxCorner = new BlockPos(tag.getIntOr("maxCornerX", 1), tag.getIntOr("maxCornerY", 1), tag.getIntOr("maxCornerZ", 1));
     }
 
     public void createPortals(Level level, DyeColor color){
@@ -334,7 +306,7 @@ public class PortalShape {
 
     public CompoundTag write(){
         CompoundTag tag = new CompoundTag();
-        tag.putString("axis", this.axis.name());
+        tag.putInt("axis", this.axis.ordinal());
 
         int[] areaData = new int[this.area.size() * 3];
         for(int i = 0; i < this.area.size(); i++){

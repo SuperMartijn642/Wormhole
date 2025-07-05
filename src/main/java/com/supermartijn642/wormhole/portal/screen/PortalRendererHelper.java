@@ -3,7 +3,6 @@ package com.supermartijn642.wormhole.portal.screen;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.supermartijn642.core.ClientUtils;
 import com.supermartijn642.core.render.RenderUtils;
 import com.supermartijn642.wormhole.PortalBlock;
@@ -14,21 +13,18 @@ import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.ModelBlockRenderer;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-
-import java.util.List;
 
 /**
  * Created 11/24/2020 by SuperMartijn642
@@ -68,7 +64,6 @@ public class PortalRendererHelper {
 
         bufferSource.endBatch();
         poseStack.popPose();
-        RenderSystem.enableDepthTest();
         Lighting.setupFor3DItems();
     }
 
@@ -78,45 +73,16 @@ public class PortalRendererHelper {
         if(!(state.getBlock() instanceof EnergyCellBlock) && !(state.getBlock() instanceof TargetCellBlock) && state.getRenderShape() != RenderShape.MODEL)
             return;
 
-        BlockEntity entity = level.getBlockEntity(pos);
-
-        BakedModel model = ClientUtils.getBlockRenderer().getBlockModel(state);
+        BlockStateModel model = ClientUtils.getBlockRenderer().getBlockModel(state);
+        RenderType renderType = ItemBlockRenderTypes.getRenderType(state);
 
         poseStack.pushPose();
         poseStack.translate(pos.getX(), pos.getY(), pos.getZ());
+        poseStack.translate(-0.5, -0.5, -0.5);
 
-        translateAndRenderModel(state, poseStack, bufferSource, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, model, valid);
-
-        poseStack.popPose();
-    }
-
-    private static void translateAndRenderModel(BlockState state, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay, BakedModel model, boolean valid){
-        poseStack.pushPose();
-
-        poseStack.translate(-0.5D, -0.5D, -0.5D);
-        RenderType renderType = ItemBlockRenderTypes.getRenderType(state);
-        renderModel(model, state, combinedLight, combinedOverlay, poseStack, bufferSource.getBuffer(renderType), renderType, valid);
+        ModelBlockRenderer.renderModel(poseStack.last(), bufferSource.getBuffer(renderType), model, valid ? 1 : 0.5f, valid ? 1 : 0.5f, valid ? 1 : 0.8f, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
 
         poseStack.popPose();
-    }
-
-    private static void renderModel(BakedModel model, BlockState state, int combinedLight, int combinedOverlay, PoseStack poseStack, VertexConsumer buffer, RenderType renderType, boolean valid){
-        RandomSource random = RandomSource.create();
-
-        for(Direction direction : Direction.values()){
-            random.setSeed(42L);
-            renderQuads(poseStack, buffer, model.getQuads(state, direction, random), combinedLight, combinedOverlay, valid);
-        }
-
-        random.setSeed(42L);
-        renderQuads(poseStack, buffer, model.getQuads(state, null, random), combinedLight, combinedOverlay, valid);
-    }
-
-    private static void renderQuads(PoseStack poseStack, VertexConsumer buffer, List<BakedQuad> quads, int combinedLight, int combinedOverlay, boolean valid){
-        PoseStack.Pose matrix = poseStack.last();
-
-        for(BakedQuad bakedquad : quads)
-            buffer.putBulkData(matrix, bakedquad, 1, valid ? 1 : 0.5f, valid ? 1 : 0.5f, valid ? 1 : 0.8f, combinedLight, combinedOverlay);
     }
 
     private static void renderBlockEntity(Level level, BlockPos pos, PoseStack poseStack, MultiBufferSource bufferSource){
@@ -129,7 +95,7 @@ public class PortalRendererHelper {
                 poseStack.pushPose();
                 poseStack.translate(pos.getX() - 0.5, pos.getY() - 0.5, pos.getZ() - 0.5);
 
-                entityRenderer.render(entity, ClientUtils.getPartialTicks(), poseStack, bufferSource, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+                entityRenderer.render(entity, ClientUtils.getPartialTicks(), poseStack, bufferSource, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, Vec3.ZERO);
 
                 poseStack.popPose();
             }

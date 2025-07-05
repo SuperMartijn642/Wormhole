@@ -31,13 +31,13 @@ public class EnergyCellBlock extends PortalGroupBlock {
     }
 
     @Override
-    protected void appendItemInformation(ItemStack stack, Consumer<Component> info, boolean advanced){
+    public void appendItemInformation(ItemStack stack, Consumer<Component> info, boolean advanced){
         info.accept(TextComponents.translation("wormhole.energy_cell.info").color(ChatFormatting.AQUA).get());
 
         CompoundTag tag = stack.get(BaseBlock.TILE_DATA);
 
         int energy = this.type == EnergyCellType.CREATIVE ? this.type.getCapacity() :
-            tag == null || tag.isEmpty() || !tag.contains("energy") ? 0 : tag.getInt("energy");
+            tag == null || tag.isEmpty() ? 0 : tag.getIntOr("energy", 0);
         int capacity = this.type.getCapacity();
 
         if(capacity > 0)

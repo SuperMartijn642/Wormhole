@@ -119,7 +119,7 @@ public class TeleportHelper {
                 Entity newEntity = entity.getType().create(targetLevel, EntitySpawnReason.DIMENSION_TRAVEL);
                 if(newEntity != null){
                     newEntity.restoreFrom(entity);
-                    newEntity.moveTo(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
+                    newEntity.snapTo(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
                     newEntity.setYHeadRot(target.yaw);
                     newEntity.setDeltaMovement(Vec3.ZERO);
                     newEntity.fallDistance = 0;

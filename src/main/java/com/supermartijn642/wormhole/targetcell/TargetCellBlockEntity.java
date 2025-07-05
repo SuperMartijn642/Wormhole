@@ -89,15 +89,10 @@ public class TargetCellBlockEntity extends PortalGroupBlockEntity implements ITa
     protected CompoundTag writeData(){
         CompoundTag tag = super.writeData();
         CompoundTag targetsTag = new CompoundTag();
-        int count = 0;
         for(int i = 0; i < this.targets.size(); i++){
-            targetsTag.putBoolean("has" + i, this.targets.get(i) != null);
-            if(this.targets.get(i) != null){
+            if(this.targets.get(i) != null)
                 targetsTag.put("target" + i, this.targets.get(i).write());
-                count = i + 1;
-            }
         }
-        tag.putInt("targetCount", count);
         tag.put("targets", targetsTag);
         return tag;
     }
@@ -106,13 +101,8 @@ public class TargetCellBlockEntity extends PortalGroupBlockEntity implements ITa
     protected void readData(CompoundTag tag){
         super.readData(tag);
         this.targets.clear();
-        int count = tag.contains("targetCount") ? tag.getInt("targetCount") : 0;
-        CompoundTag targetsTag = tag.getCompound("targets");
-        for(int i = 0; i < this.getTargetCapacity(); i++){
-            if(i < count && targetsTag.contains("has" + i) && targetsTag.getBoolean("has" + i) && targetsTag.contains("target" + i))
-                this.targets.add(new PortalTarget(targetsTag.getCompound("target" + i)));
-            else
-                this.targets.add(null);
-        }
+        CompoundTag targetsTag = tag.getCompoundOrEmpty("targets");
+        for(int i = 0; i < this.getTargetCapacity(); i++)
+            this.targets.add(targetsTag.getCompound("target" + i).map(PortalTarget::new).orElse(null));
     }
 }

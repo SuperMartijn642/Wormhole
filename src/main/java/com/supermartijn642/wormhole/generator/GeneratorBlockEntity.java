@@ -11,13 +11,11 @@ import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import team.reborn.energy.api.EnergyStorage;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created 12/18/2020 by SuperMartijn642
@@ -178,7 +176,7 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
         data.putInt("searchX", this.searchX - self.getX());
         data.putInt("searchY", this.searchY - self.getY());
         data.putInt("searchZ", this.searchZ - self.getZ());
-        data.putLongArray("portalBlocks", this.portalBlocks.stream().map(pos -> pos.subtract(self)).map(BlockPos::asLong).collect(Collectors.toList()));
+        data.putLongArray("portalBlocks", this.portalBlocks.stream().map(pos -> pos.subtract(self)).mapToLong(BlockPos::asLong).toArray());
         int[] energyBlocks = new int[this.energyBlocks.size() * 4];
         int index = 0;
         for(Map.Entry<BlockPos,Direction> entry : this.energyBlocks.entrySet()){
@@ -204,23 +202,20 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
 
     @Override
     protected void readData(CompoundTag tag){
-        this.energy = tag.contains("energy") ? tag.getInt("energy") : 0;
+        this.energy = tag.getIntOr("energy", 0);
         BlockPos self = this.worldPosition;
-        this.searchX = tag.contains("searchX") ? Math.min(Math.max(tag.getInt("searchX") + self.getX(), -this.energyRange), this.energyRange) : 0;
-        this.searchY = tag.contains("searchY") ? Math.min(Math.max(tag.getInt("searchY") + self.getY(), -this.energyRange), this.energyRange) : 0;
-        this.searchZ = tag.contains("searchZ") ? Math.min(Math.max(tag.getInt("searchZ") + self.getZ(), -this.energyRange), this.energyRange) : 0;
+        this.searchX = Math.min(Math.max(tag.getIntOr("searchX", 0) + self.getX(), -this.energyRange), this.energyRange);
+        this.searchY = Math.min(Math.max(tag.getIntOr("searchY", 0) + self.getY(), -this.energyRange), this.energyRange);
+        this.searchZ = Math.min(Math.max(tag.getIntOr("searchZ", 0) + self.getZ(), -this.energyRange), this.energyRange);
         this.portalBlocks.clear();
-        if(tag.contains("portalBlocks", Tag.TAG_LONG_ARRAY))
-            Arrays.stream(tag.getLongArray("portalBlocks")).mapToObj(BlockPos::of).map(pos -> pos.offset(self)).forEach(this.portalBlocks::add);
+        Arrays.stream(tag.getLongArray("portalBlocks").orElseGet(() -> new long[0])).mapToObj(BlockPos::of).map(pos -> pos.offset(self)).forEach(this.portalBlocks::add);
         this.energyBlocks.clear();
-        if(tag.contains("energyBlocks", Tag.TAG_INT_ARRAY)){
-            int[] energyBlocks = tag.getIntArray("energyBlocks");
-            for(int i = 0; i < energyBlocks.length / 4 * 4; )
-                this.energyBlocks.put(
-                    new BlockPos(energyBlocks[i++] + self.getX(), energyBlocks[i++] + self.getY(), energyBlocks[i++] + self.getZ()),
-                    Direction.from3DDataValue(energyBlocks[i++])
-                );
-        }
+        int[] energyBlocks = tag.getIntArray("energyBlocks").orElseGet(() -> new int[0]);
+        for(int i = 0; i < energyBlocks.length / 4 * 4; )
+            this.energyBlocks.put(
+                new BlockPos(energyBlocks[i++] + self.getX(), energyBlocks[i++] + self.getY(), energyBlocks[i++] + self.getZ()),
+                Direction.from3DDataValue(energyBlocks[i++])
+            );
     }
 
     @Override
