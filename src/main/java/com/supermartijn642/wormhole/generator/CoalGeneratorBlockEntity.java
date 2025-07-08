@@ -1,16 +1,16 @@
 package com.supermartijn642.wormhole.generator;
 
-import com.supermartijn642.core.CommonUtils;
 import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.WormholeConfig;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.item.base.SingleStackStorage;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import java.util.Map;
 
@@ -96,21 +96,20 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity {
     }
 
     @Override
-    protected CompoundTag writeData(){
-        CompoundTag data = super.writeData();
-        data.putInt("burnTime", this.burnTime);
-        data.putInt("totalBurnTime", this.totalBurnTime);
+    protected void writeData(ValueOutput output){
+        super.writeData(output);
+        output.putInt("burnTime", this.burnTime);
+        output.putInt("totalBurnTime", this.totalBurnTime);
         if(!this.stack.isEmpty())
-            data.put("stack", this.stack.save(this.level.registryAccess()));
-        return data;
+            output.store("stack", ItemStack.CODEC, this.stack);
     }
 
     @Override
-    protected void readData(CompoundTag tag){
-        super.readData(tag);
-        this.burnTime = tag.getIntOr("burnTime", 0);
-        this.totalBurnTime = tag.getIntOr("totalBurnTime", 0);
-        this.stack = tag.getCompound("stack").flatMap(t -> ItemStack.parse(CommonUtils.getRegistryAccess(), t)).orElse(ItemStack.EMPTY);
+    protected void readData(ValueInput input){
+        super.readData(input);
+        this.burnTime = input.getIntOr("burnTime", 0);
+        this.totalBurnTime = input.getIntOr("totalBurnTime", 0);
+        this.stack = input.read("stack", ItemStack.CODEC).orElse(ItemStack.EMPTY);
     }
 
     public float getProgress(){

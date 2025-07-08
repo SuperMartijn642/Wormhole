@@ -1,6 +1,5 @@
 package com.supermartijn642.wormhole.portal.screen;
 
-import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.ClientUtils;
 import com.supermartijn642.core.render.RenderUtils;
@@ -24,11 +23,10 @@ public class ScreenBlockRenderer {
         BlockState state = block.defaultBlockState();
 
         poseStack.pushPose();
-        poseStack.translate(x, y, 350);
-        poseStack.scale(1, -1, 1);
+        poseStack.translate(x, y, 0);
+        poseStack.scale(1, -1, -1);
         poseStack.scale((float)scale, (float)scale, (float)scale);
         MultiBufferSource.BufferSource bufferSource = RenderUtils.getMainBufferSource();
-        Lighting.setupForFlatItems();
 
         poseStack.mulPose(new Quaternionf().setAngleAxis(pitch / 180 * Math.PI, 1, 0, 0));
         poseStack.mulPose(new Quaternionf().setAngleAxis(yaw / 180 * Math.PI, 0, 1, 0));
@@ -41,6 +39,5 @@ public class ScreenBlockRenderer {
 
         bufferSource.endBatch();
         poseStack.popPose();
-        Lighting.setupFor3DItems();
     }
 }

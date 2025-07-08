@@ -2,7 +2,7 @@ package com.supermartijn642.wormhole.screen;
 
 import com.supermartijn642.core.EnergyFormat;
 import com.supermartijn642.core.TextComponents;
-import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.GuiGraphicsHelper;
 import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.core.gui.widget.premade.AbstractButtonWidget;
 import net.minecraft.client.gui.screens.Screen;
@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  */
 public class EnergyBarWidget extends AbstractButtonWidget {
 
-    private static final ResourceLocation BARS = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/energy_bars.png");
+    public static final ResourceLocation BARS = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/energy_bars");
 
     private final Supplier<Integer> energy, capacity;
 
@@ -28,13 +28,13 @@ public class EnergyBarWidget extends AbstractButtonWidget {
     }
 
     @Override
-    public void render(WidgetRenderContext context, int mouseX, int mouseY){
-        ScreenUtils.drawTexture(BARS, context.poseStack(), this.x, this.y, this.width, this.height, this.isFocused() ? 1 / 11f : 0, 0, 1 / 11f, 1);
+    public void render(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY){
+        graphics.submitSprite(BARS, this.x, this.y, this.width, this.height, p -> p.uv(this.isFocused() ? 1 / 11f : 0, 0, 1 / 11f, 1));
         int energy = this.energy.get();
         int capacity = this.capacity.get();
         float percentage = capacity == 0 ? 1 : Math.max(Math.min(energy / (float)capacity, 1), 0);
         if(percentage != 0)
-            ScreenUtils.drawTexture(BARS, context.poseStack(), this.x, this.y + this.height * (1 - percentage), this.width, this.height * percentage, 3 / 11f, 1 - percentage, 1 / 11f, percentage);
+            graphics.submitSprite(BARS, this.x, this.y + this.height * (1 - percentage), this.width, this.height * percentage, p -> p.uv(3 / 11f, 1 - percentage, 1 / 11f, percentage));
     }
 
     @Override

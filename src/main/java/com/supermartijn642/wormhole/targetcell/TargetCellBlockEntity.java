@@ -4,8 +4,9 @@ import com.supermartijn642.wormhole.portal.ITargetCellEntity;
 import com.supermartijn642.wormhole.portal.PortalGroupBlockEntity;
 import com.supermartijn642.wormhole.portal.PortalTarget;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,23 +87,21 @@ public class TargetCellBlockEntity extends PortalGroupBlockEntity implements ITa
     }
 
     @Override
-    protected CompoundTag writeData(){
-        CompoundTag tag = super.writeData();
-        CompoundTag targetsTag = new CompoundTag();
+    protected void writeData(ValueOutput output){
+        super.writeData(output);
+        ValueOutput targetsTag = output.child("targets");
         for(int i = 0; i < this.targets.size(); i++){
             if(this.targets.get(i) != null)
-                targetsTag.put("target" + i, this.targets.get(i).write());
+                this.targets.get(i).write(targetsTag.child("target" + i));
         }
-        tag.put("targets", targetsTag);
-        return tag;
     }
 
     @Override
-    protected void readData(CompoundTag tag){
-        super.readData(tag);
+    protected void readData(ValueInput input){
+        super.readData(input);
         this.targets.clear();
-        CompoundTag targetsTag = tag.getCompoundOrEmpty("targets");
+        ValueInput targetsTag = input.childOrEmpty("targets");
         for(int i = 0; i < this.getTargetCapacity(); i++)
-            this.targets.add(targetsTag.getCompound("target" + i).map(PortalTarget::new).orElse(null));
+            this.targets.add(targetsTag.child("target" + i).map(PortalTarget::read).orElse(null));
     }
 }

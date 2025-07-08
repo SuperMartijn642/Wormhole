@@ -1,5 +1,6 @@
 package com.supermartijn642.wormhole.generator;
 
+import com.mojang.serialization.Codec;
 import com.supermartijn642.core.CommonUtils;
 import com.supermartijn642.core.block.BaseBlockEntity;
 import com.supermartijn642.core.block.BaseBlockEntityType;
@@ -10,9 +11,10 @@ import com.supermartijn642.wormhole.portal.PortalGroup;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import team.reborn.energy.api.EnergyStorage;
 
 import java.util.*;
@@ -169,14 +171,13 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
     }
 
     @Override
-    protected CompoundTag writeData(){
-        CompoundTag data = new CompoundTag();
-        data.putInt("energy", this.energy);
+    protected void writeData(ValueOutput output){
+        output.putInt("energy", this.energy);
         BlockPos self = this.worldPosition;
-        data.putInt("searchX", this.searchX - self.getX());
-        data.putInt("searchY", this.searchY - self.getY());
-        data.putInt("searchZ", this.searchZ - self.getZ());
-        data.putLongArray("portalBlocks", this.portalBlocks.stream().map(pos -> pos.subtract(self)).mapToLong(BlockPos::asLong).toArray());
+        output.putInt("searchX", this.searchX - self.getX());
+        output.putInt("searchY", this.searchY - self.getY());
+        output.putInt("searchZ", this.searchZ - self.getZ());
+        this.portalBlocks.stream().map(pos -> pos.subtract(self)).mapToLong(BlockPos::asLong).forEach(output.list("portalBlocks", Codec.LONG)::add);
         int[] energyBlocks = new int[this.energyBlocks.size() * 4];
         int index = 0;
         for(Map.Entry<BlockPos,Direction> entry : this.energyBlocks.entrySet()){
@@ -185,32 +186,30 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
             energyBlocks[index++] = entry.getKey().getZ() - self.getZ();
             energyBlocks[index++] = entry.getValue().get3DDataValue();
         }
-        data.putIntArray("energyBlocks", energyBlocks);
-        return data;
+        output.putIntArray("energyBlocks", energyBlocks);
     }
 
     @Override
-    protected CompoundTag writeItemStackData(){
-        CompoundTag data = super.writeItemStackData();
-        data.remove("searchX");
-        data.remove("searchY");
-        data.remove("searchZ");
-        data.remove("portalBlocks");
-        data.remove("energyBlocks");
-        return data;
+    protected void writeItemStackData(ValueOutput output){
+        super.writeItemStackData(output);
+        output.discard("searchX");
+        output.discard("searchY");
+        output.discard("searchZ");
+        output.discard("portalBlocks");
+        output.discard("energyBlocks");
     }
 
     @Override
-    protected void readData(CompoundTag tag){
-        this.energy = tag.getIntOr("energy", 0);
+    protected void readData(ValueInput input){
+        this.energy = input.getIntOr("energy", 0);
         BlockPos self = this.worldPosition;
-        this.searchX = Math.min(Math.max(tag.getIntOr("searchX", 0) + self.getX(), -this.energyRange), this.energyRange);
-        this.searchY = Math.min(Math.max(tag.getIntOr("searchY", 0) + self.getY(), -this.energyRange), this.energyRange);
-        this.searchZ = Math.min(Math.max(tag.getIntOr("searchZ", 0) + self.getZ(), -this.energyRange), this.energyRange);
+        this.searchX = Math.min(Math.max(input.getIntOr("searchX", 0) + self.getX(), -this.energyRange), this.energyRange);
+        this.searchY = Math.min(Math.max(input.getIntOr("searchY", 0) + self.getY(), -this.energyRange), this.energyRange);
+        this.searchZ = Math.min(Math.max(input.getIntOr("searchZ", 0) + self.getZ(), -this.energyRange), this.energyRange);
         this.portalBlocks.clear();
-        Arrays.stream(tag.getLongArray("portalBlocks").orElseGet(() -> new long[0])).mapToObj(BlockPos::of).map(pos -> pos.offset(self)).forEach(this.portalBlocks::add);
+        input.listOrEmpty("portalBlocks", Codec.LONG).stream().map(BlockPos::of).forEach(this.portalBlocks::add);
         this.energyBlocks.clear();
-        int[] energyBlocks = tag.getIntArray("energyBlocks").orElseGet(() -> new int[0]);
+        int[] energyBlocks = input.getIntArray("energyBlocks").orElseGet(() -> new int[0]);
         for(int i = 0; i < energyBlocks.length / 4 * 4; )
             this.energyBlocks.put(
                 new BlockPos(energyBlocks[i++] + self.getX(), energyBlocks[i++] + self.getY(), energyBlocks[i++] + self.getZ()),

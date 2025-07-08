@@ -1,0 +1,172 @@
+{
+  "sources": [
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_magenta"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_red"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_brown"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_cyan"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:gui/portal_overview_screen"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:gui/select_target_screen/background_with_device"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_gray"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:gui/select_target_screen/device_select_highlight"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:gui/select_target_screen/separator"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_black"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_orange"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:gui/arrow_buttons"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:gui/select_target_screen/device_hover_highlight"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:gui/select_target_screen/warning_icon"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:gui/random_color_portal"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_pink"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:gui/select_target_screen/star_icon"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:gui/select_target_screen/dimension_icon"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:gui/select_target_screen/teleport_icon"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:gui/large_color_buttons"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:gui/red_buttons"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:gui/energy_bars"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:gui/small_color_buttons"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:gui/select_target_screen/device_background"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:gui/select_target_screen/cross_icon"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:gui/select_target_screen/hover_highlight"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_blue"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_white"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:gui/select_target_screen/direction_icon"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_light_blue"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_yellow"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:gui/select_target_screen/checkmark_icon"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:gui/progress_flame"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_purple"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:gui/select_target_screen/background"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_green"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:gui/select_target_screen/location_icon"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:gui/select_target_screen/select_highlight"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_light_gray"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:portal/portal_lime"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:gui/select_target_screen/lightning_icon"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "wormhole:gui/green_buttons"
+    }
+  ]
+}

@@ -4,9 +4,10 @@ import com.supermartijn642.core.block.BaseBlockEntity;
 import com.supermartijn642.core.block.TickableBlockEntity;
 import com.supermartijn642.wormhole.PortalGroupCapability;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 /**
  * Created 7/24/2020 by SuperMartijn642
@@ -34,12 +35,11 @@ public class PortalGroupBlockEntity extends BaseBlockEntity implements TickableB
     }
 
     @Override
-    protected CompoundTag writeData(){
-        return new CompoundTag();
+    protected void writeData(ValueOutput output){
     }
 
     @Override
-    protected void readData(CompoundTag tag){
+    protected void readData(ValueInput input){
     }
 
     @Override

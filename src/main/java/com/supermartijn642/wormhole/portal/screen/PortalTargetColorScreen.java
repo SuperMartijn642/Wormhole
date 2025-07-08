@@ -1,7 +1,7 @@
 package com.supermartijn642.wormhole.portal.screen;
 
 import com.supermartijn642.core.TextComponents;
-import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.GuiGraphicsHelper;
 import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.core.gui.widget.premade.ButtonWidget;
 import com.supermartijn642.wormhole.portal.PortalGroup;
@@ -59,17 +59,17 @@ public class PortalTargetColorScreen extends PortalGroupScreen {
     }
 
     @Override
-    protected void renderBackground(WidgetRenderContext context, int mouseX, int mouseY, PortalGroup object){
-        ScreenUtils.drawScreenBackground(context.poseStack(), 0, 0, this.width(), this.height());
-        super.renderBackground(context, mouseX, mouseY, object);
+    protected void renderBackground(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY, PortalGroup object){
+        graphics.submitDefaultScreenBackground(0, 0, this.width(), this.height());
+        super.renderBackground(context, graphics, mouseX, mouseY, object);
     }
 
     @Override
-    protected void render(WidgetRenderContext context, int mouseX, int mouseY, PortalGroup group){
-        super.render(context, mouseX, mouseY, group);
+    protected void render(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY, PortalGroup group){
+        super.render(context, graphics, mouseX, mouseY, group);
 
-        ScreenUtils.drawString(context.poseStack(), TextComponents.translation("wormhole.portal.color.gui.title").get(), 8, 7);
+        graphics.submitText(TextComponents.translation("wormhole.portal.color.gui.title").get(), 8, 7);
         // target number
-        ScreenUtils.drawString(context.poseStack(), (this.targetIndex + 1) + ".", 8, 22);
+        graphics.submitText((this.targetIndex + 1) + ".", 8, 22);
     }
 }
