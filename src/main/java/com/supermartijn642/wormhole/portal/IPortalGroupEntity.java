@@ -9,6 +9,4 @@ public interface IPortalGroupEntity {
 
     PortalGroup getGroup();
 
-    void onBreak();
-
 }

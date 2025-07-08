@@ -29,9 +29,9 @@ public class PortalGroup {
 
     public PortalGroup(Level level, CompoundTag tag){
         this.level = level;
-        this.shape = PortalShape.read(tag.getCompound("shape"));
-        this.activeTarget = tag.contains("activeTarget") ? tag.getInt("activeTarget") : 0;
-        this.activated = tag.contains("activated") && tag.getBoolean("activated");
+        this.shape = PortalShape.read(tag.getCompoundOrEmpty("shape"));
+        this.activeTarget = tag.getIntOr("activeTarget", 0);
+        this.activated = tag.getBooleanOr("activated", false);
     }
 
     public void tick(){

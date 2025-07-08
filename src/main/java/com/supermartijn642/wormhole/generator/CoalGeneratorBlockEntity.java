@@ -119,16 +119,17 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity {
         CompoundTag data = super.writeData();
         data.putInt("burnTime", this.burnTime);
         data.putInt("totalBurnTime", this.totalBurnTime);
-        data.put("stack", this.stack.saveOptional(this.level.registryAccess()));
+        if(!this.stack.isEmpty())
+            data.put("stack", this.stack.save(this.level.registryAccess()));
         return data;
     }
 
     @Override
     protected void readData(CompoundTag tag){
         super.readData(tag);
-        this.burnTime = tag.contains("burnTime") ? tag.getInt("burnTime") : 0;
-        this.totalBurnTime = tag.contains("totalBurnTime") ? tag.getInt("totalBurnTime") : 0;
-        this.stack = ItemStack.parseOptional(CommonUtils.getRegistryAccess(), tag.getCompound("stack"));
+        this.burnTime = tag.getIntOr("burnTime", 0);
+        this.totalBurnTime = tag.getIntOr("totalBurnTime", 0);
+        this.stack = tag.getCompound("stack").flatMap(t -> ItemStack.parse(CommonUtils.getRegistryAccess(), t)).orElse(ItemStack.EMPTY);
     }
 
     public float getProgress(){

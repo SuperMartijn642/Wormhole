@@ -1,2 +1,2 @@
 ### Wormhole 1.1.16
-- Initial release of Wormhole for Minecraft 1.21.4
+- Initial release of Wormhole for Minecraft 1.21.5

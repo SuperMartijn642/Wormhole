@@ -5,7 +5,6 @@ import com.supermartijn642.core.block.BaseBlock;
 import com.supermartijn642.wormhole.portal.PortalGroupBlock;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -40,12 +39,12 @@ public class TargetCellBlock extends PortalGroupBlock {
     }
 
     @Override
-    protected void appendItemInformation(ItemStack stack, Consumer<Component> info, boolean advanced){
+    public void appendItemInformation(ItemStack stack, Consumer<Component> info, boolean advanced){
         info.accept(TextComponents.translation("wormhole.target_cell.info").color(ChatFormatting.AQUA).get());
 
         CompoundTag tag = stack.get(BaseBlock.TILE_DATA);
 
-        int targets = tag == null || tag.isEmpty() || !tag.contains("targetCount", Tag.TAG_INT) ? 0 : tag.getInt("targetCount");
+        int targets = tag == null || tag.isEmpty() ? 0 : tag.getIntOr("targetCount", 0);
         int targetCapacity = this.type.getCapacity();
 
         if(targetCapacity > 0)
