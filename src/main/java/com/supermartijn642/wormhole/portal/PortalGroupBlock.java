@@ -5,7 +5,6 @@ import com.supermartijn642.core.block.BaseBlockEntityType;
 import com.supermartijn642.core.block.BlockProperties;
 import com.supermartijn642.core.block.EntityHoldingBlock;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -32,15 +31,5 @@ public class PortalGroupBlock extends BaseBlock implements EntityHoldingBlock {
     @Override
     public BlockEntity createNewBlockEntity(BlockPos pos, BlockState state){
         return this.blockEntityType.get().create(pos, state);
-    }
-
-    @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving){
-        if(state.getBlock() != newState.getBlock()){
-            BlockEntity entity = level.getBlockEntity(pos);
-            if(entity instanceof IPortalGroupEntity)
-                ((IPortalGroupEntity)entity).onBreak();
-            level.removeBlockEntity(pos);
-        }
     }
 }

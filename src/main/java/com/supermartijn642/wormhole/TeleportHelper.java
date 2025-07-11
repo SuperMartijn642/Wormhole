@@ -52,12 +52,12 @@ public class TeleportHelper {
 
         for(Entity rider : entity.getIndirectPassengers()){
             CompoundTag tag = rider.getPersistentData();
-            if(tag.contains("wormhole:teleported") && rider.tickCount - tag.getLong("wormhole:teleported") >= 0 && rider.tickCount - tag.getLong("wormhole:teleported") < TELEPORT_COOLDOWN)
+            if(tag.getLong("wormhole:teleported").map(l -> rider.tickCount - l).map(l -> l >= 0 && l < TELEPORT_COOLDOWN).orElse(false))
                 return false;
         }
 
         CompoundTag tag = entity.getPersistentData();
-        return !tag.contains("wormhole:teleported") || entity.tickCount - tag.getLong("wormhole:teleported") < 0 || entity.tickCount - tag.getLong("wormhole:teleported") >= TELEPORT_COOLDOWN;
+        return tag.getLong("wormhole:teleported").map(l -> entity.tickCount - l).map(l -> l < 0 || l >= TELEPORT_COOLDOWN).orElse(true);
     }
 
     private static void markEntityAndPassengers(Entity entity){
@@ -66,10 +66,10 @@ public class TeleportHelper {
     }
 
     private static void teleportEntityAndPassengers(Entity entity, Entity entityBeingRidden, PortalTarget target){
-        if(entity.level().isClientSide || !target.getLevel(entity.getServer()).isPresent())
+        if(entity.level().isClientSide || target.getLevel(entity.getServer()).isEmpty())
             return;
         Optional<ServerLevel> targetLevel = target.getLevel(entity.getServer()).filter(ServerLevel.class::isInstance).map(ServerLevel.class::cast);
-        if(!targetLevel.isPresent())
+        if(targetLevel.isEmpty())
             return;
 
         Collection<Entity> passengers = entity.getPassengers();
@@ -86,7 +86,7 @@ public class TeleportHelper {
     private static Entity teleportEntity(Entity entity, ServerLevel targetLevel, PortalTarget target){
         if(targetLevel == entity.level()){
             if(entity instanceof ServerPlayer){
-                entity.teleportTo(targetLevel, target.x, target.y, target.z, Set.of(), target.yaw, 0, true);
+                entity.teleportTo(targetLevel, target.x + .5, target.y + .2, target.z + .5, Set.of(), target.yaw, 0, true);
             }else
                 entity.teleportTo(target.x + .5, target.y + .2, target.z + .5);
             entity.setYHeadRot(target.yaw);
@@ -127,7 +127,7 @@ public class TeleportHelper {
                 Entity newEntity = entity.getType().create(targetLevel, EntitySpawnReason.DIMENSION_TRAVEL);
                 if(newEntity != null){
                     newEntity.restoreFrom(entity);
-                    newEntity.moveTo(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
+                    newEntity.snapTo(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
                     newEntity.setYHeadRot(target.yaw);
                     newEntity.setDeltaMovement(Vec3.ZERO);
                     newEntity.fallDistance = 0;

@@ -42,7 +42,7 @@ public class PortalBlockEntity extends PortalGroupBlockEntity {
     }
 
     @Override
-    public void onBreak(){
+    public void preRemoveSideEffects(BlockPos blockPos, BlockState blockState){
         if(this.hasGroup())
             this.getGroup().deactivate();
     }

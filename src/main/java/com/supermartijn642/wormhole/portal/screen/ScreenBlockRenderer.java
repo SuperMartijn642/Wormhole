@@ -1,30 +1,27 @@
 package com.supermartijn642.wormhole.portal.screen;
 
 import com.mojang.blaze3d.platform.Lighting;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.supermartijn642.core.ClientUtils;
 import com.supermartijn642.core.render.RenderUtils;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.ModelBlockRenderer;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.ModelData;
 import org.joml.Quaternionf;
 
-import java.util.List;
-
 /**
  * Created 2/2/2021 by SuperMartijn642
  */
 public class ScreenBlockRenderer {
+
+    private static final RandomSource RANDOM = RandomSource.create();
 
     public static void drawBlock(PoseStack poseStack, Block block, double x, double y, double scale, float yaw, float pitch){
         BlockState state = block.defaultBlockState();
@@ -39,35 +36,14 @@ public class ScreenBlockRenderer {
         poseStack.mulPose(new Quaternionf().setAngleAxis(pitch / 180 * Math.PI, 1, 0, 0));
         poseStack.mulPose(new Quaternionf().setAngleAxis(yaw / 180 * Math.PI, 0, 1, 0));
 
-        BakedModel model = ClientUtils.getBlockRenderer().getBlockModel(state);
-        ModelData modelData = ModelData.EMPTY;
+        BlockStateModel model = ClientUtils.getBlockRenderer().getBlockModel(state);
 
         poseStack.translate(-0.5, -0.5, -0.5);
-        for(RenderType renderType : model.getRenderTypes(state, RandomSource.create(42), modelData))
-            renderModel(model, state, poseStack, bufferSource.getBuffer(renderType), modelData, renderType);
+        for(RenderType renderType : model.getRenderTypes(state, RANDOM, ModelData.EMPTY))
+            ModelBlockRenderer.renderModel(poseStack.last(), bufferSource.getBuffer(renderType), model, 1, 1, 1, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, renderType);
 
         bufferSource.endBatch();
         poseStack.popPose();
-        RenderSystem.enableDepthTest();
         Lighting.setupFor3DItems();
-    }
-
-    private static void renderModel(BakedModel model, BlockState state, PoseStack poseStack, VertexConsumer buffer, ModelData modelData, RenderType renderType){
-        RandomSource random = RandomSource.create();
-
-        for(Direction direction : Direction.values()){
-            random.setSeed(42L);
-            renderQuads(poseStack, buffer, model.getQuads(state, direction, random, modelData, renderType));
-        }
-
-        random.setSeed(42L);
-        renderQuads(poseStack, buffer, model.getQuads(state, null, random, modelData, renderType));
-    }
-
-    private static void renderQuads(PoseStack poseStack, VertexConsumer buffer, List<BakedQuad> quads){
-        PoseStack.Pose matrix = poseStack.last();
-
-        for(BakedQuad bakedquad : quads)
-            buffer.putBulkData(matrix, bakedquad, 1, 1, 1, 1, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, false);
     }
 }

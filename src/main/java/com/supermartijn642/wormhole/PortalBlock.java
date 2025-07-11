@@ -8,6 +8,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -62,7 +63,7 @@ public class PortalBlock extends PortalGroupBlock implements SimpleWaterloggedBl
     }
 
     @Override
-    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity){
+    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier){
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if(blockEntity instanceof PortalBlockEntity)
             ((PortalBlockEntity)blockEntity).teleport(entity);

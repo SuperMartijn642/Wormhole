@@ -181,6 +181,6 @@ public class EnergyCellBlockEntity extends PortalGroupBlockEntity implements IEn
     @Override
     protected void readData(CompoundTag tag){
         super.readData(tag);
-        this.energy = tag.contains("energy") ? tag.getInt("energy") : 0;
+        this.energy = tag.getIntOr("energy", 0);
     }
 }

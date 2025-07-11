@@ -44,7 +44,7 @@ public class PortalGroupBlockEntity extends BaseBlockEntity implements TickableB
     }
 
     @Override
-    public void onBreak(){
+    public void preRemoveSideEffects(BlockPos pos, BlockState state){
         if(this.hasGroup())
             this.getGroup().destroy();
     }

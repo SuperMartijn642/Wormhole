@@ -13,7 +13,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -73,12 +72,12 @@ public class CoalGeneratorBlock extends BaseBlock implements EntityHoldingBlock 
     }
 
     @Override
-    protected void appendItemInformation(ItemStack stack, Consumer<Component> info, boolean advanced){
+    public void appendItemInformation(ItemStack stack, Consumer<Component> info, boolean advanced){
         int range = 2 * WormholeConfig.coalGeneratorRange.get() + 1;
         info.accept(TextComponents.translation("wormhole.coal_generator.info", range, EnergyFormat.formatEnergyPerTick(WormholeConfig.coalGeneratorPower.get())).color(ChatFormatting.AQUA).get());
 
         CompoundTag tag = stack.get(BaseBlock.TILE_DATA);
-        int energy = tag == null || tag.isEmpty() || !tag.contains("energy", Tag.TAG_INT) ? 0 : tag.getInt("energy");
+        int energy = tag == null || tag.isEmpty() ? 0 : tag.getIntOr("energy", 0);
         info.accept(TextComponents.string(EnergyFormat.formatCapacityWithUnit(energy, WormholeConfig.coalGeneratorCapacity.get())).color(ChatFormatting.YELLOW).get());
     }
 
