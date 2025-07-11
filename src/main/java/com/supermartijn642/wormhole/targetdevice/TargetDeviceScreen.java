@@ -1,9 +1,8 @@
 package com.supermartijn642.wormhole.targetdevice;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.ClientUtils;
 import com.supermartijn642.core.TextComponents;
-import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.GuiGraphicsHelper;
 import com.supermartijn642.core.gui.widget.ItemBaseWidget;
 import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.core.gui.widget.premade.AbstractButtonWidget;
@@ -35,17 +34,17 @@ import java.util.function.Function;
  */
 public class TargetDeviceScreen extends ItemBaseWidget {
 
-    private static final ResourceLocation BACKGROUND = getTexture("select_target_screen/device_background");
-    private static final ResourceLocation SELECT_HIGHLIGHT = getTexture("select_target_screen/device_select_highlight");
-    private static final ResourceLocation HOVER_HIGHLIGHT = getTexture("select_target_screen/device_hover_highlight");
-    private static final ResourceLocation LOCATION_ICON = getTexture("select_target_screen/location_icon");
-    private static final ResourceLocation ENERGY_ICON = getTexture("select_target_screen/lightning_icon");
-    private static final ResourceLocation DIMENSION_ICON = getTexture("select_target_screen/dimension_icon");
-    private static final ResourceLocation DIRECTION_ICON = getTexture("select_target_screen/direction_icon");
-    private static final ResourceLocation SEPARATOR = getTexture("select_target_screen/separator");
+    public static final ResourceLocation BACKGROUND = getTexture("select_target_screen/device_background");
+    public static final ResourceLocation SELECT_HIGHLIGHT = getTexture("select_target_screen/device_select_highlight");
+    public static final ResourceLocation HOVER_HIGHLIGHT = getTexture("select_target_screen/device_hover_highlight");
+    public static final ResourceLocation LOCATION_ICON = getTexture("select_target_screen/location_icon");
+    public static final ResourceLocation ENERGY_ICON = getTexture("select_target_screen/lightning_icon");
+    public static final ResourceLocation DIMENSION_ICON = getTexture("select_target_screen/dimension_icon");
+    public static final ResourceLocation DIRECTION_ICON = getTexture("select_target_screen/direction_icon");
+    public static final ResourceLocation SEPARATOR = getTexture("select_target_screen/separator");
 
     private static ResourceLocation getTexture(String name){
-        return ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/" + name + ".png");
+        return ResourceLocation.fromNamespaceAndPath("wormhole", "gui/" + name);
     }
 
     private static final int WIDTH = 324, HEIGHT = 185;
@@ -105,84 +104,89 @@ public class TargetDeviceScreen extends ItemBaseWidget {
     }
 
     @Override
-    protected void renderBackground(WidgetRenderContext context, int mouseX, int mouseY, ItemStack object){
-        ScreenUtils.drawTexture(BACKGROUND, context.poseStack(), 0, 0, this.width(), this.height());
+    protected void renderBackground(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY, ItemStack object){
+        graphics.submitSprite(BACKGROUND, 0, 0, this.width(), this.height());
 
         // draw target select highlight
         if(this.selectedTarget >= 0)
-            ScreenUtils.drawTexture(SELECT_HIGHLIGHT, context.poseStack(), 5, 16 + 16 * this.selectedTarget, 106, 16);
+            graphics.submitSprite(SELECT_HIGHLIGHT, 5, 16 + 16 * this.selectedTarget, 106, 16);
         else if(this.selectedCurrentTarget)
-            ScreenUtils.drawTexture(SELECT_HIGHLIGHT, context.poseStack(), 213, 16, 106, 16);
+            graphics.submitSprite(SELECT_HIGHLIGHT, 213, 16, 106, 16);
 
-        super.renderBackground(context, mouseX, mouseY, object);
+        super.renderBackground(context, graphics, mouseX, mouseY, object);
     }
 
     @Override
-    protected void renderForeground(WidgetRenderContext context, int mouseX, int mouseY, ItemStack object){
-        super.renderForeground(context, mouseX, mouseY, object);
+    protected void renderForeground(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY, ItemStack object){
+        super.renderForeground(context, graphics, mouseX, mouseY, object);
 
         // draw titles
-        ScreenUtils.drawCenteredString(context.poseStack(), TextComponents.translation("wormhole.target_device.gui.title").get(), 58, 3, Integer.MAX_VALUE);
-        ScreenUtils.drawCenteredString(context.poseStack(), TextComponents.translation("wormhole.target_device.gui.current_location").get(), 266, 3, Integer.MAX_VALUE);
+        graphics.submitText(TextComponents.translation("wormhole.target_device.gui.title").get(), 58, 3, p -> p.color(Integer.MAX_VALUE).centerHorizontally());
+        graphics.submitText(TextComponents.translation("wormhole.target_device.gui.current_location").get(), 266, 3, p -> p.color(Integer.MAX_VALUE).centerHorizontally());
 
         // draw hover highlight
         if(mouseX > 5 && mouseX < 111 && mouseY > 16 && mouseY < 176){
             int targetIndex = (mouseY - 16) / 16;
             if(this.getOrDefault(list -> list.size() > targetIndex && list.get(targetIndex) != null, false))
-                ScreenUtils.drawTexture(HOVER_HIGHLIGHT, context.poseStack(), 5, 16 + targetIndex * 16, 106, 16);
+                graphics.submitSprite(HOVER_HIGHLIGHT, 5, 16 + targetIndex * 16, 106, 16);
         }else if(mouseX > 213 && mouseX < 319 && mouseY > 16 && mouseY < 32)
-            ScreenUtils.drawTexture(HOVER_HIGHLIGHT, context.poseStack(), 213, 16, 106, 16);
+            graphics.submitSprite(HOVER_HIGHLIGHT, 213, 16, 106, 16);
 
         // draw target info
         if(this.selectedTarget >= 0){
             PortalTarget target = this.getOrDefault(list -> list.size() > this.selectedTarget ? list.get(this.selectedTarget) : null, null);
             if(target != null)
-                this.renderTargetInfo(context.poseStack(), target.name, target.getPos(), target.dimension, target.dimensionDisplayName, target.yaw);
+                this.renderTargetInfo(graphics, target.name, target.getPos(), target.dimension, target.dimensionDisplayName, target.yaw);
         }else if(this.selectedCurrentTarget){
             ResourceKey<Level> dimension = ClientUtils.getWorld().dimension();
-            this.renderTargetInfo(context.poseStack(), this.currentTargetNameField.getText().trim(), this.currentPos, dimension, TextComponents.dimension(dimension).get(), this.currentYaw);
+            this.renderTargetInfo(graphics, this.currentTargetNameField.getText().trim(), this.currentPos, dimension, TextComponents.dimension(dimension).get(), this.currentYaw);
         }
 
         this.updateAddRemoveButton();
     }
 
-    private void renderTargetInfo(PoseStack poseStack, String name, BlockPos pos, ResourceKey<Level> dimension, Component dimensionName, float yaw){
-        ScreenUtils.drawCenteredString(poseStack, name, 162, 31, Integer.MAX_VALUE);
+    private void renderTargetInfo(GuiGraphicsHelper graphics, String name, BlockPos pos, ResourceKey<Level> dimension, Component dimensionName, float yaw){
+        graphics.submitText(name, 162, 31, p -> p.color(Integer.MAX_VALUE).centerHorizontally());
 
-        ScreenUtils.drawTexture(SEPARATOR, poseStack, 124, 41, 77, 1);
+        graphics.submitSprite(SEPARATOR, 124, 41, 77, 1);
 
         // location
-        ScreenUtils.drawTexture(LOCATION_ICON, poseStack, 121, 47, 9, 9);
-        ScreenUtils.drawString(poseStack, "(" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")", 132, 48, Integer.MAX_VALUE);
+        graphics.submitSprite(LOCATION_ICON, 121, 47, 9, 9);
+        graphics.submitText("(" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")", 132, 48, p -> p.color(Integer.MAX_VALUE));
         // dimension
-        Block block = null;
+        Block block;
         if(dimension.equals(Level.OVERWORLD))
             block = Blocks.DIRT_PATH;
         else if(dimension.equals(Level.NETHER))
             block = Blocks.NETHERRACK;
         else if(dimension.equals(Level.END))
             block = Blocks.END_STONE;
-        if(block == null)
-            ScreenUtils.drawTexture(DIMENSION_ICON, poseStack, 121, 59, 9, 9);
         else
-            ScreenBlockRenderer.drawBlock(poseStack, block, 125.5, 63.5, 5.5, 45, 40);
-        ScreenUtils.drawString(poseStack, dimensionName, 132, 60, Integer.MAX_VALUE);
+            block = null;
+        if(block == null)
+            graphics.submitSprite(DIMENSION_ICON, 121, 59, 9, 9);
+        else
+            graphics.submitCustomRendering(
+                119, 57, 13, 13,
+                poseStack -> ScreenBlockRenderer.drawBlock(poseStack, block, 6.5, 6.5, 5.5, 45, 40)
+            );
+        graphics.submitText(dimensionName, 132, 60, p -> p.color(Integer.MAX_VALUE));
         // direction
-        ScreenUtils.drawTexture(DIRECTION_ICON, poseStack, 119, 69, 13, 13);
-        ScreenUtils.drawString(poseStack, TextComponents.translation("wormhole.direction." + Direction.fromYRot(yaw)).get(), 132, 72, Integer.MAX_VALUE);
+        graphics.submitSprite(DIRECTION_ICON, 119, 69, 13, 13);
+        graphics.submitText(TextComponents.translation("wormhole.direction." + Direction.fromYRot(yaw)).get(), 132, 72, p -> p.color(Integer.MAX_VALUE));
     }
 
     @Override
-    public void renderTooltips(WidgetRenderContext context, int mouseX, int mouseY, ItemStack object){
+    public void renderTooltips(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY, ItemStack object){
         // location
         if(mouseX >= 120 && mouseX <= 131 && mouseY >= 46 && mouseY <= 57)
-            ScreenUtils.drawTooltip(context.poseStack(), TextComponents.translation("wormhole.target.location").get(), mouseX, mouseY);
+            graphics.submitTooltipForTopStratum(c -> c.text(TextComponents.translation("wormhole.target.location").get()), mouseX, mouseY);
             // dimension
         else if(mouseX >= 120 && mouseX <= 131 && mouseY >= 58 && mouseY <= 69)
-            ScreenUtils.drawTooltip(context.poseStack(), TextComponents.translation("wormhole.target.dimension").get(), mouseX, mouseY);
+            graphics.submitTooltipForTopStratum(c -> c.text(TextComponents.translation("wormhole.target.dimension").get()), mouseX, mouseY);
             // direction
         else if(mouseX >= 120 && mouseX <= 131 && mouseY >= 70 && mouseY <= 81)
-            ScreenUtils.drawTooltip(context.poseStack(), TextComponents.translation("wormhole.target.direction").get(), mouseX, mouseY);
+            graphics.submitTooltipForTopStratum(c -> c.text(TextComponents.translation("wormhole.target.direction").get()), mouseX, mouseY);
     }
 
     private void updateAddRemoveButton(){

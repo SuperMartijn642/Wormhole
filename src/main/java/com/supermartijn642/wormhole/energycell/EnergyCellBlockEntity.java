@@ -4,8 +4,9 @@ import com.supermartijn642.wormhole.portal.IEnergyCellEntity;
 import com.supermartijn642.wormhole.portal.PortalGroupBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 
@@ -155,15 +156,14 @@ public class EnergyCellBlockEntity extends PortalGroupBlockEntity implements IEn
     }
 
     @Override
-    protected CompoundTag writeData(){
-        CompoundTag tag = super.writeData();
-        tag.putInt("energy", this.energy);
-        return tag;
+    protected void writeData(ValueOutput output){
+        super.writeData(output);
+        output.putInt("energy", this.energy);
     }
 
     @Override
-    protected void readData(CompoundTag tag){
-        super.readData(tag);
-        this.energy = tag.getIntOr("energy", 0);
+    protected void readData(ValueInput input){
+        super.readData(input);
+        this.energy = input.getIntOr("energy", 0);
     }
 }

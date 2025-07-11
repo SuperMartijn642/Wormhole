@@ -1,6 +1,6 @@
 package com.supermartijn642.wormhole.screen;
 
-import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.GuiGraphicsHelper;
 import com.supermartijn642.core.gui.widget.BaseWidget;
 import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import net.minecraft.network.chat.Component;
@@ -13,7 +13,7 @@ import java.util.function.Supplier;
  */
 public class FlameProgressWidget extends BaseWidget {
 
-    private static final ResourceLocation FLAME = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/progress_flame.png");
+    public static final ResourceLocation FLAME = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/progress_flame");
 
     private final Supplier<Float> progress;
 
@@ -23,12 +23,12 @@ public class FlameProgressWidget extends BaseWidget {
     }
 
     @Override
-    public void render(WidgetRenderContext context, int mouseX, int mouseY){
+    public void render(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY){
         float progress = Math.max(Math.min(this.progress.get(), 1), 0);
         if(progress != 1)
-            ScreenUtils.drawTexture(FLAME, context.poseStack(), this.x, this.y, this.width, this.height * (1 - progress), 0, 0, 0.5f, (1 - progress));
+            graphics.submitSprite(FLAME, this.x, this.y, this.width, this.height * (1 - progress), p -> p.uv(0, 0, 0.5f, (1 - progress)));
         if(progress != 0)
-            ScreenUtils.drawTexture(FLAME, context.poseStack(), this.x, this.y + this.height * (1 - progress), this.width, this.height * progress, 0.5f, 1 - progress, 0.5f, progress);
+            graphics.submitSprite(FLAME, this.x, this.y + this.height * (1 - progress), this.width, this.height * progress, p -> p.uv(0.5f, 1 - progress, 0.5f, progress));
     }
 
     @Override

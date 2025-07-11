@@ -1,7 +1,5 @@
 package com.supermartijn642.wormhole.portal.screen;
 
-import com.mojang.blaze3d.platform.Lighting;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.ClientUtils;
 import com.supermartijn642.core.render.RenderUtils;
@@ -29,7 +27,7 @@ import org.joml.Vector3f;
  */
 public class PortalRendererHelper {
 
-    private static final int ROTATE_TIME = 20000;
+    private static final int ROTATE_TIME = 30000;
 
     public static void drawPortal(PoseStack poseStack, PortalShape shape, float x, float y, float width, float height){ // TODO fix transparency
         Level level = ClientUtils.getWorld();
@@ -41,14 +39,12 @@ public class PortalRendererHelper {
         );
 
         poseStack.pushPose();
-        poseStack.translate(x + width / 2, y + height / 2, 350);
-        poseStack.scale(scale, -scale, scale);
+        poseStack.translate(x + width / 2, y + height / 2, 0);
+        poseStack.scale(scale, -scale, -scale);
         MultiBufferSource.BufferSource bufferSource = RenderUtils.getMainBufferSource();
 
-        RenderSystem.setShaderLights(new Vector3f(0, 1, 0), new Vector3f(0, 0, 1));
-
         poseStack.mulPose(new Quaternionf().setAngleAxis(Math.PI / 4, 1, 0, 0));
-        poseStack.mulPose(new Quaternionf().setAngleAxis((double)(System.currentTimeMillis() % ROTATE_TIME) / ROTATE_TIME * Math.PI, 0, 1, 0));
+        poseStack.mulPose(new Quaternionf().setAngleAxis((double)(System.currentTimeMillis() % ROTATE_TIME) / ROTATE_TIME * 2 * Math.PI, 0, 1, 0));
         poseStack.translate(-center.x(), -center.y(), -center.z());
 
         for(BlockPos pos : shape.frame)
@@ -62,7 +58,6 @@ public class PortalRendererHelper {
 
         bufferSource.endBatch();
         poseStack.popPose();
-        Lighting.setupFor3DItems();
     }
 
     private static void renderBlock(Level level, BlockPos pos, PoseStack poseStack, MultiBufferSource bufferSource, boolean valid){
@@ -75,6 +70,7 @@ public class PortalRendererHelper {
 
         poseStack.pushPose();
         poseStack.translate(pos.getX(), pos.getY(), pos.getZ());
+        poseStack.translate(-0.5, -0.5, -0.5);
 
         ModelBlockRenderer.renderModel(poseStack.last(), bufferSource, model, valid ? 1 : 0.5f, valid ? 1 : 0.5f, valid ? 1 : 0.8f, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, level, pos, state);
 

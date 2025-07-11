@@ -1,10 +1,9 @@
 package com.supermartijn642.wormhole.portal.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.ClientUtils;
 import com.supermartijn642.core.EnergyFormat;
 import com.supermartijn642.core.TextComponents;
-import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.GuiGraphicsHelper;
 import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.core.gui.widget.premade.AbstractButtonWidget;
 import com.supermartijn642.core.gui.widget.premade.ButtonWidget;
@@ -41,18 +40,18 @@ import java.util.function.Supplier;
  */
 public class PortalTargetScreen extends PortalGroupScreen {
 
-    private static final ResourceLocation BACKGROUND = getTexture("select_target_screen/background"), BACKGROUND_WITH_DEVICE = getTexture("select_target_screen/background_with_device");
-    private static final ResourceLocation SELECT_HIGHLIGHT = getTexture("select_target_screen/select_highlight"), SELECT_HIGHLIGHT_DEVICE = getTexture("select_target_screen/device_select_highlight");
-    private static final ResourceLocation HOVER_HIGHLIGHT = getTexture("select_target_screen/hover_highlight"), HOVER_HIGHLIGHT_DEVICE = getTexture("select_target_screen/device_hover_highlight");
-    private static final ResourceLocation LOCATION_ICON = getTexture("select_target_screen/location_icon");
-    private static final ResourceLocation ENERGY_ICON = getTexture("select_target_screen/lightning_icon");
-    private static final ResourceLocation DIMENSION_ICON = getTexture("select_target_screen/dimension_icon");
-    private static final ResourceLocation DIRECTION_ICON = getTexture("select_target_screen/direction_icon");
-    private static final ResourceLocation STAR_ICON = getTexture("select_target_screen/star_icon");
-    private static final ResourceLocation SEPARATOR = getTexture("select_target_screen/separator");
+    public static final ResourceLocation BACKGROUND = getTexture("select_target_screen/background"), BACKGROUND_WITH_DEVICE = getTexture("select_target_screen/background_with_device");
+    public static final ResourceLocation SELECT_HIGHLIGHT = getTexture("select_target_screen/select_highlight"), SELECT_HIGHLIGHT_DEVICE = getTexture("select_target_screen/device_select_highlight");
+    public static final ResourceLocation HOVER_HIGHLIGHT = getTexture("select_target_screen/hover_highlight"), HOVER_HIGHLIGHT_DEVICE = getTexture("select_target_screen/device_hover_highlight");
+    public static final ResourceLocation LOCATION_ICON = getTexture("select_target_screen/location_icon");
+    public static final ResourceLocation ENERGY_ICON = getTexture("select_target_screen/lightning_icon");
+    public static final ResourceLocation DIMENSION_ICON = getTexture("select_target_screen/dimension_icon");
+    public static final ResourceLocation DIRECTION_ICON = getTexture("select_target_screen/direction_icon");
+    public static final ResourceLocation STAR_ICON = getTexture("select_target_screen/star_icon");
+    public static final ResourceLocation SEPARATOR = getTexture("select_target_screen/separator");
 
     private static ResourceLocation getTexture(String name){
-        return ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/" + name + ".png");
+        return ResourceLocation.fromNamespaceAndPath("wormhole", "gui/" + name);
     }
 
     private static final int WIDTH = 240, HEIGHT = 185;
@@ -138,100 +137,106 @@ public class PortalTargetScreen extends PortalGroupScreen {
     }
 
     @Override
-    protected void renderBackground(WidgetRenderContext context, int mouseX, int mouseY, PortalGroup object){
+    protected void renderBackground(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY, PortalGroup object){
         ResourceLocation texture = this.hasTargetDevice ? BACKGROUND_WITH_DEVICE : BACKGROUND;
-        ScreenUtils.drawTexture(texture, context.poseStack(), 0, 0, this.width(), this.height());
+        graphics.submitSprite(texture, 0, 0, this.width(), this.height());
 
         // draw target select highlight
         if(this.selectedPortalTarget >= this.scrollOffset && this.selectedPortalTarget < this.scrollOffset + 10)
-            ScreenUtils.drawTexture(SELECT_HIGHLIGHT, context.poseStack(), 5, 16 + 16 * (this.selectedPortalTarget - this.scrollOffset), 130, 16);
+            graphics.submitSprite(SELECT_HIGHLIGHT, 5, 16 + 16 * (this.selectedPortalTarget - this.scrollOffset), 130, 16);
         else if(this.hasTargetDevice && this.selectedDeviceTarget >= 0 && this.selectedDeviceTarget < 10)
-            ScreenUtils.drawTexture(SELECT_HIGHLIGHT_DEVICE, context.poseStack(), 242, 16 + 16 * this.selectedDeviceTarget, 106, 16);
+            graphics.submitSprite(SELECT_HIGHLIGHT_DEVICE, 242, 16 + 16 * this.selectedDeviceTarget, 106, 16);
 
-        super.renderBackground(context, mouseX, mouseY, object);
+        super.renderBackground(context, graphics, mouseX, mouseY, object);
     }
 
     @Override
-    protected void render(WidgetRenderContext context, int mouseX, int mouseY, PortalGroup group){
-        super.render(context, mouseX, mouseY, group);
+    protected void render(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY, PortalGroup group){
+        super.render(context, graphics, mouseX, mouseY, group);
 
         // draw titles
-        ScreenUtils.drawCenteredString(context.poseStack(), TextComponents.translation("wormhole.portal.targets.gui.title").get(), 70, 3, Integer.MAX_VALUE);
+        graphics.submitText(TextComponents.translation("wormhole.portal.targets.gui.title").get(), 70, 3, p -> p.color(Integer.MAX_VALUE).centerHorizontally());
         if(this.hasTargetDevice)
-            ScreenUtils.drawCenteredString(context.poseStack(), TextComponents.translation("wormhole.target_device.gui.title").get(), 296, 3, Integer.MAX_VALUE);
+            graphics.submitText(TextComponents.translation("wormhole.target_device.gui.title").get(), 296, 3, p -> p.color(Integer.MAX_VALUE).centerHorizontally());
 
         // draw hover highlight
         if(mouseX > 5 && mouseX < 135 && mouseY > 16 && mouseY < 176){
             int targetIndex = (mouseY - 16) / 16;
             if(group.getTarget(targetIndex + this.scrollOffset) != null)
-                ScreenUtils.drawTexture(HOVER_HIGHLIGHT, context.poseStack(), 5, 16 + targetIndex * 16, 130, 16);
+                graphics.submitSprite(HOVER_HIGHLIGHT, 5, 16 + targetIndex * 16, 130, 16);
         }else if(this.hasTargetDevice && mouseX > 242 && mouseX < 348 && mouseY > 16 && mouseY < 176){
             int targetIndex = (mouseY - 16) / 16;
             if(this.getFromDeviceTargets(list -> list.size() > targetIndex && list.get(targetIndex) != null, false))
-                ScreenUtils.drawTexture(HOVER_HIGHLIGHT_DEVICE, context.poseStack(), 242, 16 + targetIndex * 16, 106, 16);
+                graphics.submitSprite(HOVER_HIGHLIGHT_DEVICE, 242, 16 + targetIndex * 16, 106, 16);
         }
 
         int activeTarget = group.getActiveTargetIndex();
         // draw target numbers
         for(int count = 0; count < Math.min(10, this.portalTargetNameLabels.size()); count++){
             if(count + this.scrollOffset != activeTarget)
-                ScreenUtils.drawCenteredString(context.poseStack(), this.scrollOffset + count + 1 + ".", 14, 21 + count * 16);
+                //noinspection Convert2MethodRef
+                graphics.submitText(this.scrollOffset + count + 1 + ".", 14, 21 + count * 16, p -> p.centerHorizontally());
             else
-                ScreenUtils.drawTexture(STAR_ICON, context.poseStack(), 8, 19 + 16 * count, 10, 10);
+                graphics.submitSprite(STAR_ICON, 8, 19 + 16 * count, 10, 10);
         }
 
         // draw target info
         if(this.selectedPortalTarget >= 0 && this.selectedPortalTarget < group.getTotalTargetCapacity()){
             PortalTarget target = group.getTarget(this.selectedPortalTarget);
             if(target != null)
-                this.renderTargetInfo(context.poseStack(), group, target, true);
+                this.renderTargetInfo(graphics, group, target, true);
         }else if(this.hasTargetDevice && this.selectedDeviceTarget >= 0 && this.selectedDeviceTarget < 10){
             PortalTarget target = this.getFromDeviceTargets(list -> this.selectedDeviceTarget < list.size() ? list.get(this.selectedDeviceTarget) : null, null);
             if(target != null)
-                this.renderTargetInfo(context.poseStack(), group, target, false);
+                this.renderTargetInfo(graphics, group, target, false);
         }
 
         this.updateSelectRemoveColorButtons(group);
     }
 
-    private void renderTargetInfo(PoseStack poseStack, PortalGroup group, PortalTarget target, boolean showColor){
-        ScreenUtils.drawCenteredString(poseStack, target.name, 191, 31, Integer.MAX_VALUE);
+    private void renderTargetInfo(GuiGraphicsHelper graphics, PortalGroup group, PortalTarget target, boolean showColor){
+        graphics.submitText(target.name, 191, 31, p -> p.color(Integer.MAX_VALUE).centerHorizontally());
 
-        ScreenUtils.drawTexture(SEPARATOR, poseStack, 153, 41, 77, 1);
+        graphics.submitSprite(SEPARATOR, 153, 41, 77, 1);
 
         // location
-        ScreenUtils.drawTexture(LOCATION_ICON, poseStack, 150, 47, 9, 9);
-        ScreenUtils.drawString(poseStack, "(" + target.x + ", " + target.y + ", " + target.z + ")", 161, 48, Integer.MAX_VALUE);
+        graphics.submitSprite(LOCATION_ICON, 150, 47, 9, 9);
+        graphics.submitText("(" + target.x + ", " + target.y + ", " + target.z + ")", 161, 48, p -> p.color(Integer.MAX_VALUE));
         // dimension
-        Block block = null;
+        Block block;
         if(target.dimension.equals(Level.OVERWORLD))
             block = Blocks.DIRT_PATH;
         else if(target.dimension.equals(Level.NETHER))
             block = Blocks.NETHERRACK;
         else if(target.dimension.equals(Level.END))
             block = Blocks.END_STONE;
-        if(block == null)
-            ScreenUtils.drawTexture(DIMENSION_ICON, poseStack, 150, 59, 9, 9);
         else
-            ScreenBlockRenderer.drawBlock(poseStack, block, 154.5, 63.5, 5.5, 45, 40);
-        ScreenUtils.drawString(poseStack, target.getDimensionDisplayName(), 161, 60, Integer.MAX_VALUE);
+            block = null;
+        if(block == null)
+            graphics.submitSprite(DIMENSION_ICON, 150, 59, 9, 9);
+        else
+            graphics.submitCustomRendering(
+                148, 57, 13, 13,
+                poseStack -> ScreenBlockRenderer.drawBlock(poseStack, block, 6.5, 6.5, 5.5, 45, 40)
+            );
+        graphics.submitText(target.getDimensionDisplayName(), 161, 60, p -> p.color(Integer.MAX_VALUE));
         // direction
-        ScreenUtils.drawTexture(DIRECTION_ICON, poseStack, 148, 69, 13, 13);
-        ScreenUtils.drawString(poseStack, TextComponents.translation("wormhole.direction." + Direction.fromYRot(target.yaw)).get(), 161, 72, Integer.MAX_VALUE);
+        graphics.submitSprite(DIRECTION_ICON, 148, 69, 13, 13);
+        graphics.submitText(TextComponents.translation("wormhole.direction." + Direction.fromYRot(target.yaw)).get(), 161, 72, p -> p.color(Integer.MAX_VALUE));
 
-        ScreenUtils.drawTexture(SEPARATOR, poseStack, 153, 85, 77, 1);
+        graphics.submitSprite(SEPARATOR, 153, 85, 77, 1);
 
         if(showColor){
             // color
-            ScreenUtils.drawString(poseStack, TextComponents.translation("wormhole.color." + (target.color == null ? "random" : target.color.getName())).get(), 161, 92, Integer.MAX_VALUE);
+            graphics.submitText(TextComponents.translation("wormhole.color." + (target.color == null ? "random" : target.color.getName())).get(), 161, 92, p -> p.color(Integer.MAX_VALUE));
 
-            ScreenUtils.drawTexture(SEPARATOR, poseStack, 153, 105, 77, 1);
+            graphics.submitSprite(SEPARATOR, 153, 105, 77, 1);
         }
 
         // energy cost
-        ScreenUtils.drawTexture(ENERGY_ICON, poseStack, 150, showColor ? 111 : 91, 9, 9);
+        graphics.submitSprite(ENERGY_ICON, 150, showColor ? 111 : 91, 9, 9);
         int cost = PortalGroup.getTeleportCostToTarget(ClientUtils.getWorld(), group.getCenterPos(), target);
-        ScreenUtils.drawString(poseStack, EnergyFormat.formatEnergyWithUnit(cost), 161, showColor ? 112 : 92, Integer.MAX_VALUE);
+        graphics.submitText(EnergyFormat.formatEnergyWithUnit(cost), 161, showColor ? 112 : 92, p -> p.color(Integer.MAX_VALUE));
     }
 
     private void addPortalTargetWidgets(PortalGroup group){
@@ -328,21 +333,21 @@ public class PortalTargetScreen extends PortalGroupScreen {
     }
 
     @Override
-    protected void renderTooltips(WidgetRenderContext context, int mouseX, int mouseY, PortalGroup group){
+    protected void renderTooltips(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY, PortalGroup group){
         // location
         if(mouseX >= 149 && mouseX <= 160 && mouseY >= 46 && mouseY <= 57)
-            ScreenUtils.drawTooltip(context.poseStack(), TextComponents.translation("wormhole.target.location").get(), mouseX, mouseY);
+            graphics.submitTooltipForTopStratum(c -> c.text(TextComponents.translation("wormhole.target.location").get()), mouseX, mouseY);
             // dimension
         else if(mouseX >= 149 && mouseX <= 160 && mouseY >= 58 && mouseY <= 69)
-            ScreenUtils.drawTooltip(context.poseStack(), TextComponents.translation("wormhole.target.dimension").get(), mouseX, mouseY);
+            graphics.submitTooltipForTopStratum(c -> c.text(TextComponents.translation("wormhole.target.dimension").get()), mouseX, mouseY);
             // direction
         else if(mouseX >= 149 && mouseX <= 160 && mouseY >= 70 && mouseY <= 81)
-            ScreenUtils.drawTooltip(context.poseStack(), TextComponents.translation("wormhole.target.direction").get(), mouseX, mouseY);
+            graphics.submitTooltipForTopStratum(c -> c.text(TextComponents.translation("wormhole.target.direction").get()), mouseX, mouseY);
             // energy
         else if(mouseX >= 149 && mouseX <= 160 && (this.selectedPortalTarget >= 0 ? mouseY >= 110 && mouseY <= 121 : mouseY >= 90 && mouseY <= 101))
-            ScreenUtils.drawTooltip(context.poseStack(), TextComponents.translation("wormhole.target.teleport_cost").get(), mouseX, mouseY);
+            graphics.submitTooltipForTopStratum(c -> c.text(TextComponents.translation("wormhole.target.teleport_cost").get()), mouseX, mouseY);
 
-        super.renderTooltips(context, mouseX, mouseY, group);
+        super.renderTooltips(context, graphics, mouseX, mouseY, group);
     }
 
     public <T> T getFromDeviceTargets(Function<List<PortalTarget>,T> function, T other){
