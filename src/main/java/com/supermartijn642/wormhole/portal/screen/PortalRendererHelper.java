@@ -1,7 +1,5 @@
 package com.supermartijn642.wormhole.portal.screen;
 
-import com.mojang.blaze3d.platform.Lighting;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.ClientUtils;
 import com.supermartijn642.core.render.RenderUtils;
@@ -11,10 +9,10 @@ import com.supermartijn642.wormhole.portal.PortalShape;
 import com.supermartijn642.wormhole.targetcell.TargetCellBlock;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
@@ -23,6 +21,7 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.client.RenderTypeHelper;
 import net.minecraftforge.client.model.data.ModelData;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -32,7 +31,7 @@ import org.joml.Vector3f;
  */
 public class PortalRendererHelper {
 
-    private static final int ROTATE_TIME = 20000;
+    private static final int ROTATE_TIME = 30000;
     private static final RandomSource RANDOM = RandomSource.create();
 
     public static void drawPortal(PoseStack poseStack, PortalShape shape, float x, float y, float width, float height){ // TODO fix transparency
@@ -45,14 +44,12 @@ public class PortalRendererHelper {
         );
 
         poseStack.pushPose();
-        poseStack.translate(x + width / 2, y + height / 2, 350);
-        poseStack.scale(scale, -scale, scale);
+        poseStack.translate(x + width / 2, y + height / 2, 0);
+        poseStack.scale(scale, -scale, -scale);
         MultiBufferSource.BufferSource bufferSource = RenderUtils.getMainBufferSource();
 
-        RenderSystem.setShaderLights(new Vector3f(0, 1, 0), new Vector3f(0, 0, 1));
-
         poseStack.mulPose(new Quaternionf().setAngleAxis(Math.PI / 4, 1, 0, 0));
-        poseStack.mulPose(new Quaternionf().setAngleAxis((double)(System.currentTimeMillis() % ROTATE_TIME) / ROTATE_TIME * Math.PI, 0, 1, 0));
+        poseStack.mulPose(new Quaternionf().setAngleAxis((double)(System.currentTimeMillis() % ROTATE_TIME) / ROTATE_TIME * 2 * Math.PI, 0, 1, 0));
         poseStack.translate(-center.x(), -center.y(), -center.z());
 
         for(BlockPos pos : shape.frame)
@@ -66,7 +63,6 @@ public class PortalRendererHelper {
 
         bufferSource.endBatch();
         poseStack.popPose();
-        Lighting.setupFor3DItems();
     }
 
     private static void renderBlock(Level level, BlockPos pos, PoseStack poseStack, MultiBufferSource bufferSource, boolean valid){
@@ -85,8 +81,8 @@ public class PortalRendererHelper {
         poseStack.translate(pos.getX(), pos.getY(), pos.getZ());
         poseStack.translate(-0.5, -0.5, -0.5);
 
-        for(RenderType renderType : model.getRenderTypes(state, RANDOM, modelData))
-            ModelBlockRenderer.renderModel(poseStack.last(), bufferSource.getBuffer(renderType), model, valid ? 1 : 0.5f, valid ? 1 : 0.5f, valid ? 1 : 0.8f, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, modelData, renderType);
+        for(ChunkSectionLayer layer : model.getRenderTypes(state, RANDOM, modelData))
+            ModelBlockRenderer.renderModel(poseStack.last(), bufferSource.getBuffer(RenderTypeHelper.getEntityRenderType(layer)), model, valid ? 1 : 0.5f, valid ? 1 : 0.5f, valid ? 1 : 0.8f, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, modelData, layer);
 
         poseStack.popPose();
     }

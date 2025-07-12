@@ -1,7 +1,7 @@
 package com.supermartijn642.wormhole.portal.screen;
 
 import com.supermartijn642.core.TextComponents;
-import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.GuiGraphicsHelper;
 import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.core.gui.widget.premade.AbstractButtonWidget;
 import com.supermartijn642.wormhole.Wormhole;
@@ -18,8 +18,8 @@ import java.util.function.Supplier;
  */
 public class PortalTargetSelectColorButton extends AbstractButtonWidget {
 
-    public static final ResourceLocation BUTTON_OUTLINE = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/large_color_buttons.png");
-    public static final ResourceLocation RANDOM_COLOR_PORTAL = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/random_color_portal.png");
+    public static final ResourceLocation BUTTON_OUTLINE = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/large_color_buttons");
+    public static final ResourceLocation RANDOM_COLOR_PORTAL = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/random_color_portal");
 
     private final DyeColor color;
     private final Supplier<DyeColor> targetColor;
@@ -34,10 +34,10 @@ public class PortalTargetSelectColorButton extends AbstractButtonWidget {
     }
 
     @Override
-    public void render(WidgetRenderContext context, int mouseX, int mouseY){
-        ScreenUtils.drawTexture(BUTTON_OUTLINE, context.poseStack(), this.x, this.y, this.width, this.height, 0, this.targetColor.get() == this.color ? 2 / 3f : this.isFocused() ? 1 / 3f : 0, 1, 1 / 3f);
+    public void render(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY){
+        graphics.submitSprite(BUTTON_OUTLINE, this.x, this.y, this.width, this.height, p -> p.uv(0, this.targetColor.get() == this.color ? 2 / 3f : this.isFocused() ? 1 / 3f : 0, 1, 1 / 3f));
         ResourceLocation texture = this.color == null ? RANDOM_COLOR_PORTAL : ResourceLocation.fromNamespaceAndPath("wormhole", "textures/portal/portal_" + this.color.getName() + ".png");
-        ScreenUtils.drawTexture(texture, context.poseStack(), this.x + 2, this.y + 2, this.width - 4, this.height - 4, 0, 0, 1, 16 / 512f);
+        graphics.submitSprite(texture, this.x + 2, this.y + 2, this.width - 4, this.height - 4, p -> p.uv(0, 0, 1, 16 / 512f));
     }
 
     @Override

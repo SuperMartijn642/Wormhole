@@ -1,9 +1,8 @@
 package com.supermartijn642.wormhole.portal.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.supermartijn642.core.EnergyFormat;
 import com.supermartijn642.core.TextComponents;
-import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.GuiGraphicsHelper;
 import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.core.gui.widget.premade.ButtonWidget;
 import com.supermartijn642.wormhole.Wormhole;
@@ -29,16 +28,16 @@ import java.util.function.Supplier;
  */
 public class PortalOverviewScreen extends PortalGroupScreen {
 
-    private static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/portal_overview_screen.png");
-    private static final ResourceLocation LOCATION_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/select_target_screen/location_icon.png");
-    private static final ResourceLocation ENERGY_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/select_target_screen/lightning_icon.png");
-    private static final ResourceLocation TELEPORT_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/select_target_screen/teleport_icon.png");
-    private static final ResourceLocation STAR_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/select_target_screen/star_icon.png");
-    private static final ResourceLocation DIMENSION_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/select_target_screen/dimension_icon.png");
-    private static final ResourceLocation CHECKMARK_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/select_target_screen/checkmark_icon.png");
-    private static final ResourceLocation CROSS_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/select_target_screen/cross_icon.png");
-    private static final ResourceLocation WARNING_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/select_target_screen/warning_icon.png");
-    private static final ResourceLocation SEPARATOR = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/select_target_screen/separator.png");
+    public static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/portal_overview_screen");
+    public static final ResourceLocation LOCATION_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/select_target_screen/location_icon");
+    public static final ResourceLocation ENERGY_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/select_target_screen/lightning_icon");
+    public static final ResourceLocation TELEPORT_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/select_target_screen/teleport_icon");
+    public static final ResourceLocation STAR_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/select_target_screen/star_icon");
+    public static final ResourceLocation DIMENSION_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/select_target_screen/dimension_icon");
+    public static final ResourceLocation CHECKMARK_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/select_target_screen/checkmark_icon");
+    public static final ResourceLocation CROSS_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/select_target_screen/cross_icon");
+    public static final ResourceLocation WARNING_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/select_target_screen/warning_icon");
+    public static final ResourceLocation SEPARATOR = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/select_target_screen/separator");
     private static final int WIDTH = 280, HEIGHT = 185;
 
     private WormholeColoredButton activateButton;
@@ -72,93 +71,101 @@ public class PortalOverviewScreen extends PortalGroupScreen {
     }
 
     @Override
-    protected void renderBackground(WidgetRenderContext context, int mouseX, int mouseY, PortalGroup object){
-        ScreenUtils.drawTexture(BACKGROUND, context.poseStack(), 0, 0, this.width(), this.height());
-        super.renderBackground(context, mouseX, mouseY, object);
+    protected void renderBackground(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY, PortalGroup object){
+        graphics.submitSprite(BACKGROUND, 0, 0, this.width(), this.height());
+        super.renderBackground(context, graphics, mouseX, mouseY, object);
     }
 
     @Override
-    protected void render(WidgetRenderContext context, int mouseX, int mouseY, PortalGroup group){
-        super.render(context, mouseX, mouseY, group);
+    protected void render(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY, PortalGroup group){
+        super.render(context, graphics, mouseX, mouseY, group);
 
-        ScreenUtils.drawCenteredString(context.poseStack(), TextComponents.translation("wormhole.portal.gui.title").get(), 72.5f, 3, Integer.MAX_VALUE);
+        graphics.submitText(TextComponents.translation("wormhole.portal.gui.title").get(), 72.5f, 3, p -> p.color(Integer.MAX_VALUE).centerHorizontally());
 
         PortalTarget target = group.getActiveTarget();
-        this.renderInfo(context.poseStack(), group.getStoredEnergy(), group.getIdleEnergyCost(), group.getTeleportEnergyCost(), target);
+        this.renderInfo(graphics, group.getStoredEnergy(), group.getIdleEnergyCost(), group.getTeleportEnergyCost(), target);
     }
 
-    private void renderInfo(PoseStack poseStack, int storedEnergy, int idleCost, int teleportCost, PortalTarget target){
+    private void renderInfo(GuiGraphicsHelper graphics, int storedEnergy, int idleCost, int teleportCost, PortalTarget target){
         PortalStatus status = target == null ? PortalStatus.NO_TARGET : storedEnergy == 0 ? PortalStatus.NO_ENERGY :
             storedEnergy < idleCost ? PortalStatus.NOT_ENOUGH_ENERGY : PortalStatus.OK;
 
-        ScreenUtils.drawCenteredString(poseStack, TextComponents.translation("wormhole.portal.gui.information").get(), 192, 31, Integer.MAX_VALUE);
+        graphics.submitText(TextComponents.translation("wormhole.portal.gui.information").get(), 192, 31, p -> p.color(Integer.MAX_VALUE).centerHorizontally());
 
-        ScreenUtils.drawTexture(SEPARATOR, poseStack, 154, 41, 77, 1);
+        graphics.submitSprite(SEPARATOR, 154, 41, 77, 1);
 
         // status
-        ScreenUtils.drawTexture(status.getIcon(), poseStack, 151, 47, 9, 9);
-        ScreenUtils.drawString(poseStack, status.getStatus(), 162, 48, Integer.MAX_VALUE);
+        graphics.submitSprite(status.getIcon(), 151, 47, 9, 9);
+        graphics.submitText(status.getStatus(), 162, 48, p -> p.color(Integer.MAX_VALUE));
         // idle cost
-        ScreenUtils.drawTexture(ENERGY_ICON, poseStack, 151, 59, 9, 9);
-        ScreenUtils.drawString(poseStack, EnergyFormat.formatEnergyPerTick(idleCost), 162, 60, Integer.MAX_VALUE);
+        graphics.submitSprite(ENERGY_ICON, 151, 59, 9, 9);
+        graphics.submitText(EnergyFormat.formatEnergyPerTick(idleCost), 162, 60, p -> p.color(Integer.MAX_VALUE));
         // teleport cost
-        ScreenUtils.drawTexture(TELEPORT_ICON, poseStack, 150, 70, 11, 11);
-        ScreenUtils.drawString(poseStack, target == null ? "--" : EnergyFormat.formatEnergyWithUnit(teleportCost), 162, 72, Integer.MAX_VALUE);
+        graphics.submitSprite(TELEPORT_ICON, 150, 70, 11, 11);
+        graphics.submitText(target == null ? "--" : EnergyFormat.formatEnergyWithUnit(teleportCost), 162, 72, p -> p.color(Integer.MAX_VALUE));
 
-        ScreenUtils.drawTexture(SEPARATOR, poseStack, 154, 85, 77, 1);
+        graphics.submitSprite(SEPARATOR, 154, 85, 77, 1);
 
         // target
-        ScreenUtils.drawTexture(STAR_ICON, poseStack, 151, 91, 9, 9);
-        ScreenUtils.drawString(poseStack, target == null ? "--" : target.name, 162, 92, Integer.MAX_VALUE);
+        graphics.submitSprite(STAR_ICON, 151, 91, 9, 9);
+        graphics.submitText(target == null ? "--" : target.name, 162, 92, p -> p.color(Integer.MAX_VALUE));
         if(target != null){
             // location
-            ScreenUtils.drawTexture(LOCATION_ICON, poseStack, 151, 103, 9, 9);
-            ScreenUtils.drawString(poseStack, "(" + target.x + ", " + target.y + ", " + target.z + ")", 162, 104, Integer.MAX_VALUE);
+            graphics.submitSprite(LOCATION_ICON, 151, 103, 9, 9);
+            graphics.submitText("(" + target.x + ", " + target.y + ", " + target.z + ")", 162, 104, p -> p.color(Integer.MAX_VALUE));
             // dimension
-            Block block = null;
+            Block block;
             if(target.dimension.equals(Level.OVERWORLD))
                 block = Blocks.DIRT_PATH;
             else if(target.dimension.equals(Level.NETHER))
                 block = Blocks.NETHERRACK;
             else if(target.dimension.equals(Level.END))
                 block = Blocks.END_STONE;
-            if(block == null)
-                ScreenUtils.drawTexture(DIMENSION_ICON, poseStack, 151, 115, 9, 9);
             else
-                ScreenBlockRenderer.drawBlock(poseStack, block, 155.5, 119.5, 5.5, 45, 40);
-            ScreenUtils.drawString(poseStack, target.getDimensionDisplayName(), 162, 116, Integer.MAX_VALUE);
+                block = null;
+            if(block == null)
+                graphics.submitSprite(DIMENSION_ICON, 151, 115, 9, 9);
+            else
+                graphics.submitCustomRendering(
+                    149, 113, 13, 13,
+                    poseStack -> ScreenBlockRenderer.drawBlock(poseStack, block, 6.5, 6.5, 5.5, 45, 40)
+                );
+            graphics.submitText(target.getDimensionDisplayName(), 162, 116, p -> p.color(Integer.MAX_VALUE));
         }
     }
 
     @Override
-    protected void renderForeground(WidgetRenderContext context, int mouseX, int mouseY, PortalGroup group){
-        super.renderForeground(context, mouseX, mouseY, group);
+    protected void renderForeground(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY, PortalGroup group){
+        super.renderForeground(context, graphics, mouseX, mouseY, group);
 
-        PortalRendererHelper.drawPortal(context.poseStack(), group.shape, this.x + 8, this.y + 19, 132, 132);
+        graphics.submitCustomRendering(
+            this.x + 8, this.y + 19, 132, 132,
+            poseStack -> PortalRendererHelper.drawPortal(poseStack, group.shape, 0, 0, 132, 132)
+        );
     }
 
     @Override
-    protected void renderTooltips(WidgetRenderContext context, int mouseX, int mouseY, PortalGroup group){
+    protected void renderTooltips(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY, PortalGroup group){
         // status
         if(mouseX >= 150 && mouseX <= 161 && mouseY >= 46 && mouseY <= 57)
-            ScreenUtils.drawTooltip(context.poseStack(), TextComponents.translation("wormhole.portal.gui.status").get(), mouseX, mouseY);
+            graphics.submitTooltipForTopStratum(c -> c.text(TextComponents.translation("wormhole.portal.gui.status").get()), mouseX, mouseY);
             // idle cost
         else if(mouseX >= 150 && mouseX <= 161 && mouseY >= 58 && mouseY <= 69)
-            ScreenUtils.drawTooltip(context.poseStack(), TextComponents.translation("wormhole.portal.gui.idle_cost").get(), mouseX, mouseY);
+            graphics.submitTooltipForTopStratum(c -> c.text(TextComponents.translation("wormhole.portal.gui.idle_cost").get()), mouseX, mouseY);
             // teleport cost
         else if(mouseX >= 150 && mouseX <= 161 && mouseY >= 70 && mouseY <= 81)
-            ScreenUtils.drawTooltip(context.poseStack(), TextComponents.translation("wormhole.portal.gui.teleport_cost").get(), mouseX, mouseY);
+            graphics.submitTooltipForTopStratum(c -> c.text(TextComponents.translation("wormhole.portal.gui.teleport_cost").get()), mouseX, mouseY);
             // target
         else if(mouseX >= 150 && mouseX <= 161 && mouseY >= 90 && mouseY <= 101)
-            ScreenUtils.drawTooltip(context.poseStack(), TextComponents.translation("wormhole.portal.gui.target").get(), mouseX, mouseY);
+            graphics.submitTooltipForTopStratum(c -> c.text(TextComponents.translation("wormhole.portal.gui.target").get()), mouseX, mouseY);
             // location
         else if(mouseX >= 150 && mouseX <= 161 && mouseY >= 102 && mouseY <= 113)
-            ScreenUtils.drawTooltip(context.poseStack(), TextComponents.translation("wormhole.portal.gui.target_location").get(), mouseX, mouseY);
+            graphics.submitTooltipForTopStratum(c -> c.text(TextComponents.translation("wormhole.portal.gui.target_location").get()), mouseX, mouseY);
             // dimension
         else if(mouseX >= 150 && mouseX <= 161 && mouseY >= 114 && mouseY <= 125)
-            ScreenUtils.drawTooltip(context.poseStack(), TextComponents.translation("wormhole.portal.gui.target_dimension").get(), mouseX, mouseY);
+            graphics.submitTooltipForTopStratum(c -> c.text(TextComponents.translation("wormhole.portal.gui.target_dimension").get()), mouseX, mouseY);
 
-        super.renderTooltips(context, mouseX, mouseY, group);
+        super.renderTooltips(context, graphics, mouseX, mouseY, group);
     }
 
     private enum PortalStatus {

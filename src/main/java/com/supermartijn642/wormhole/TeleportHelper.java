@@ -86,9 +86,9 @@ public class TeleportHelper {
     private static Entity teleportEntity(Entity entity, ServerLevel targetLevel, PortalTarget target){
         if(targetLevel == entity.level()){
             if(entity instanceof ServerPlayer){
-                entity.teleportTo(targetLevel, target.x + .5, target.y + .2, target.z + .5, Set.of(), target.yaw, 0, true);
+                entity.teleportTo(targetLevel, target.x + .5, target.y + .1, target.z + .5, Set.of(), target.yaw, 0, true);
             }else
-                entity.teleportTo(target.x + .5, target.y + .2, target.z + .5);
+                entity.teleportTo(target.x + .5, target.y + .1, target.z + .5);
             entity.setYHeadRot(target.yaw);
             entity.setDeltaMovement(Vec3.ZERO);
             entity.fallDistance = 0;
@@ -102,15 +102,15 @@ public class TeleportHelper {
                 LevelData levelData = targetLevel.getLevelData();
                 player.connection.send(new ClientboundRespawnPacket(player.createCommonSpawnInfo(targetLevel), (byte)3));
                 player.connection.send(new ClientboundChangeDifficultyPacket(levelData.getDifficulty(), levelData.isDifficultyLocked()));
-                PlayerList playerList = player.server.getPlayerList();
+                PlayerList playerList = player.getServer().getPlayerList();
                 playerList.sendPlayerPermissionLevel(player);
-                ServerLevel oldLevel = player.serverLevel();
+                ServerLevel oldLevel = player.level();
                 oldLevel.removePlayerImmediately(player, Entity.RemovalReason.CHANGED_DIMENSION);
                 player.unsetRemoved();
                 if(targetLevel.dimension() == Level.NETHER)
-                    player.enteredNetherPosition = new Vec3(target.x + .5, target.y + .2, target.z + .5);
+                    player.enteredNetherPosition = new Vec3(target.x + .5, target.y + .1, target.z + .5);
                 player.setServerLevel(targetLevel);
-                player.connection.teleport(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
+                player.connection.teleport(target.x + .5, target.y + .1, target.z + .5, target.yaw, 0);
                 player.connection.resetPosition();
                 targetLevel.addDuringTeleport(player);
                 player.triggerDimensionChangeTriggers(oldLevel);
@@ -127,7 +127,7 @@ public class TeleportHelper {
                 Entity newEntity = entity.getType().create(targetLevel, EntitySpawnReason.DIMENSION_TRAVEL);
                 if(newEntity != null){
                     newEntity.restoreFrom(entity);
-                    newEntity.snapTo(target.x + .5, target.y + .2, target.z + .5, target.yaw, 0);
+                    newEntity.snapTo(target.x + .5, target.y + .1, target.z + .5, target.yaw, 0);
                     newEntity.setYHeadRot(target.yaw);
                     newEntity.setDeltaMovement(Vec3.ZERO);
                     newEntity.fallDistance = 0;

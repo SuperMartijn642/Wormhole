@@ -1,7 +1,7 @@
 package com.supermartijn642.wormhole.screen;
 
 import com.supermartijn642.core.TextComponents;
-import com.supermartijn642.core.gui.ScreenUtils;
+import com.supermartijn642.core.gui.GuiGraphicsHelper;
 import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.core.gui.widget.premade.AbstractButtonWidget;
 import net.minecraft.network.chat.Component;
@@ -14,7 +14,7 @@ import java.util.function.Consumer;
  */
 public class ArrowButton extends AbstractButtonWidget {
 
-    private final ResourceLocation BUTTONS = ResourceLocation.fromNamespaceAndPath("wormhole", "textures/gui/arrow_buttons.png");
+    public static final ResourceLocation BUTTONS = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/arrow_buttons");
 
     private final boolean up;
     public boolean active = true;
@@ -40,9 +40,9 @@ public class ArrowButton extends AbstractButtonWidget {
     }
 
     @Override
-    public void render(WidgetRenderContext context, int mouseX, int mouseY){
+    public void render(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY){
         float x = (this.active ? this.isFocused() ? 15 : 0 : 30) / 45f;
         float y = (this.up ? 0 : 8) / 16f;
-        ScreenUtils.drawTexture(BUTTONS, context.poseStack(), this.x, this.y, this.width, this.height, x, y, 15 / 45f, 8 / 16f);
+        graphics.submitSprite(BUTTONS, this.x, this.y, this.width, this.height, p -> p.uv(x, y, 15 / 45f, 8 / 16f));
     }
 }

@@ -21,7 +21,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import javax.annotation.Nonnull;
@@ -31,14 +31,14 @@ import java.util.*;
 /**
  * Created 11/9/2020 by SuperMartijn642
  */
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber
 public class PortalGroupCapability {
 
     public static Capability<PortalGroupCapability> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
     }, ResourceLocation.fromNamespaceAndPath("wormhole", "portal_group_capability"));
 
     @SubscribeEvent
-    public static void attachCapabilities(AttachCapabilitiesEvent<Level> e){
+    public static void attachCapabilities(AttachCapabilitiesEvent.Levels e){
         Level level = e.getObject();
 
         LazyOptional<PortalGroupCapability> capability = LazyOptional.of(() -> new PortalGroupCapability(level));
@@ -64,10 +64,7 @@ public class PortalGroupCapability {
 
 
     @SubscribeEvent
-    public static void onTick(TickEvent.LevelTickEvent e){
-        if(e.phase != TickEvent.Phase.END)
-            return;
-
+    public static void onTick(TickEvent.LevelTickEvent.Post e){
         tickLevelCapability(e.level);
     }
 

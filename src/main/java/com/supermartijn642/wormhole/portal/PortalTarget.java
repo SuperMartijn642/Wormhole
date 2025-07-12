@@ -3,13 +3,14 @@ package com.supermartijn642.wormhole.portal;
 import com.supermartijn642.core.TextComponents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Optional;
@@ -44,32 +45,30 @@ public class PortalTarget {
         this(level.dimension(), pos.getX(), pos.getY(), pos.getZ(), yaw, name, null);
     }
 
-    public PortalTarget(CompoundTag tag){
+    public PortalTarget(ValueInput input){
         //noinspection OptionalGetWithoutIsPresent
         this(
-            ResourceKey.create(Registries.DIMENSION, tag.getString("dimension").map(ResourceLocation::parse).get()),
-            tag.getIntOr("x", 0), tag.getIntOr("y", 0), tag.getIntOr("z", 0),
-            tag.getFloatOr("yaw", 0),
-            tag.getString("name").orElse("Target Destination"),
-            tag.getInt("color").map(DyeColor::byId).orElse(null)
+            ResourceKey.create(Registries.DIMENSION, input.getString("dimension").map(ResourceLocation::parse).get()),
+            input.getIntOr("x", 0), input.getIntOr("y", 0), input.getIntOr("z", 0),
+            input.getFloatOr("yaw", 0),
+            input.getString("name").orElse("Target Destination"),
+            input.getInt("color").map(DyeColor::byId).orElse(null)
         );
     }
 
-    public static PortalTarget read(CompoundTag tag){
-        return new PortalTarget(tag);
+    public static PortalTarget read(ValueInput input){
+        return new PortalTarget(input);
     }
 
-    public CompoundTag write(){
-        CompoundTag tag = new CompoundTag();
-        tag.putString("dimension", this.dimension.location().toString());
-        tag.putInt("x", this.x);
-        tag.putInt("y", this.y);
-        tag.putInt("z", this.z);
-        tag.putFloat("yaw", this.yaw);
-        tag.putString("name", this.name);
+    public void write(ValueOutput output){
+        output.putString("dimension", this.dimension.location().toString());
+        output.putInt("x", this.x);
+        output.putInt("y", this.y);
+        output.putInt("z", this.z);
+        output.putFloat("yaw", this.yaw);
+        output.putString("name", this.name);
         if(this.color != null)
-            tag.putInt("color", this.color.getId());
-        return tag;
+            output.putInt("color", this.color.getId());
     }
 
     public Optional<Level> getLevel(MinecraftServer server){

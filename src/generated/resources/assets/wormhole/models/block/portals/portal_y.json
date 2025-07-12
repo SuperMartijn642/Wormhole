@@ -17,10 +17,10 @@
         16.0
       ],
       "faces": {
-        "up": {
+        "down": {
           "texture": "#portal"
         },
-        "down": {
+        "up": {
           "texture": "#portal"
         }
       }
