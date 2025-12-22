@@ -63,7 +63,7 @@ public class PortalBlock extends PortalGroupBlock implements SimpleWaterloggedBl
     }
 
     @Override
-    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier){
+    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier, boolean bl){
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if(blockEntity instanceof PortalBlockEntity)
             ((PortalBlockEntity)blockEntity).teleport(entity);

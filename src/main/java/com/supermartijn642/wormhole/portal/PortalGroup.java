@@ -3,6 +3,7 @@ package com.supermartijn642.wormhole.portal;
 import com.supermartijn642.wormhole.PortalGroupCapability;
 import com.supermartijn642.wormhole.TeleportHelper;
 import com.supermartijn642.wormhole.WormholeConfig;
+import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
@@ -203,19 +204,23 @@ public class PortalGroup {
     }
 
     public void drainEnergy(int energy){
+        int drained = 0;
         for(BlockPos pos : this.shape.energyCells){
             BlockEntity entity = this.level.getBlockEntity(pos);
-            if(entity instanceof IEnergyCellEntity)
-                energy -= ((IEnergyCellEntity)entity).extractEnergy(energy, false, true);
+            if(entity instanceof IEnergyCellEntity){
+                drained += ((IEnergyCellEntity)entity).extractEnergy(energy - drained, false, null);
+                if(drained >= energy)
+                    break;
+            }
         }
     }
 
-    public int receiveEnergy(int energy, boolean simulate){
+    public int receiveEnergy(int energy, TransactionContext transaction){
         int received = 0;
         for(BlockPos pos : this.shape.energyCells){
             BlockEntity entity = this.level.getBlockEntity(pos);
             if(entity instanceof IEnergyCellEntity){
-                received += ((IEnergyCellEntity)entity).receiveEnergy(energy - received, simulate, true);
+                received += ((IEnergyCellEntity)entity).receiveEnergy(energy - received, true, transaction);
                 if(received >= energy)
                     break;
             }

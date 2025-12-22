@@ -66,7 +66,7 @@ public class CoalGeneratorBlock extends BaseBlock implements EntityHoldingBlock 
 
     @Override
     protected InteractionFeedback interact(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, Direction hitSide, Vec3 hitLocation){
-        if(!level.isClientSide)
+        if(!level.isClientSide())
             CommonUtils.openContainer(new CoalGeneratorContainer(player, pos));
         return InteractionFeedback.CONSUME;
     }

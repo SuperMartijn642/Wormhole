@@ -1,7 +1,5 @@
 package com.supermartijn642.wormhole;
 
-import com.supermartijn642.core.CommonUtils;
-import com.supermartijn642.wormhole.energycell.EnergyHolderEnergyStorageWrapper;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import team.reborn.energy.api.EnergyStorage;
 
@@ -12,16 +10,10 @@ public class WormholeAPIProviders {
 
     public static void registerAPIProviders(){
         ItemStorage.SIDED.registerForBlockEntity((entity, side) -> entity.getItemCapability(), Wormhole.coal_generator_tile);
-        if(CommonUtils.isModLoaded("team_reborn_energy"))
-            RebornEnergyProviders.register();
-    }
-
-    private static class RebornEnergyProviders {
-        public static void register(){
-            EnergyStorage.SIDED.registerForBlockEntity((entity, direction) -> new EnergyHolderEnergyStorageWrapper(entity), Wormhole.stabilizer_tile);
-            EnergyStorage.SIDED.registerForBlockEntity((entity, direction) -> new EnergyHolderEnergyStorageWrapper(entity), Wormhole.basic_energy_cell_tile);
-            EnergyStorage.SIDED.registerForBlockEntity((entity, direction) -> new EnergyHolderEnergyStorageWrapper(entity), Wormhole.advanced_energy_cell_tile);
-            EnergyStorage.SIDED.registerForBlockEntity((entity, direction) -> new EnergyHolderEnergyStorageWrapper(entity), Wormhole.coal_generator_tile);
-        }
+        EnergyStorage.SIDED.registerForBlockEntity((entity, direction) -> entity.energyHandler, Wormhole.stabilizer_tile);
+        EnergyStorage.SIDED.registerForBlockEntity((entity, direction) -> entity.energyHandler, Wormhole.basic_energy_cell_tile);
+        EnergyStorage.SIDED.registerForBlockEntity((entity, direction) -> entity.energyHandler, Wormhole.advanced_energy_cell_tile);
+        EnergyStorage.SIDED.registerForBlockEntity((entity, direction) -> entity.energyHandler, Wormhole.creative_energy_cell_tile);
+        EnergyStorage.SIDED.registerForBlockEntity((entity, direction) -> entity, Wormhole.coal_generator_tile);
     }
 }

@@ -5,7 +5,7 @@ import com.supermartijn642.core.TextComponents;
 import com.supermartijn642.core.gui.GuiGraphicsHelper;
 import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.core.gui.widget.premade.AbstractButtonWidget;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
@@ -22,7 +22,7 @@ public class EnergyBarWidget extends AbstractButtonWidget {
     private final Supplier<Integer> energy, capacity;
 
     public EnergyBarWidget(int x, int y, int width, int height, Supplier<Integer> energy, Supplier<Integer> capacity){
-        super(x, y, width, height, () -> EnergyFormat.cycleEnergyType(!Screen.hasShiftDown()));
+        super(x, y, width, height, () -> EnergyFormat.cycleEnergyType(!Minecraft.getInstance().hasShiftDown()));
         this.energy = energy;
         this.capacity = capacity;
     }

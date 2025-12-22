@@ -3,6 +3,9 @@ accessWidener v1 named
 # Entity
 accessible field net/minecraft/world/entity/Entity portalCooldown I
 accessible method net/minecraft/world/entity/Entity unsetRemoved ()V
+# FeatureRenderDispatcher
+accessible field net/minecraft/client/renderer/feature/FeatureRenderDispatcher bufferSource Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;
+mutable field net/minecraft/client/renderer/feature/FeatureRenderDispatcher bufferSource Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;
 # ServerLevel
 accessible method net/minecraft/server/level/ServerLevel addPlayer (Lnet/minecraft/server/level/ServerPlayer;)V
 # ServerPlayer

@@ -64,7 +64,7 @@ public class TargetDeviceItem extends BaseItem {
 
     @Override
     public ItemUseResult interact(ItemStack stack, Player player, InteractionHand hand, Level level){
-        if(level.isClientSide)
+        if(level.isClientSide())
             WormholeClient.openTargetDeviceScreen(hand, player.blockPosition(), Math.round(player.getYRot() / 90) * 90);
         return ItemUseResult.consume(player.getItemInHand(hand));
     }
