@@ -8,56 +8,75 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
  * Created 12/18/2020 by SuperMartijn642
  */
 public class CoalGeneratorBlockEntity extends GeneratorBlockEntity {
 
-    private final IItemHandler itemCapability = new IItemHandler() {
+    private final ResourceHandler<ItemResource> itemCapability = new ResourceHandler<>() {
+        private final SnapshotJournal<ItemStack> snapshotJournal = new SnapshotJournal<>() {
+            @Override
+            protected ItemStack createSnapshot(){
+                return CoalGeneratorBlockEntity.this.getStack();
+            }
+
+            @Override
+            protected void revertToSnapshot(ItemStack snapshot){
+                CoalGeneratorBlockEntity.this.setStack(snapshot);
+            }
+        };
+
         @Override
-        public int getSlots(){
+        public int size(){
             return 1;
         }
 
         @Override
-        public ItemStack getStackInSlot(int slot){
-            return CoalGeneratorBlockEntity.this.getStack();
+        public ItemResource getResource(int index){
+            return ItemResource.of(CoalGeneratorBlockEntity.this.getStack());
         }
 
         @Override
-        public ItemStack insertItem(int slot, ItemStack stack, boolean simulate){
-            ItemStack current = CoalGeneratorBlockEntity.this.getStack();
-            if(stack.isEmpty() || (!current.isEmpty() && !ItemStack.isSameItemSameComponents(current, stack)))
-                return stack;
-
-            int count = Math.min(stack.getMaxStackSize() - current.getCount(), stack.getCount());
-            if(!simulate){
-                ItemStack newStack = stack.copy();
-                newStack.setCount(current.getCount() + count);
-                CoalGeneratorBlockEntity.this.setStack(newStack);
-            }
-
-            ItemStack result = stack.copy();
-            result.shrink(count);
-            return result;
+        public long getAmountAsLong(int index){
+            return CoalGeneratorBlockEntity.this.getStack().getCount();
         }
 
         @Override
-        public ItemStack extractItem(int slot, int amount, boolean simulate){
-            return ItemStack.EMPTY;
-        }
-
-        @Override
-        public int getSlotLimit(int slot){
+        public long getCapacityAsLong(int index, ItemResource resource){
             ItemStack current = CoalGeneratorBlockEntity.this.getStack();
             return current.isEmpty() ? 64 : current.getMaxStackSize();
         }
 
         @Override
-        public boolean isItemValid(int slot, ItemStack stack){
-            return CoalGeneratorBlockEntity.this.isItemValid(stack);
+        public boolean isValid(int index, ItemResource resource){
+            TransferPreconditions.checkNonEmpty(resource);
+            return CoalGeneratorBlockEntity.this.isItemValid(resource.toStack());
+        }
+
+        @Override
+        public int insert(int index, ItemResource resource, int amount, TransactionContext transaction){
+            TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+            ItemStack current = CoalGeneratorBlockEntity.this.getStack();
+            if(!current.isEmpty() && !resource.matches(current))
+                return 0;
+
+            int inserted = Math.min(amount, current.getMaxStackSize() - current.getCount());
+            if(inserted > 0){
+                this.snapshotJournal.updateSnapshots(transaction);
+                CoalGeneratorBlockEntity.this.setStack(resource.toStack(current.getCount() + inserted));
+            }
+            return inserted;
+        }
+
+        @Override
+        public int extract(int index, ItemResource resource, int amount, TransactionContext transaction){
+            return 0;
         }
     };
     private int burnTime = 0, totalBurnTime = 0;
@@ -110,7 +129,7 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity {
             this.level.setBlockAndUpdate(this.worldPosition, state.setValue(CoalGeneratorBlock.LIT, !lit));
     }
 
-    public IItemHandler getItemCapability(){
+    public ResourceHandler<ItemResource> getItemCapability(){
         return this.itemCapability;
     }
 

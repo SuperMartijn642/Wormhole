@@ -8,7 +8,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
+import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
  * Created 11/16/2020 by SuperMartijn642
@@ -36,18 +39,18 @@ public class EnergyCellBlockEntity extends PortalGroupBlockEntity implements IEn
         }
 
         @Override
-        public int receiveEnergy(int maxReceive, boolean simulate, boolean fromGroup){
+        public int receiveEnergy(int maxReceive, boolean fromGroup, TransactionContext transaction){
             return 0;
         }
 
         @Override
-        public int extractEnergy(int maxExtract, boolean simulate, boolean fromGroup){
+        public int extractEnergy(int maxExtract, boolean fromGroup, TransactionContext transaction){
             return maxExtract;
         }
 
         @Override
         public int getEnergyStored(boolean fromGroup){
-            return this.getMaxEnergyStored();
+            return this.getMaxEnergyStored(fromGroup);
         }
 
         @Override
@@ -56,25 +59,38 @@ public class EnergyCellBlockEntity extends PortalGroupBlockEntity implements IEn
         }
 
         @Override
-        public boolean canExtract(){
-            return true;
-        }
-
-        @Override
         public void update(){
             super.update();
             for(Direction direction : Direction.values()){
-                IEnergyStorage storage = this.level.getCapability(Capabilities.EnergyStorage.BLOCK, this.worldPosition.relative(direction), direction.getOpposite());
-                if(storage != null)
-                    this.pushEnergy(storage);
+                EnergyHandler storage = this.level.getCapability(Capabilities.Energy.BLOCK, this.worldPosition.relative(direction), direction.getOpposite());
+                if(storage != null){
+                    try(Transaction transaction = Transaction.openRoot()){
+                        storage.insert(this.getMaxEnergyStored(false), transaction);
+                        transaction.commit();
+                    }
+                }
             }
         }
-
-        public void pushEnergy(IEnergyStorage energyStorage){
-            if(energyStorage.canReceive())
-                energyStorage.receiveEnergy(this.getMaxEnergyStored(true), false);
-        }
     }
+
+    private final SnapshotJournal<Integer> snapshotJournal = new SnapshotJournal<>() {
+        @Override
+        protected Integer createSnapshot(){
+            return EnergyCellBlockEntity.this.energy;
+        }
+
+        @Override
+        protected void revertToSnapshot(Integer snapshot){
+            EnergyCellBlockEntity.this.energy = snapshot;
+        }
+
+        @Override
+        protected void onRootCommit(Integer originalState){
+            if(originalState != EnergyCellBlockEntity.this.energy)
+                EnergyCellBlockEntity.this.dataChanged();
+        }
+    };
+    public final EnergyHandler energyHandler = new EnergyCellEnergyHandlerWrapper(this);
 
     protected final EnergyCellType type;
     protected int energy = 0;
@@ -101,29 +117,28 @@ public class EnergyCellBlockEntity extends PortalGroupBlockEntity implements IEn
     }
 
     @Override
-    public int receiveEnergy(int maxReceive, boolean simulate, boolean fromGroup){
+    public int receiveEnergy(int maxReceive, boolean fromGroup, TransactionContext transaction){
         if(!fromGroup && this.hasGroup())
-            return this.getGroup().receiveEnergy(maxReceive, simulate);
+            return this.getGroup().receiveEnergy(maxReceive, transaction);
 
-        if(maxReceive < 0)
-            return -this.extractEnergy(-maxReceive, simulate);
         int absorb = Math.min(this.getMaxEnergyStored(true) - this.energy, maxReceive);
-        if(!simulate){
+        if(absorb > 0){
+            this.snapshotJournal.updateSnapshots(transaction);
             this.energy += absorb;
-            if(absorb > 0)
-                this.dataChanged();
         }
         return absorb;
     }
 
     @Override
-    public int extractEnergy(int maxExtract, boolean simulate, boolean fromGroup){
-        if(maxExtract < 0)
-            return -this.receiveEnergy(-maxExtract, simulate);
+    public int extractEnergy(int maxExtract, boolean fromGroup, TransactionContext transaction){
+        if(!fromGroup && this.hasGroup()) // Don't allow extracting energy when the cell is part of a portal
+            return 0;
         int drain = Math.min(this.energy, maxExtract);
-        if(!simulate){
+        if(drain > 0){
+            if(transaction != null)
+                this.snapshotJournal.updateSnapshots(transaction);
             this.energy -= drain;
-            if(drain > 0)
+            if(transaction == null)
                 this.dataChanged();
         }
         return drain;
@@ -138,21 +153,16 @@ public class EnergyCellBlockEntity extends PortalGroupBlockEntity implements IEn
     }
 
     @Override
+    public void setEnergyStored(int energy){
+        this.energy = energy;
+    }
+
+    @Override
     public int getMaxEnergyStored(boolean fromGroup){
         if(!fromGroup && this.hasGroup())
             return this.getGroup().getEnergyCapacity();
 
         return this.type.getCapacity();
-    }
-
-    @Override
-    public boolean canExtract(){
-        return false;
-    }
-
-    @Override
-    public boolean canReceive(){
-        return true;
     }
 
     @Override

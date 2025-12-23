@@ -1,6 +1,7 @@
 package com.supermartijn642.wormhole;
 
 import com.supermartijn642.core.TextComponents;
+import com.supermartijn642.wormhole.energycell.EnergyCellEnergyHandlerWrapper;
 import com.supermartijn642.wormhole.portal.*;
 import com.supermartijn642.wormhole.targetdevice.TargetDeviceItem;
 import net.minecraft.ChatFormatting;
@@ -11,6 +12,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
+import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +23,25 @@ import java.util.List;
  * Created 7/21/2020 by SuperMartijn642
  */
 public class StabilizerBlockEntity extends PortalGroupBlockEntity implements ITargetCellEntity, IEnergyCellEntity {
+
+    private final SnapshotJournal<Integer> snapshotJournal = new SnapshotJournal<>() {
+        @Override
+        protected Integer createSnapshot(){
+            return StabilizerBlockEntity.this.energy;
+        }
+
+        @Override
+        protected void revertToSnapshot(Integer snapshot){
+            StabilizerBlockEntity.this.energy = snapshot;
+        }
+
+        @Override
+        protected void onRootCommit(Integer originalState){
+            if(originalState != StabilizerBlockEntity.this.energy)
+                StabilizerBlockEntity.this.dataChanged();
+        }
+    };
+    public final EnergyHandler energyHandler = new EnergyCellEnergyHandlerWrapper(this);
 
     private final List<PortalTarget> targets = new ArrayList<>();
     private int energy = 0;
@@ -32,7 +55,7 @@ public class StabilizerBlockEntity extends PortalGroupBlockEntity implements ITa
     @Override
     public void update(){
         super.update();
-        if(!this.level.isClientSide && this.getBlockState().getBlock() instanceof StabilizerBlock && this.hasGroup() != this.getBlockState().getValue(StabilizerBlock.ON_PROPERTY))
+        if(!this.level.isClientSide() && this.getBlockState().getBlock() instanceof StabilizerBlock && this.hasGroup() != this.getBlockState().getValue(StabilizerBlock.ON_PROPERTY))
             this.level.setBlock(this.worldPosition, Wormhole.portal_stabilizer.defaultBlockState().setValue(StabilizerBlock.ON_PROPERTY, this.hasGroup()), 2);
     }
 
@@ -43,11 +66,11 @@ public class StabilizerBlockEntity extends PortalGroupBlockEntity implements ITa
                 stack = player.getItemInHand(InteractionHand.OFF_HAND);
 
             if(stack.getItem() instanceof TargetDeviceItem){
-                if(this.level.isClientSide)
+                if(this.level.isClientSide())
                     WormholeClient.openPortalTargetScreen(this.worldPosition);
-            }else if(this.level.isClientSide)
+            }else if(this.level.isClientSide())
                 WormholeClient.openPortalOverviewScreen(this.worldPosition);
-        }else if(!this.level.isClientSide){
+        }else if(!this.level.isClientSide()){
             PortalShape shape = PortalShape.find(this.level, this.worldPosition);
             if(shape == null)
                 player.displayClientMessage(TextComponents.translation("wormhole.portal_stabilizer.error").color(ChatFormatting.RED).get(), true);
@@ -90,29 +113,28 @@ public class StabilizerBlockEntity extends PortalGroupBlockEntity implements ITa
     }
 
     @Override
-    public int receiveEnergy(int maxReceive, boolean simulate, boolean fromGroup){
+    public int receiveEnergy(int maxReceive, boolean fromGroup, TransactionContext transaction){
         if(!fromGroup && this.hasGroup())
-            return this.getGroup().receiveEnergy(maxReceive, simulate);
+            return this.getGroup().receiveEnergy(maxReceive, transaction);
 
-        if(maxReceive < 0)
-            return -this.extractEnergy(-maxReceive, simulate);
         int absorb = Math.min(this.getMaxEnergyStored(true) - this.energy, maxReceive);
-        if(!simulate){
+        if(absorb > 0){
+            this.snapshotJournal.updateSnapshots(transaction);
             this.energy += absorb;
-            if(absorb > 0)
-                this.dataChanged();
         }
         return absorb;
     }
 
     @Override
-    public int extractEnergy(int maxExtract, boolean simulate, boolean fromGroup){
-        if(maxExtract < 0)
-            return -this.receiveEnergy(-maxExtract, simulate);
+    public int extractEnergy(int maxExtract, boolean fromGroup, TransactionContext transaction){
+        if(!fromGroup)
+            return 0;
         int drain = Math.min(this.energy, maxExtract);
-        if(!simulate){
+        if(drain > 0){
+            if(transaction != null)
+                this.snapshotJournal.updateSnapshots(transaction);
             this.energy -= drain;
-            if(drain > 0)
+            if(transaction == null)
                 this.dataChanged();
         }
         return drain;
@@ -127,21 +149,16 @@ public class StabilizerBlockEntity extends PortalGroupBlockEntity implements ITa
     }
 
     @Override
+    public void setEnergyStored(int energy){
+        this.energy = energy;
+    }
+
+    @Override
     public int getMaxEnergyStored(boolean fromGroup){
         if(!fromGroup && this.hasGroup())
             return this.getGroup().getEnergyCapacity();
 
         return WormholeConfig.stabilizerEnergyCapacity.get();
-    }
-
-    @Override
-    public boolean canExtract(){
-        return false;
-    }
-
-    @Override
-    public boolean canReceive(){
-        return true;
     }
 
     @Override

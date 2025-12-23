@@ -8,7 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
  * Created 7/24/2020 by SuperMartijn642
@@ -187,7 +187,7 @@ public class PortalGroup {
         int total = 0;
         for(BlockPos pos : this.shape.energyCells){
             BlockEntity entity = this.level.getBlockEntity(pos);
-            if(entity instanceof IEnergyStorage)
+            if(entity instanceof IEnergyCellEntity)
                 total += ((IEnergyCellEntity)entity).getMaxEnergyStored(true);
         }
         return total;
@@ -197,26 +197,30 @@ public class PortalGroup {
         int total = 0;
         for(BlockPos pos : this.shape.energyCells){
             BlockEntity entity = this.level.getBlockEntity(pos);
-            if(entity instanceof IEnergyStorage)
+            if(entity instanceof IEnergyCellEntity)
                 total += ((IEnergyCellEntity)entity).getEnergyStored(true);
         }
         return total;
     }
 
     public void drainEnergy(int energy){
+        int drained = 0;
         for(BlockPos pos : this.shape.energyCells){
             BlockEntity entity = this.level.getBlockEntity(pos);
-            if(entity instanceof IEnergyStorage)
-                energy -= ((IEnergyCellEntity)entity).extractEnergy(energy, false, true);
+            if(entity instanceof IEnergyCellEntity){
+                drained += ((IEnergyCellEntity)entity).extractEnergy(energy - drained, false, null);
+                if(drained >= energy)
+                    break;
+            }
         }
     }
 
-    public int receiveEnergy(int energy, boolean simulate){
+    public int receiveEnergy(int energy, TransactionContext transaction){
         int received = 0;
         for(BlockPos pos : this.shape.energyCells){
             BlockEntity entity = this.level.getBlockEntity(pos);
-            if(entity instanceof IEnergyStorage){
-                received += ((IEnergyCellEntity)entity).receiveEnergy(energy - received, simulate, true);
+            if(entity instanceof IEnergyCellEntity){
+                received += ((IEnergyCellEntity)entity).receiveEnergy(energy - received, true, transaction);
                 if(received >= energy)
                     break;
             }

@@ -1,50 +1,19 @@
 package com.supermartijn642.wormhole.portal;
 
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
  * Created 10/29/2020 by SuperMartijn642
  */
-public interface IEnergyCellEntity extends IEnergyStorage {
+public interface IEnergyCellEntity {
 
-    @Override
-    default int receiveEnergy(int maxReceive, boolean simulate){
-        return this.receiveEnergy(maxReceive, simulate, false);
-    }
+    int receiveEnergy(int maxReceive, boolean fromGroup, TransactionContext transaction);
 
-    /**
-     * {@link IEnergyStorage#receiveEnergy(int, boolean)}
-     */
-    int receiveEnergy(int maxReceive, boolean simulate, boolean fromGroup);
+    int extractEnergy(int maxExtract, boolean fromGroup, TransactionContext transaction);
 
-    @Override
-    default int extractEnergy(int maxExtract, boolean simulate){
-        return this.extractEnergy(maxExtract, simulate, false);
-    }
-
-    /**
-     * {@link IEnergyStorage#extractEnergy(int, boolean)}
-     */
-    int extractEnergy(int maxExtract, boolean simulate, boolean fromGroup);
-
-    @Override
-    default int getEnergyStored(){
-        return this.getEnergyStored(false);
-    }
-
-    /**
-     * {@link IEnergyStorage#getEnergyStored()}
-     */
     int getEnergyStored(boolean fromGroup);
 
-    @Override
-    default int getMaxEnergyStored(){
-        return this.getMaxEnergyStored(false);
-    }
+    void setEnergyStored(int energy);
 
-    /**
-     * {@link IEnergyStorage#getMaxEnergyStored()}
-     */
     int getMaxEnergyStored(boolean fromGroup);
-
 }

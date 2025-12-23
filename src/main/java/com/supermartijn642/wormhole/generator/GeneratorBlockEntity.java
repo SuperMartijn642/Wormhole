@@ -13,16 +13,38 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
+import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 import java.util.*;
 
 /**
  * Created 12/18/2020 by SuperMartijn642
  */
-public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlockEntity, IEnergyStorage {
+public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlockEntity, EnergyHandler {
 
     private static final int BLOCKS_PER_TICK = 5;
+
+    private final SnapshotJournal<Integer> snapshotJournal = new SnapshotJournal<Integer>() {
+        @Override
+        protected Integer createSnapshot(){
+            return GeneratorBlockEntity.this.energy;
+        }
+
+        @Override
+        protected void revertToSnapshot(Integer snapshot){
+            GeneratorBlockEntity.this.energy = snapshot;
+        }
+
+        @Override
+        protected void onRootCommit(Integer originalState){
+            if(originalState != GeneratorBlockEntity.this.energy)
+                GeneratorBlockEntity.this.dataChanged();
+        }
+    };
 
     protected int energy;
     protected final int energyCapacity;
@@ -44,7 +66,7 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
 
     @Override
     public void update(){
-        if(!this.level.isClientSide){
+        if(!this.level.isClientSide()){
             // find blocks with the energy capability
             for(int i = 0; i < BLOCKS_PER_TICK; i++){
                 BlockPos pos = this.worldPosition.offset(this.searchX, this.searchY, this.searchZ);
@@ -62,8 +84,8 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
                         Direction inputSide = Direction.UP;
                         if(entity != null){
                             for(Direction side : Direction.values()){
-                                IEnergyStorage storage = this.level.getCapability(Capabilities.EnergyStorage.BLOCK, pos, null, entity, side);
-                                if(storage != null && storage.canReceive()){
+                                EnergyHandler storage = this.level.getCapability(Capabilities.Energy.BLOCK, pos, null, entity, side);
+                                if(storage != null){
                                     isEnergyHolder = true;
                                     inputSide = side;
                                     break;
@@ -107,12 +129,15 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
                 BlockEntity entity = this.level.getBlockEntity(pos);
                 if(entity instanceof IPortalGroupEntity && ((IPortalGroupEntity)entity).hasGroup()){
                     PortalGroup group = ((IPortalGroupEntity)entity).getGroup();
-                    int transferred = group.receiveEnergy(toTransfer, false);
-                    toTransfer -= transferred;
-                    this.energy -= transferred;
-                    this.dataChanged();
-                    if(this.energy == 0)
-                        return;
+                    try(Transaction transaction = Transaction.openRoot()){
+                        int transferred = group.receiveEnergy(toTransfer, transaction);
+                        transaction.commit();
+                        toTransfer -= transferred;
+                        this.energy -= transferred;
+                        this.dataChanged();
+                        if(this.energy == 0)
+                            return;
+                    }
                 }else
                     toRemove.add(pos);
             }
@@ -123,15 +148,19 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
             }
             for(Map.Entry<BlockPos,Direction> entry : this.energyBlocks.entrySet()){
                 BlockPos pos = entry.getKey();
-                IEnergyStorage storage = this.level.getCapability(Capabilities.EnergyStorage.BLOCK, pos, entry.getValue());
-                if(storage != null && storage.canReceive()){
-                    final int max = toTransfer;
-                    int transferred = storage.receiveEnergy(max, false);
-                    toTransfer -= transferred;
-                    this.energy -= transferred;
-                    this.dataChanged();
-                    if(this.energy == 0)
-                        return;
+                EnergyHandler storage = this.level.getCapability(Capabilities.Energy.BLOCK, pos, entry.getValue());
+                if(storage != null){
+                    try(Transaction transaction = Transaction.openRoot()){
+                        int transferred = storage.insert(toTransfer, transaction);
+                        transaction.commit();
+                        if(transferred > 0){
+                            toTransfer -= transferred;
+                            this.energy -= transferred;
+                            this.dataChanged();
+                            if(this.energy == 0)
+                                return;
+                        }
+                    }
                 }else
                     toRemove.add(pos);
             }
@@ -187,7 +216,7 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
         this.searchY = Math.min(Math.max(input.getIntOr("searchY", 0) + self.getY(), -this.energyRange), this.energyRange);
         this.searchZ = Math.min(Math.max(input.getIntOr("searchZ", 0) + self.getZ(), -this.energyRange), this.energyRange);
         this.portalBlocks.clear();
-        input.listOrEmpty("portalBlocks", Codec.LONG).stream().map(BlockPos::of).forEach(this.portalBlocks::add);
+        input.listOrEmpty("portalBlocks", Codec.LONG).stream().map(BlockPos::of).map(pos -> pos.offset(self)).forEach(this.portalBlocks::add);
         this.energyBlocks.clear();
         int[] energyBlocks = input.getIntArray("energyBlocks").orElseGet(() -> new int[0]);
         for(int i = 0; i < energyBlocks.length / 4 * 4; )
@@ -198,37 +227,28 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
     }
 
     @Override
-    public int receiveEnergy(int maxReceive, boolean simulate){
+    public int insert(int amount, TransactionContext transaction){
         return 0;
     }
 
     @Override
-    public int extractEnergy(int maxExtract, boolean simulate){
-        int extracted = Math.min(Math.min(this.energy, this.energyTransferLimit), maxExtract);
-        if(extracted > 0 && !simulate){
+    public int extract(int amount, TransactionContext transaction){
+        TransferPreconditions.checkNonNegative(amount);
+        int extracted = Math.min(Math.min(this.energy, this.energyTransferLimit), amount);
+        if(extracted > 0){
+            this.snapshotJournal.updateSnapshots(transaction);
             this.energy -= extracted;
-            this.dataChanged();
         }
-        return Math.max(extracted, 0);
+        return extracted;
     }
 
     @Override
-    public int getEnergyStored(){
+    public long getAmountAsLong(){
         return this.energy;
     }
 
     @Override
-    public int getMaxEnergyStored(){
+    public long getCapacityAsLong(){
         return this.energyCapacity;
-    }
-
-    @Override
-    public boolean canExtract(){
-        return true;
-    }
-
-    @Override
-    public boolean canReceive(){
-        return false;
     }
 }

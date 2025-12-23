@@ -13,11 +13,11 @@ public class WormholeAPIProviders {
 
     public static void registerAPIProviders(){
         ModLoadingContext.get().getActiveContainer().getEventBus().addListener((Consumer<RegisterCapabilitiesEvent>)event -> {
-            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, Wormhole.coal_generator_tile, (entity, side) -> entity.getItemCapability());
-            event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, Wormhole.stabilizer_tile, (entity, side) -> entity);
-            event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, Wormhole.basic_energy_cell_tile, (entity, side) -> entity);
-            event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, Wormhole.advanced_energy_cell_tile, (entity, side) -> entity);
-            event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, Wormhole.coal_generator_tile, (entity, side) -> entity);
+            event.registerBlockEntity(Capabilities.Item.BLOCK, Wormhole.coal_generator_tile, (entity, side) -> entity.getItemCapability());
+            event.registerBlockEntity(Capabilities.Energy.BLOCK, Wormhole.stabilizer_tile, (entity, side) -> entity.energyHandler);
+            event.registerBlockEntity(Capabilities.Energy.BLOCK, Wormhole.basic_energy_cell_tile, (entity, side) -> entity.energyHandler);
+            event.registerBlockEntity(Capabilities.Energy.BLOCK, Wormhole.advanced_energy_cell_tile, (entity, side) -> entity.energyHandler);
+            event.registerBlockEntity(Capabilities.Energy.BLOCK, Wormhole.coal_generator_tile, (entity, side) -> entity);
         });
     }
 }

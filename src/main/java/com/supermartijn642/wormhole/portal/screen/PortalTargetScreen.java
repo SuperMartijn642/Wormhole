@@ -19,6 +19,7 @@ import com.supermartijn642.wormhole.portal.packets.PortalSelectTargetPacket;
 import com.supermartijn642.wormhole.screen.ArrowButton;
 import com.supermartijn642.wormhole.screen.WormholeColoredButton;
 import com.supermartijn642.wormhole.targetdevice.TargetDeviceItem;
+import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -371,10 +372,10 @@ public class PortalTargetScreen extends PortalGroupScreen {
     }
 
     @Override
-    protected boolean mousePressed(int mouseX, int mouseY, int button, boolean hasBeenHandled, PortalGroup group){
-        hasBeenHandled |= super.mousePressed(mouseX, mouseY, button, hasBeenHandled, group);
+    protected boolean mousePressed(int mouseX, int mouseY, MouseButtonInfo info, boolean isDoubleClick, boolean hasBeenHandled, PortalGroup group){
+        hasBeenHandled |= super.mousePressed(mouseX, mouseY, info, isDoubleClick, hasBeenHandled, group);
 
-        if(button == 0){
+        if(info.button() == 0){
             if(mouseX > 5 && mouseX < 135 && mouseY > 16 && mouseY < 176){
                 int targetIndex = (mouseY - 16) / 16 + this.scrollOffset;
                 if(group.getTarget(targetIndex) != null){
