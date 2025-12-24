@@ -60,13 +60,13 @@ public class CoalGeneratorBlock extends BaseBlock implements EntityHoldingBlock 
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     public CoalGeneratorBlock(){
-        super(true, BlockProperties.create().mapColor(MapColor.COLOR_GRAY).sound(SoundType.METAL).requiresCorrectTool().destroyTime(1.2f).explosionResistance(6));
+        super(true, BlockProperties.create().mapColor(MapColor.COLOR_GRAY).sound(SoundType.METAL).lightLevel(state -> state.getValue(LIT) ? 8 : 0).requiresCorrectTool().destroyTime(1.2f).explosionResistance(6));
         this.registerDefaultState(this.defaultBlockState().setValue(LIT, false).setValue(FACING, Direction.NORTH));
     }
 
     @Override
     protected InteractionFeedback interact(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, Direction hitSide, Vec3 hitLocation){
-        if(!level.isClientSide)
+        if(!level.isClientSide())
             CommonUtils.openContainer(new CoalGeneratorContainer(player, pos));
         return InteractionFeedback.CONSUME;
     }
@@ -89,11 +89,6 @@ public class CoalGeneratorBlock extends BaseBlock implements EntityHoldingBlock 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context){
         return SHAPES[state.getValue(FACING).get2DDataValue()].getUnderlying();
-    }
-
-    @Override
-    public int getLightEmission(BlockState state, BlockGetter level, BlockPos pos){
-        return state.getValue(LIT) ? 8 : 0;
     }
 
     @Override

@@ -14,6 +14,7 @@ import com.supermartijn642.wormhole.portal.screen.ScreenBlockRenderer;
 import com.supermartijn642.wormhole.screen.WormholeColoredButton;
 import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceAddPacket;
 import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceRemovePacket;
+import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -222,10 +223,10 @@ public class TargetDeviceScreen extends ItemBaseWidget {
     }
 
     @Override
-    protected boolean mousePressed(int mouseX, int mouseY, int button, boolean hasBeenHandled, ItemStack object){
-        hasBeenHandled |= super.mousePressed(mouseX, mouseY, button, hasBeenHandled, object);
+    protected boolean mousePressed(int mouseX, int mouseY, MouseButtonInfo info, boolean isDoubleClick, boolean hasBeenHandled, ItemStack object){
+        hasBeenHandled |= super.mousePressed(mouseX, mouseY, info, isDoubleClick, hasBeenHandled, object);
 
-        if(button == 0){
+        if(info.button() == 0){
             if(mouseX > 5 && mouseX < 111 && mouseY > 16 && mouseY < 176){
                 int targetIndex = (mouseY - 16) / 16;
                 if(this.getOrDefault(list -> list.size() > targetIndex && list.get(targetIndex) != null, false)){

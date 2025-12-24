@@ -49,7 +49,7 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
 
     @Override
     public void update(){
-        if(!this.level.isClientSide){
+        if(!this.level.isClientSide()){
             // find blocks with the energy capability
             for(int i = 0; i < BLOCKS_PER_TICK; i++){
                 BlockPos pos = this.worldPosition.offset(this.searchX, this.searchY, this.searchZ);
@@ -193,7 +193,7 @@ public class GeneratorBlockEntity extends BaseBlockEntity implements TickableBlo
         this.searchY = Math.min(Math.max(input.getIntOr("searchY", 0) + self.getY(), -this.energyRange), this.energyRange);
         this.searchZ = Math.min(Math.max(input.getIntOr("searchZ", 0) + self.getZ(), -this.energyRange), this.energyRange);
         this.portalBlocks.clear();
-        input.listOrEmpty("portalBlocks", Codec.LONG).stream().map(BlockPos::of).forEach(this.portalBlocks::add);
+        input.listOrEmpty("portalBlocks", Codec.LONG).stream().map(BlockPos::of).map(pos -> pos.offset(self)).forEach(this.portalBlocks::add);
         this.energyBlocks.clear();
         int[] energyBlocks = input.getIntArray("energyBlocks").orElseGet(() -> new int[0]);
         for(int i = 0; i < energyBlocks.length / 4 * 4; )

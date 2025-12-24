@@ -1,6 +1,7 @@
 package com.supermartijn642.wormhole;
 
 import com.supermartijn642.core.TextComponents;
+import com.supermartijn642.wormhole.energycell.EnergyCellEnergyStorageWrapper;
 import com.supermartijn642.wormhole.portal.*;
 import com.supermartijn642.wormhole.targetdevice.TargetDeviceItem;
 import net.minecraft.ChatFormatting;
@@ -26,7 +27,7 @@ import java.util.List;
 public class StabilizerBlockEntity extends PortalGroupBlockEntity implements ITargetCellEntity, IEnergyCellEntity {
 
     private final List<PortalTarget> targets = new ArrayList<>();
-    private final LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> this);
+    private final LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> new EnergyCellEnergyStorageWrapper(this));
     private int energy = 0;
 
     public StabilizerBlockEntity(BlockPos pos, BlockState state){
@@ -38,7 +39,7 @@ public class StabilizerBlockEntity extends PortalGroupBlockEntity implements ITa
     @Override
     public void update(){
         super.update();
-        if(!this.level.isClientSide && this.getBlockState().getBlock() instanceof StabilizerBlock && this.hasGroup() != this.getBlockState().getValue(StabilizerBlock.ON_PROPERTY))
+        if(!this.level.isClientSide() && this.getBlockState().getBlock() instanceof StabilizerBlock && this.hasGroup() != this.getBlockState().getValue(StabilizerBlock.ON_PROPERTY))
             this.level.setBlock(this.worldPosition, Wormhole.portal_stabilizer.defaultBlockState().setValue(StabilizerBlock.ON_PROPERTY, this.hasGroup()), 2);
     }
 
@@ -49,11 +50,11 @@ public class StabilizerBlockEntity extends PortalGroupBlockEntity implements ITa
                 stack = player.getItemInHand(InteractionHand.OFF_HAND);
 
             if(stack.getItem() instanceof TargetDeviceItem){
-                if(this.level.isClientSide)
+                if(this.level.isClientSide())
                     WormholeClient.openPortalTargetScreen(this.worldPosition);
-            }else if(this.level.isClientSide)
+            }else if(this.level.isClientSide())
                 WormholeClient.openPortalOverviewScreen(this.worldPosition);
-        }else if(!this.level.isClientSide){
+        }else if(!this.level.isClientSide()){
             PortalShape shape = PortalShape.find(this.level, this.worldPosition);
             if(shape == null)
                 player.displayClientMessage(TextComponents.translation("wormhole.portal_stabilizer.error").color(ChatFormatting.RED).get(), true);
@@ -100,26 +101,22 @@ public class StabilizerBlockEntity extends PortalGroupBlockEntity implements ITa
         if(!fromGroup && this.hasGroup())
             return this.getGroup().receiveEnergy(maxReceive, simulate);
 
-        if(maxReceive < 0)
-            return -this.extractEnergy(-maxReceive, simulate);
         int absorb = Math.min(this.getMaxEnergyStored(true) - this.energy, maxReceive);
-        if(!simulate){
+        if(!simulate && absorb > 0){
             this.energy += absorb;
-            if(absorb > 0)
-                this.dataChanged();
+            this.dataChanged();
         }
         return absorb;
     }
 
     @Override
     public int extractEnergy(int maxExtract, boolean simulate, boolean fromGroup){
-        if(maxExtract < 0)
-            return -this.receiveEnergy(-maxExtract, simulate);
+        if(!fromGroup)
+            return 0;
         int drain = Math.min(this.energy, maxExtract);
-        if(!simulate){
+        if(!simulate && drain > 0){
             this.energy -= drain;
-            if(drain > 0)
-                this.dataChanged();
+            this.dataChanged();
         }
         return drain;
     }
@@ -133,21 +130,16 @@ public class StabilizerBlockEntity extends PortalGroupBlockEntity implements ITa
     }
 
     @Override
+    public void setEnergyStored(int energy){
+        this.energy = energy;
+    }
+
+    @Override
     public int getMaxEnergyStored(boolean fromGroup){
         if(!fromGroup && this.hasGroup())
             return this.getGroup().getEnergyCapacity();
 
         return WormholeConfig.stabilizerEnergyCapacity.get();
-    }
-
-    @Override
-    public boolean canExtract(){
-        return false;
-    }
-
-    @Override
-    public boolean canReceive(){
-        return true;
     }
 
     @Override

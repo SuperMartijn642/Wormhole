@@ -65,7 +65,7 @@ public class PortalGroupCapability {
 
     @SubscribeEvent
     public static void onTick(TickEvent.LevelTickEvent.Post e){
-        tickLevelCapability(e.level);
+        tickLevelCapability(e.level());
     }
 
     public static void tickLevelCapability(Level level){
@@ -125,7 +125,7 @@ public class PortalGroupCapability {
     }
 
     public void updateGroup(PortalGroup group){
-        if(!this.level.isClientSide && group != null)
+        if(!this.level.isClientSide() && group != null)
             Wormhole.CHANNEL.sendToDimension(this.level, new UpdateGroupPacket(this.writeGroup(group)));
     }
 

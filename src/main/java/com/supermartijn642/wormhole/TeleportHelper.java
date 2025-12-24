@@ -37,7 +37,7 @@ public class TeleportHelper {
                 return false;
 
         Entity lowestEntity = entity.getRootVehicle();
-        if(!entity.level().isClientSide){
+        if(!entity.level().isClientSide()){
             lowestEntity.level().getServer().schedule(new TickTask(0, () -> teleportEntityAndPassengers(lowestEntity, null, target)));
             markEntityAndPassengers(lowestEntity);
         }
@@ -45,7 +45,7 @@ public class TeleportHelper {
     }
 
     public static boolean canTeleport(Entity entity, PortalTarget target){
-        if(entity.level().isClientSide || !target.getLevel(entity.getServer()).isPresent())
+        if(entity.level().isClientSide() || target.getLevel(entity.level().getServer()).isEmpty())
             return false;
         if(entity.isPassenger())
             return canTeleport(entity.getRootVehicle(), target);
@@ -66,9 +66,9 @@ public class TeleportHelper {
     }
 
     private static void teleportEntityAndPassengers(Entity entity, Entity entityBeingRidden, PortalTarget target){
-        if(entity.level().isClientSide || target.getLevel(entity.getServer()).isEmpty())
+        if(entity.level().isClientSide() || target.getLevel(entity.level().getServer()).isEmpty())
             return;
-        Optional<ServerLevel> targetLevel = target.getLevel(entity.getServer()).filter(ServerLevel.class::isInstance).map(ServerLevel.class::cast);
+        Optional<ServerLevel> targetLevel = target.getLevel(entity.level().getServer()).filter(ServerLevel.class::isInstance).map(ServerLevel.class::cast);
         if(targetLevel.isEmpty())
             return;
 
@@ -102,7 +102,7 @@ public class TeleportHelper {
                 LevelData levelData = targetLevel.getLevelData();
                 player.connection.send(new ClientboundRespawnPacket(player.createCommonSpawnInfo(targetLevel), (byte)3));
                 player.connection.send(new ClientboundChangeDifficultyPacket(levelData.getDifficulty(), levelData.isDifficultyLocked()));
-                PlayerList playerList = player.getServer().getPlayerList();
+                PlayerList playerList = player.level().getServer().getPlayerList();
                 playerList.sendPlayerPermissionLevel(player);
                 ServerLevel oldLevel = player.level();
                 oldLevel.removePlayerImmediately(player, Entity.RemovalReason.CHANGED_DIMENSION);

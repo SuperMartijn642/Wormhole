@@ -50,17 +50,12 @@ public class EnergyCellBlockEntity extends PortalGroupBlockEntity implements IEn
 
         @Override
         public int getEnergyStored(boolean fromGroup){
-            return this.getMaxEnergyStored();
+            return this.getMaxEnergyStored(fromGroup);
         }
 
         @Override
         public int getMaxEnergyStored(boolean fromGroup){
             return this.type.getCapacity();
-        }
-
-        @Override
-        public boolean canExtract(){
-            return true;
         }
 
         @Override
@@ -80,7 +75,7 @@ public class EnergyCellBlockEntity extends PortalGroupBlockEntity implements IEn
     }
 
     protected final EnergyCellType type;
-    private final LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> this);
+    private final LazyOptional<IEnergyStorage> energyCapability = LazyOptional.of(() -> new EnergyCellEnergyStorageWrapper(this));
     protected int energy = 0;
     private int ticks = 40;
 
@@ -109,26 +104,22 @@ public class EnergyCellBlockEntity extends PortalGroupBlockEntity implements IEn
         if(!fromGroup && this.hasGroup())
             return this.getGroup().receiveEnergy(maxReceive, simulate);
 
-        if(maxReceive < 0)
-            return -this.extractEnergy(-maxReceive, simulate);
         int absorb = Math.min(this.getMaxEnergyStored(true) - this.energy, maxReceive);
-        if(!simulate){
+        if(!simulate && absorb > 0){
             this.energy += absorb;
-            if(absorb > 0)
-                this.dataChanged();
+            this.dataChanged();
         }
         return absorb;
     }
 
     @Override
     public int extractEnergy(int maxExtract, boolean simulate, boolean fromGroup){
-        if(maxExtract < 0)
-            return -this.receiveEnergy(-maxExtract, simulate);
+        if(!fromGroup && this.hasGroup()) // Don't allow extracting energy when the cell is part of a portal
+            return 0;
         int drain = Math.min(this.energy, maxExtract);
-        if(!simulate){
+        if(!simulate && drain > 0){
             this.energy -= drain;
-            if(drain > 0)
-                this.dataChanged();
+            this.dataChanged();
         }
         return drain;
     }
@@ -142,21 +133,16 @@ public class EnergyCellBlockEntity extends PortalGroupBlockEntity implements IEn
     }
 
     @Override
+    public void setEnergyStored(int energy){
+        this.energy = energy;
+    }
+
+    @Override
     public int getMaxEnergyStored(boolean fromGroup){
         if(!fromGroup && this.hasGroup())
             return this.getGroup().getEnergyCapacity();
 
         return this.type.getCapacity();
-    }
-
-    @Override
-    public boolean canExtract(){
-        return false;
-    }
-
-    @Override
-    public boolean canReceive(){
-        return true;
     }
 
     @Override

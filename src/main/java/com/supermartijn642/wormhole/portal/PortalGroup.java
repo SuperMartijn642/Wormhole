@@ -8,7 +8,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.energy.IEnergyStorage;
 
 /**
  * Created 7/24/2020 by SuperMartijn642
@@ -187,7 +186,7 @@ public class PortalGroup {
         int total = 0;
         for(BlockPos pos : this.shape.energyCells){
             BlockEntity entity = this.level.getBlockEntity(pos);
-            if(entity instanceof IEnergyStorage)
+            if(entity instanceof IEnergyCellEntity)
                 total += ((IEnergyCellEntity)entity).getMaxEnergyStored(true);
         }
         return total;
@@ -197,7 +196,7 @@ public class PortalGroup {
         int total = 0;
         for(BlockPos pos : this.shape.energyCells){
             BlockEntity entity = this.level.getBlockEntity(pos);
-            if(entity instanceof IEnergyStorage)
+            if(entity instanceof IEnergyCellEntity)
                 total += ((IEnergyCellEntity)entity).getEnergyStored(true);
         }
         return total;
@@ -206,7 +205,7 @@ public class PortalGroup {
     public void drainEnergy(int energy){
         for(BlockPos pos : this.shape.energyCells){
             BlockEntity entity = this.level.getBlockEntity(pos);
-            if(entity instanceof IEnergyStorage)
+            if(entity instanceof IEnergyCellEntity)
                 energy -= ((IEnergyCellEntity)entity).extractEnergy(energy, false, true);
         }
     }
@@ -215,7 +214,7 @@ public class PortalGroup {
         int received = 0;
         for(BlockPos pos : this.shape.energyCells){
             BlockEntity entity = this.level.getBlockEntity(pos);
-            if(entity instanceof IEnergyStorage){
+            if(entity instanceof IEnergyCellEntity){
                 received += ((IEnergyCellEntity)entity).receiveEnergy(energy - received, simulate, true);
                 if(received >= energy)
                     break;
