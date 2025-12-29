@@ -18,8 +18,8 @@ import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -35,17 +35,17 @@ import java.util.function.Function;
  */
 public class TargetDeviceScreen extends ItemBaseWidget {
 
-    public static final ResourceLocation BACKGROUND = getTexture("select_target_screen/device_background");
-    public static final ResourceLocation SELECT_HIGHLIGHT = getTexture("select_target_screen/device_select_highlight");
-    public static final ResourceLocation HOVER_HIGHLIGHT = getTexture("select_target_screen/device_hover_highlight");
-    public static final ResourceLocation LOCATION_ICON = getTexture("select_target_screen/location_icon");
-    public static final ResourceLocation ENERGY_ICON = getTexture("select_target_screen/lightning_icon");
-    public static final ResourceLocation DIMENSION_ICON = getTexture("select_target_screen/dimension_icon");
-    public static final ResourceLocation DIRECTION_ICON = getTexture("select_target_screen/direction_icon");
-    public static final ResourceLocation SEPARATOR = getTexture("select_target_screen/separator");
+    public static final Identifier BACKGROUND = getTexture("select_target_screen/device_background");
+    public static final Identifier SELECT_HIGHLIGHT = getTexture("select_target_screen/device_select_highlight");
+    public static final Identifier HOVER_HIGHLIGHT = getTexture("select_target_screen/device_hover_highlight");
+    public static final Identifier LOCATION_ICON = getTexture("select_target_screen/location_icon");
+    public static final Identifier ENERGY_ICON = getTexture("select_target_screen/lightning_icon");
+    public static final Identifier DIMENSION_ICON = getTexture("select_target_screen/dimension_icon");
+    public static final Identifier DIRECTION_ICON = getTexture("select_target_screen/direction_icon");
+    public static final Identifier SEPARATOR = getTexture("select_target_screen/separator");
 
-    private static ResourceLocation getTexture(String name){
-        return ResourceLocation.fromNamespaceAndPath("wormhole", "gui/" + name);
+    private static Identifier getTexture(String name){
+        return Identifier.fromNamespaceAndPath("wormhole", "gui/" + name);
     }
 
     private static final int WIDTH = 324, HEIGHT = 185;

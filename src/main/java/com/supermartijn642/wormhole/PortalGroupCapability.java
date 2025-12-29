@@ -10,7 +10,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
@@ -35,14 +35,14 @@ import java.util.*;
 public class PortalGroupCapability {
 
     public static Capability<PortalGroupCapability> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
-    }, ResourceLocation.fromNamespaceAndPath("wormhole", "portal_group_capability"));
+    }, Identifier.fromNamespaceAndPath("wormhole", "portal_group_capability"));
 
     @SubscribeEvent
     public static void attachCapabilities(AttachCapabilitiesEvent.Levels e){
         Level level = e.getObject();
 
         LazyOptional<PortalGroupCapability> capability = LazyOptional.of(() -> new PortalGroupCapability(level));
-        e.addCapability(ResourceLocation.fromNamespaceAndPath("wormhole", "portal_groups"), new ICapabilitySerializable<Tag>() {
+        e.addCapability(Identifier.fromNamespaceAndPath("wormhole", "portal_groups"), new ICapabilitySerializable<Tag>() {
             @Nonnull
             @Override
             public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side){

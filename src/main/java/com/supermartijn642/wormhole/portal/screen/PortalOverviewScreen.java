@@ -16,7 +16,7 @@ import com.supermartijn642.wormhole.screen.WormholeColoredButton;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -28,16 +28,16 @@ import java.util.function.Supplier;
  */
 public class PortalOverviewScreen extends PortalGroupScreen {
 
-    public static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/portal_overview_screen");
-    public static final ResourceLocation LOCATION_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/select_target_screen/location_icon");
-    public static final ResourceLocation ENERGY_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/select_target_screen/lightning_icon");
-    public static final ResourceLocation TELEPORT_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/select_target_screen/teleport_icon");
-    public static final ResourceLocation STAR_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/select_target_screen/star_icon");
-    public static final ResourceLocation DIMENSION_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/select_target_screen/dimension_icon");
-    public static final ResourceLocation CHECKMARK_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/select_target_screen/checkmark_icon");
-    public static final ResourceLocation CROSS_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/select_target_screen/cross_icon");
-    public static final ResourceLocation WARNING_ICON = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/select_target_screen/warning_icon");
-    public static final ResourceLocation SEPARATOR = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/select_target_screen/separator");
+    public static final Identifier BACKGROUND = Identifier.fromNamespaceAndPath("wormhole", "gui/portal_overview_screen");
+    public static final Identifier LOCATION_ICON = Identifier.fromNamespaceAndPath("wormhole", "gui/select_target_screen/location_icon");
+    public static final Identifier ENERGY_ICON = Identifier.fromNamespaceAndPath("wormhole", "gui/select_target_screen/lightning_icon");
+    public static final Identifier TELEPORT_ICON = Identifier.fromNamespaceAndPath("wormhole", "gui/select_target_screen/teleport_icon");
+    public static final Identifier STAR_ICON = Identifier.fromNamespaceAndPath("wormhole", "gui/select_target_screen/star_icon");
+    public static final Identifier DIMENSION_ICON = Identifier.fromNamespaceAndPath("wormhole", "gui/select_target_screen/dimension_icon");
+    public static final Identifier CHECKMARK_ICON = Identifier.fromNamespaceAndPath("wormhole", "gui/select_target_screen/checkmark_icon");
+    public static final Identifier CROSS_ICON = Identifier.fromNamespaceAndPath("wormhole", "gui/select_target_screen/cross_icon");
+    public static final Identifier WARNING_ICON = Identifier.fromNamespaceAndPath("wormhole", "gui/select_target_screen/warning_icon");
+    public static final Identifier SEPARATOR = Identifier.fromNamespaceAndPath("wormhole", "gui/select_target_screen/separator");
     private static final int WIDTH = 280, HEIGHT = 185;
 
     private WormholeColoredButton activateButton;
@@ -177,9 +177,9 @@ public class PortalOverviewScreen extends PortalGroupScreen {
 
         private final String status;
         private final ChatFormatting color;
-        private final ResourceLocation icon;
+        private final Identifier icon;
 
-        PortalStatus(String status, ChatFormatting color, ResourceLocation icon){
+        PortalStatus(String status, ChatFormatting color, Identifier icon){
             this.status = status;
             this.color = color;
             this.icon = icon;
@@ -189,7 +189,7 @@ public class PortalOverviewScreen extends PortalGroupScreen {
             return TextComponents.translation("wormhole.portal.gui.status." + this.status).color(this.color).get();
         }
 
-        public ResourceLocation getIcon(){
+        public Identifier getIcon(){
             return this.icon;
         }
     }
