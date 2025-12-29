@@ -23,7 +23,7 @@ import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -41,18 +41,18 @@ import java.util.function.Supplier;
  */
 public class PortalTargetScreen extends PortalGroupScreen {
 
-    public static final ResourceLocation BACKGROUND = getTexture("select_target_screen/background"), BACKGROUND_WITH_DEVICE = getTexture("select_target_screen/background_with_device");
-    public static final ResourceLocation SELECT_HIGHLIGHT = getTexture("select_target_screen/select_highlight"), SELECT_HIGHLIGHT_DEVICE = getTexture("select_target_screen/device_select_highlight");
-    public static final ResourceLocation HOVER_HIGHLIGHT = getTexture("select_target_screen/hover_highlight"), HOVER_HIGHLIGHT_DEVICE = getTexture("select_target_screen/device_hover_highlight");
-    public static final ResourceLocation LOCATION_ICON = getTexture("select_target_screen/location_icon");
-    public static final ResourceLocation ENERGY_ICON = getTexture("select_target_screen/lightning_icon");
-    public static final ResourceLocation DIMENSION_ICON = getTexture("select_target_screen/dimension_icon");
-    public static final ResourceLocation DIRECTION_ICON = getTexture("select_target_screen/direction_icon");
-    public static final ResourceLocation STAR_ICON = getTexture("select_target_screen/star_icon");
-    public static final ResourceLocation SEPARATOR = getTexture("select_target_screen/separator");
+    public static final Identifier BACKGROUND = getTexture("select_target_screen/background"), BACKGROUND_WITH_DEVICE = getTexture("select_target_screen/background_with_device");
+    public static final Identifier SELECT_HIGHLIGHT = getTexture("select_target_screen/select_highlight"), SELECT_HIGHLIGHT_DEVICE = getTexture("select_target_screen/device_select_highlight");
+    public static final Identifier HOVER_HIGHLIGHT = getTexture("select_target_screen/hover_highlight"), HOVER_HIGHLIGHT_DEVICE = getTexture("select_target_screen/device_hover_highlight");
+    public static final Identifier LOCATION_ICON = getTexture("select_target_screen/location_icon");
+    public static final Identifier ENERGY_ICON = getTexture("select_target_screen/lightning_icon");
+    public static final Identifier DIMENSION_ICON = getTexture("select_target_screen/dimension_icon");
+    public static final Identifier DIRECTION_ICON = getTexture("select_target_screen/direction_icon");
+    public static final Identifier STAR_ICON = getTexture("select_target_screen/star_icon");
+    public static final Identifier SEPARATOR = getTexture("select_target_screen/separator");
 
-    private static ResourceLocation getTexture(String name){
-        return ResourceLocation.fromNamespaceAndPath("wormhole", "gui/" + name);
+    private static Identifier getTexture(String name){
+        return Identifier.fromNamespaceAndPath("wormhole", "gui/" + name);
     }
 
     private static final int WIDTH = 240, HEIGHT = 185;
@@ -139,7 +139,7 @@ public class PortalTargetScreen extends PortalGroupScreen {
 
     @Override
     protected void renderBackground(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY, PortalGroup object){
-        ResourceLocation texture = this.hasTargetDevice ? BACKGROUND_WITH_DEVICE : BACKGROUND;
+        Identifier texture = this.hasTargetDevice ? BACKGROUND_WITH_DEVICE : BACKGROUND;
         graphics.submitSprite(texture, 0, 0, this.width(), this.height());
 
         // draw target select highlight

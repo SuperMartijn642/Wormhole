@@ -4,15 +4,15 @@ import com.supermartijn642.core.gui.GuiGraphicsHelper;
 import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import com.supermartijn642.core.gui.widget.premade.ButtonWidget;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * Created 10/15/2020 by SuperMartijn642
  */
 public class WormholeColoredButton extends ButtonWidget {
 
-    public static final ResourceLocation RED_BUTTONS = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/red_buttons");
-    public static final ResourceLocation GREEN_BUTTONS = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/green_buttons");
+    public static final Identifier RED_BUTTONS = Identifier.fromNamespaceAndPath("wormhole", "gui/red_buttons");
+    public static final Identifier GREEN_BUTTONS = Identifier.fromNamespaceAndPath("wormhole", "gui/green_buttons");
 
     private int color; // 1 is red, 2 is green, other is default
     private boolean visible = true;
@@ -47,7 +47,7 @@ public class WormholeColoredButton extends ButtonWidget {
             if(this.color == 0)
                 super.render(context, graphics, mouseX, mouseY);
             else{
-                ResourceLocation texture = this.color == 1 ? RED_BUTTONS : GREEN_BUTTONS;
+                Identifier texture = this.color == 1 ? RED_BUTTONS : GREEN_BUTTONS;
                 drawButtonBackground(graphics, (float)this.x, (float)this.y, (float)this.width, (float)this.height, (float)(this.isActive() ? (this.isFocused() ? 5 : 0) : 10) / 15f, texture);
                 graphics.submitText(this.getText(), (float)this.x + (float)this.width / 2.0F, (float)this.y + (float)this.height / 2.0F - 5.0F, p -> p.color(this.isActive() ? -1 : Integer.MAX_VALUE).shadow().centerHorizontally());
             }
@@ -60,7 +60,7 @@ public class WormholeColoredButton extends ButtonWidget {
             super.onPress();
     }
 
-    public static void drawButtonBackground(GuiGraphicsHelper graphics, float x, float y, float width, float height, float yOffset, ResourceLocation texture){
+    public static void drawButtonBackground(GuiGraphicsHelper graphics, float x, float y, float width, float height, float yOffset, Identifier texture){
         graphics.submitSprite(texture, x, y, 2.0F, 2.0F, p -> p.uv(0.0F, yOffset, 0.4F, 0.13333334F));
         graphics.submitSprite(texture, x + width - 2.0F, y, 2.0F, 2.0F, p -> p.uv(0.6F, yOffset, 0.4F, 0.13333334F));
         graphics.submitSprite(texture, x + width - 2.0F, y + height - 2.0F, 2.0F, 2.0F, p -> p.uv(0.6F, yOffset + 0.2F, 0.4F, 0.13333334F));

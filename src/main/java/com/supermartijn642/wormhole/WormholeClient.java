@@ -19,7 +19,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.state.BlockOutlineRenderState;
 import net.minecraft.client.renderer.state.LevelRenderState;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -36,7 +36,7 @@ import java.util.List;
  */
 public class WormholeClient {
 
-    private static final ContextKey<GeneratorHighlightState> GENERATOR_HIGHLIGHT_DATA = new ContextKey<>(ResourceLocation.fromNamespaceAndPath("wormhole", "generator_highlights"));
+    private static final ContextKey<GeneratorHighlightState> GENERATOR_HIGHLIGHT_DATA = new ContextKey<>(Identifier.fromNamespaceAndPath("wormhole", "generator_highlights"));
     private static final PoseStack POSE_STACK = new PoseStack();
 
     public static void register(){

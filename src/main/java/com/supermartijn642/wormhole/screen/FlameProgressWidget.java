@@ -4,7 +4,7 @@ import com.supermartijn642.core.gui.GuiGraphicsHelper;
 import com.supermartijn642.core.gui.widget.BaseWidget;
 import com.supermartijn642.core.gui.widget.WidgetRenderContext;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.function.Supplier;
 
@@ -13,7 +13,7 @@ import java.util.function.Supplier;
  */
 public class FlameProgressWidget extends BaseWidget {
 
-    public static final ResourceLocation FLAME = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/progress_flame");
+    public static final Identifier FLAME = Identifier.fromNamespaceAndPath("wormhole", "gui/progress_flame");
 
     private final Supplier<Float> progress;
 

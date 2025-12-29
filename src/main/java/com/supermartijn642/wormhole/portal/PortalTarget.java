@@ -4,8 +4,8 @@ import com.supermartijn642.core.TextComponents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
@@ -48,7 +48,7 @@ public class PortalTarget {
     public PortalTarget(ValueInput input){
         //noinspection OptionalGetWithoutIsPresent
         this(
-            ResourceKey.create(Registries.DIMENSION, input.getString("dimension").map(ResourceLocation::parse).get()),
+            ResourceKey.create(Registries.DIMENSION, input.getString("dimension").map(Identifier::parse).get()),
             input.getIntOr("x", 0), input.getIntOr("y", 0), input.getIntOr("z", 0),
             input.getFloatOr("yaw", 0),
             input.getString("name").orElse("Target Destination"),
@@ -61,7 +61,7 @@ public class PortalTarget {
     }
 
     public void write(ValueOutput output){
-        output.putString("dimension", this.dimension.location().toString());
+        output.putString("dimension", this.dimension.identifier().toString());
         output.putInt("x", this.x);
         output.putInt("y", this.y);
         output.putInt("z", this.z);

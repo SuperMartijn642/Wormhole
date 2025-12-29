@@ -7,7 +7,7 @@ import com.supermartijn642.core.gui.widget.premade.AbstractButtonWidget;
 import com.supermartijn642.wormhole.WormholeClient;
 import com.supermartijn642.wormhole.portal.PortalTarget;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.DyeColor;
 
 import java.util.function.Consumer;
@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  */
 public class PortalTargetEditColorButton extends AbstractButtonWidget {
 
-    public static final ResourceLocation BUTTONS = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/small_color_buttons");
+    public static final Identifier BUTTONS = Identifier.fromNamespaceAndPath("wormhole", "gui/small_color_buttons");
 
     public boolean visible = true;
     private final Supplier<PortalTarget> target;
