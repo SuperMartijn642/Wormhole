@@ -8,7 +8,7 @@ import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.portal.PortalTarget;
 import com.supermartijn642.wormhole.portal.packets.PortalColorTargetPacket;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.DyeColor;
 
 import java.util.function.Supplier;
@@ -18,8 +18,8 @@ import java.util.function.Supplier;
  */
 public class PortalTargetSelectColorButton extends AbstractButtonWidget {
 
-    public static final ResourceLocation BUTTON_OUTLINE = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/large_color_buttons");
-    public static final ResourceLocation RANDOM_COLOR_PORTAL = ResourceLocation.fromNamespaceAndPath("wormhole", "gui/random_color_portal");
+    public static final Identifier BUTTON_OUTLINE = Identifier.fromNamespaceAndPath("wormhole", "gui/large_color_buttons");
+    public static final Identifier RANDOM_COLOR_PORTAL = Identifier.fromNamespaceAndPath("wormhole", "gui/random_color_portal");
 
     private final DyeColor color;
     private final Supplier<DyeColor> targetColor;
@@ -36,7 +36,7 @@ public class PortalTargetSelectColorButton extends AbstractButtonWidget {
     @Override
     public void render(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY){
         graphics.submitSprite(BUTTON_OUTLINE, this.x, this.y, this.width, this.height, p -> p.uv(0, this.targetColor.get() == this.color ? 2 / 3f : this.isFocused() ? 1 / 3f : 0, 1, 1 / 3f));
-        ResourceLocation texture = this.color == null ? RANDOM_COLOR_PORTAL : ResourceLocation.fromNamespaceAndPath("wormhole", "textures/portal/portal_" + this.color.getName() + ".png");
+        Identifier texture = this.color == null ? RANDOM_COLOR_PORTAL : Identifier.fromNamespaceAndPath("wormhole", "textures/portal/portal_" + this.color.getName() + ".png");
         graphics.submitSprite(texture, this.x + 2, this.y + 2, this.width - 4, this.height - 4, p -> p.uv(0, 0, 1, 16 / 512f));
     }
 
