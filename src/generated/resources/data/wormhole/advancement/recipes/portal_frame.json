@@ -2,13 +2,13 @@
   "parent": "minecraft:recipes/root",
   "display": {
     "icon": {
-      "id": "wormhole:target_device"
+      "id": "wormhole:portal_frame"
     },
     "title": {
-      "translate": "wormhole.advancement.recipes/misc/target_device.title"
+      "translate": "wormhole.advancement.recipes/portal_frame.title"
     },
     "description": {
-      "translate": "wormhole.advancement.recipes/misc/target_device.description"
+      "translate": "wormhole.advancement.recipes/portal_frame.description"
     },
     "frame": "task",
     "show_toast": false,
@@ -19,7 +19,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "wormhole:target_device"
+        "recipe": "wormhole:portal_frame"
       }
     },
     "recipe_condition": {
@@ -41,7 +41,7 @@
   ],
   "rewards": {
     "recipes": [
-      "wormhole:target_device"
+      "wormhole:portal_frame"
     ]
   }
 }

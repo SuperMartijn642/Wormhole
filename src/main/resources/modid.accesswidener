@@ -1,5 +1,7 @@
-accessWidener v1 named
+classTweaker v1 official
 
+# BlockModelRenderState
+accessible field net/minecraft/client/renderer/block/BlockModelRenderState renderType Lnet/minecraft/client/renderer/rendertype/RenderType;
 # Entity
 accessible field net/minecraft/world/entity/Entity portalCooldown I
 accessible method net/minecraft/world/entity/Entity unsetRemoved ()V

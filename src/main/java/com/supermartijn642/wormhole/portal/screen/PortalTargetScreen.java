@@ -216,9 +216,9 @@ public class PortalTargetScreen extends PortalGroupScreen {
         if(block == null)
             graphics.submitSprite(DIMENSION_ICON, 150, 59, 9, 9);
         else
-            graphics.submitCustomRendering(
+            graphics.submitFeatures(
                 148, 57, 13, 13,
-                poseStack -> ScreenBlockRenderer.drawBlock(poseStack, block, 6.5, 6.5, 5.5, 45, 40)
+                (poseStack, output) -> ScreenBlockRenderer.drawBlock(poseStack, output, block, 6.5, 6.5, 5.5, 45, 40)
             );
         graphics.submitText(target.getDimensionDisplayName(), 161, 60, p -> p.color(Integer.MAX_VALUE));
         // direction

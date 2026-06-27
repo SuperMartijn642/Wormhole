@@ -8,7 +8,7 @@ import com.supermartijn642.wormhole.portal.PortalGroup;
 import com.supermartijn642.wormhole.portal.PortalGroupBlockEntity;
 import com.supermartijn642.wormhole.portal.PortalShape;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityLevelChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -26,10 +26,10 @@ import java.util.*;
 public class PortalGroupCapability {
 
     public static void registerListeners(){
-        ServerTickEvents.END_WORLD_TICK.register(PortalGroupCapability::tickLevelCapability);
+        ServerTickEvents.END_LEVEL_TICK.register(PortalGroupCapability::tickLevelCapability);
         if(CommonUtils.getEnvironmentSide().isClient())
-            ClientTickEvents.END_WORLD_TICK.register(PortalGroupCapability::tickLevelCapability);
-        ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player, origin, destination) -> onJoinWorld(player, destination));
+            ClientTickEvents.END_LEVEL_TICK.register(PortalGroupCapability::tickLevelCapability);
+        ServerEntityLevelChangeEvents.AFTER_PLAYER_CHANGE_LEVEL.register((player, origin, destination) -> onJoinWorld(player, destination));
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> onRespawn(newPlayer));
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> onJoin(handler.getPlayer()));
     }

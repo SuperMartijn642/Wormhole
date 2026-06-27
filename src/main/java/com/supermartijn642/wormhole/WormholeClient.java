@@ -16,11 +16,11 @@ import com.supermartijn642.wormhole.portal.screen.PortalTargetScreen;
 import com.supermartijn642.wormhole.targetdevice.TargetDeviceScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldExtractionContext;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.state.BlockOutlineRenderState;
+import net.minecraft.client.renderer.state.level.BlockOutlineRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -42,15 +42,11 @@ public class WormholeClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient(){
-        WorldRenderEvents.AFTER_BLOCK_OUTLINE_EXTRACTION.register(WormholeClient::onBlockHighlightExtract);
-        WorldRenderEvents.BEFORE_BLOCK_OUTLINE.register(WormholeClient::onBlockHighlightDraw);
-
-        ClientRegistrationHandler handler = ClientRegistrationHandler.get("wormhole");
-
-        // Set translucent render type for the portal
-        handler.registerBlockModelTranslucentRenderType(() -> Wormhole.portal);
+        LevelRenderEvents.AFTER_BLOCK_OUTLINE_EXTRACTION.register(WormholeClient::onBlockHighlightExtract);
+        LevelRenderEvents.BEFORE_BLOCK_OUTLINE.register(WormholeClient::onBlockHighlightDraw);
 
         // Register container screen for the coal generator
+        ClientRegistrationHandler handler = ClientRegistrationHandler.get("wormhole");
         handler.registerContainerScreen(() -> Wormhole.coal_generator_container, container -> WidgetContainerScreen.of(new CoalGeneratorScreen(), container, true));
     }
 
@@ -74,12 +70,11 @@ public class WormholeClient implements ClientModInitializer {
         ClientUtils.displayScreen(WidgetScreen.of(new PortalOverviewScreen(pos)));
     }
 
-    private static void onBlockHighlightExtract(WorldExtractionContext context, HitResult result){
+    private static void onBlockHighlightExtract(LevelExtractionContext context, HitResult result){
         if(!(result instanceof BlockHitResult))
             return;
 
-        //noinspection resource
-        ClientLevel level = context.world();
+        ClientLevel level = context.level();
         BlockEntity entity = level.getBlockEntity(((BlockHitResult)result).getBlockPos());
         if(!(entity instanceof GeneratorBlockEntity))
             return;
@@ -91,20 +86,20 @@ public class WormholeClient implements ClientModInitializer {
                 state.portalBlockShapes.add(Pair.of(pos, BlockShape.create(shape)));
         }
         for(BlockPos pos : ((GeneratorBlockEntity)entity).getChargingEnergyBlocks()){
-            VoxelShape shape = level.getBlockState(pos).getBlockSupportShape(level, pos)    ;
+            VoxelShape shape = level.getBlockState(pos).getBlockSupportShape(level, pos);
             if(!shape.isEmpty())
                 state.energyBlockShapes.add(Pair.of(pos, BlockShape.create(shape)));
         }
-        context.worldState().setData(GENERATOR_HIGHLIGHT_DATA, state);
+        context.levelState().setData(GENERATOR_HIGHLIGHT_DATA, state);
     }
 
-    private static boolean onBlockHighlightDraw(WorldRenderContext context, BlockOutlineRenderState outlineRenderState){
-        GeneratorHighlightState state = context.worldState().getData(GENERATOR_HIGHLIGHT_DATA);
+    private static boolean onBlockHighlightDraw(LevelRenderContext context, BlockOutlineRenderState outlineRenderState){
+        GeneratorHighlightState state = context.levelState().getData(GENERATOR_HIGHLIGHT_DATA);
         if(state == null)
             return true;
 
         POSE_STACK.pushPose();
-        Vec3 playerPos = context.worldState().cameraRenderState.pos;
+        Vec3 playerPos = context.levelState().cameraRenderState.pos;
         POSE_STACK.translate(-playerPos.x, -playerPos.y, -playerPos.z);
 
         for(Pair<BlockPos,BlockShape> block : state.portalBlockShapes){
