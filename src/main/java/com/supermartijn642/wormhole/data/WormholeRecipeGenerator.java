@@ -90,7 +90,7 @@ public class WormholeRecipeGenerator extends RecipeGenerator {
             .pattern("ACA")
             .pattern("ADA")
             .input('A', Tags.Items.INGOTS_IRON)
-            .input('B',Tags.Items.ENDER_PEARLS)
+            .input('B', Tags.Items.ENDER_PEARLS)
             .input('C', Items.FURNACE)
             .input('D', Tags.Items.DUSTS_REDSTONE)
             .unlockedBy(Tags.Items.INGOTS_IRON);

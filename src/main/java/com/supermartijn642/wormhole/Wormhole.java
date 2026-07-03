@@ -1,5 +1,6 @@
 package com.supermartijn642.wormhole;
 
+import com.supermartijn642.core.CommonUtils;
 import com.supermartijn642.core.block.BaseBlock;
 import com.supermartijn642.core.block.BaseBlockEntityType;
 import com.supermartijn642.core.gui.BaseContainerType;
@@ -31,8 +32,6 @@ import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceAddPacket;
 import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceMovePacket;
 import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceNamePacket;
 import com.supermartijn642.wormhole.targetdevice.packets.TargetDeviceRemovePacket;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 
 /**
@@ -118,7 +117,8 @@ public class Wormhole {
         CHANNEL.registerMessage(PortalDeactivatePacket.class, PortalDeactivatePacket::new, true);
 
         register();
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> WormholeClient::register);
+        if(CommonUtils.getEnvironmentSide().isClient())
+            WormholeClient.register();
         registerGenerators();
     }
 

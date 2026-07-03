@@ -5,6 +5,7 @@ import com.supermartijn642.wormhole.WormholeConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
@@ -59,8 +60,8 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity implements II
         if(burnTime > 0){
             this.burnTime = this.totalBurnTime = burnTime;
             if(this.stack.getCount() == 1){
-                ItemStack remainder = this.stack.getCraftingRemainder();
-                this.stack = remainder == null ? ItemStack.EMPTY : remainder;
+                ItemStackTemplate remainder = this.stack.getCraftingRemainder();
+                this.stack = remainder == null ? ItemStack.EMPTY : remainder.create();
             }else
                 this.stack.shrink(1);
             this.dataChanged();

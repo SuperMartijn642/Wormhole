@@ -14,11 +14,11 @@ import com.supermartijn642.wormhole.portal.screen.PortalOverviewScreen;
 import com.supermartijn642.wormhole.portal.screen.PortalTargetColorScreen;
 import com.supermartijn642.wormhole.portal.screen.PortalTargetScreen;
 import com.supermartijn642.wormhole.targetdevice.TargetDeviceScreen;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.state.BlockOutlineRenderState;
-import net.minecraft.client.renderer.state.LevelRenderState;
+import net.minecraft.client.renderer.state.level.BlockOutlineRenderState;
+import net.minecraft.client.renderer.state.level.LevelRenderState;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.Level;
@@ -44,12 +44,8 @@ public class WormholeClient {
     private static final PoseStack POSE_STACK = new PoseStack();
 
     public static void register(){
-        ClientRegistrationHandler handler = ClientRegistrationHandler.get("wormhole");
-
-        // Set translucent render type for the portal
-        handler.registerBlockModelTranslucentRenderType(() -> Wormhole.portal);
-
         // Register container screen for the coal generator
+        ClientRegistrationHandler handler = ClientRegistrationHandler.get("wormhole");
         handler.registerContainerScreen(() -> Wormhole.coal_generator_container, container -> WidgetContainerScreen.of(new CoalGeneratorScreen(), container, true));
     }
 
@@ -96,7 +92,7 @@ public class WormholeClient {
         //noinspection deprecation
         BlockOutlineRenderState outlineRenderState = new BlockOutlineRenderState(
             pos,
-            ItemBlockRenderTypes.getChunkRenderType(blockState).sortOnUpload(),
+            ClientUtils.getMinecraft().getModelManager().getBlockStateModelSet().get(blockState).hasMaterialFlag(BakedQuad.FLAG_TRANSLUCENT),
             ClientUtils.getMinecraft().options.highContrastBlockOutline().get(),
             blockState.getShape(level, pos, CollisionContext.of(event.getCamera().entity()))
         );

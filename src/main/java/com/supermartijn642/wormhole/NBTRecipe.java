@@ -1,27 +1,43 @@
 package com.supermartijn642.wormhole;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.supermartijn642.core.block.BaseBlock;
 import com.supermartijn642.wormhole.targetdevice.TargetDeviceItem;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.*;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * Created 2/8/2020 by SuperMartijn642
  */
 public class NBTRecipe extends ShapedRecipe {
 
-    public static final RecipeSerializer<NBTRecipe> SERIALIZER = new Serializer();
+    private static final MapCodec<NBTRecipe> CODEC = RecordCodecBuilder.mapCodec(instance ->
+        instance.group(
+            Recipe.CommonInfo.MAP_CODEC.forGetter(recipe -> recipe.commonInfo),
+            CraftingRecipe.CraftingBookInfo.MAP_CODEC.forGetter(recipe -> recipe.bookInfo),
+            ShapedRecipePattern.MAP_CODEC.forGetter(recipe -> recipe.pattern),
+            ItemStackTemplate.CODEC.fieldOf("result").forGetter(recipe -> recipe.result)
+        ).apply(instance, NBTRecipe::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf,NBTRecipe> STREAM_CODEC = StreamCodec.composite(
+        Recipe.CommonInfo.STREAM_CODEC,
+        recipe -> recipe.commonInfo,
+        CraftingRecipe.CraftingBookInfo.STREAM_CODEC,
+        recipe -> recipe.bookInfo,
+        ShapedRecipePattern.STREAM_CODEC,
+        recipe -> recipe.pattern,
+        ItemStackTemplate.STREAM_CODEC,
+        recipe -> recipe.result,
+        NBTRecipe::new
+    );
+    public static final RecipeSerializer<NBTRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
 
     private static final List<Item> VALID_ITEMS = new LinkedList<>();
 
@@ -37,24 +53,18 @@ public class NBTRecipe extends ShapedRecipe {
         VALID_ITEMS.add(Item.byBlock(Wormhole.coal_generator));
     }
 
-    private final String group;
-    private final CraftingBookCategory category;
     private final ShapedRecipePattern pattern;
-    private final ItemStack result;
-    private final boolean showNotification;
+    private final ItemStackTemplate result;
 
-    public NBTRecipe(String group, CraftingBookCategory category, ShapedRecipePattern pattern, ItemStack recipeOutput, boolean showNotification){
-        super(group, category, pattern, recipeOutput, showNotification);
-        this.group = group;
-        this.category = category;
+    public NBTRecipe(CommonInfo commonInfo, CraftingBookInfo craftingBookInfo, ShapedRecipePattern pattern, ItemStackTemplate result){
+        super(commonInfo, craftingBookInfo, pattern, result);
         this.pattern = pattern;
-        this.result = recipeOutput;
-        this.showNotification = showNotification;
+        this.result = result;
     }
 
     @Override
-    public ItemStack assemble(CraftingInput input, HolderLookup.Provider provider){
-        ItemStack result = this.result.copy();
+    public ItemStack assemble(CraftingInput input){
+        ItemStack result = this.result.create();
         loop:
         for(int i = 0; i < input.height(); i++){
             for(int j = 0; j < input.width(); j++){
@@ -75,37 +85,8 @@ public class NBTRecipe extends ShapedRecipe {
     }
 
     @Override
-    public RecipeSerializer<? extends ShapedRecipe> getSerializer(){
-        return SERIALIZER;
-    }
-
-    private static class Serializer implements RecipeSerializer<NBTRecipe> {
-
-        private static final MapCodec<NBTRecipe> CODEC = RecordCodecBuilder.mapCodec(instance ->
-            instance.group(
-                Codec.STRING.optionalFieldOf("group", "").forGetter(recipe -> recipe.group),
-                CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(recipe -> recipe.category),
-                ShapedRecipePattern.MAP_CODEC.forGetter(recipe -> recipe.pattern),
-                ItemStack.STRICT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
-                Codec.BOOL.optionalFieldOf("show_notification", true).forGetter(recipe -> recipe.showNotification)
-            ).apply(instance, NBTRecipe::new));
-        private static final StreamCodec<RegistryFriendlyByteBuf,NBTRecipe> STREAM_CODEC = ShapedRecipe.Serializer.STREAM_CODEC.map(
-            Serializer::fromShapedRecipe,
-            Function.identity()
-        );
-
-        @Override
-        public MapCodec<NBTRecipe> codec(){
-            return CODEC;
-        }
-
-        @Override
-        public StreamCodec<RegistryFriendlyByteBuf,NBTRecipe> streamCodec(){
-            return STREAM_CODEC;
-        }
-
-        private static NBTRecipe fromShapedRecipe(ShapedRecipe recipe){
-            return new NBTRecipe(recipe.group(), recipe.category(), recipe.pattern, recipe.assemble(null, null), recipe.showNotification());
-        }
+    public RecipeSerializer<ShapedRecipe> getSerializer(){
+        //noinspection unchecked,rawtypes
+        return (RecipeSerializer)SERIALIZER;
     }
 }

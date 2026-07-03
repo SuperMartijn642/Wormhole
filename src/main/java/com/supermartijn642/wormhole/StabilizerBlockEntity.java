@@ -57,10 +57,10 @@ public class StabilizerBlockEntity extends PortalGroupBlockEntity implements ITa
         }else if(!this.level.isClientSide()){
             PortalShape shape = PortalShape.find(this.level, this.worldPosition);
             if(shape == null)
-                player.displayClientMessage(TextComponents.translation("wormhole.portal_stabilizer.error").color(ChatFormatting.RED).get(), true);
+                player.sendOverlayMessage(TextComponents.translation("wormhole.portal_stabilizer.error").color(ChatFormatting.RED).get());
             else{
                 this.level.getCapability(PortalGroupCapability.CAPABILITY).ifPresent(groups -> groups.add(shape));
-                player.displayClientMessage(TextComponents.translation("wormhole.portal_stabilizer.success").color(ChatFormatting.YELLOW).get(), true);
+                player.sendOverlayMessage(TextComponents.translation("wormhole.portal_stabilizer.success").color(ChatFormatting.YELLOW).get());
             }
         }
         return true;
