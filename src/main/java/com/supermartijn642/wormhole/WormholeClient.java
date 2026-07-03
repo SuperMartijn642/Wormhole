@@ -16,8 +16,8 @@ import com.supermartijn642.wormhole.portal.screen.PortalTargetScreen;
 import com.supermartijn642.wormhole.targetdevice.TargetDeviceScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.state.BlockOutlineRenderState;
-import net.minecraft.client.renderer.state.LevelRenderState;
+import net.minecraft.client.renderer.state.level.BlockOutlineRenderState;
+import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextKey;
@@ -42,12 +42,8 @@ public class WormholeClient {
     public static void register(){
         NeoForge.EVENT_BUS.addListener(WormholeClient::onBlockHighlightExtract);
 
-        ClientRegistrationHandler handler = ClientRegistrationHandler.get("wormhole");
-
-        // Set translucent render type for the portal
-        handler.registerBlockModelTranslucentRenderType(() -> Wormhole.portal);
-
         // Register container screen for the coal generator
+        ClientRegistrationHandler handler = ClientRegistrationHandler.get("wormhole");
         handler.registerContainerScreen(() -> Wormhole.coal_generator_container, container -> WidgetContainerScreen.of(new CoalGeneratorScreen(), container, true));
     }
 

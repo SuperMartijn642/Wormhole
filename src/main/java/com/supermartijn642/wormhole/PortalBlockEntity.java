@@ -4,11 +4,11 @@ import com.supermartijn642.wormhole.portal.PortalGroup;
 import com.supermartijn642.wormhole.portal.PortalGroupBlockEntity;
 import com.supermartijn642.wormhole.portal.PortalTarget;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
@@ -26,13 +26,13 @@ public class PortalBlockEntity extends PortalGroupBlockEntity {
     }
 
     public boolean activate(Player player, InteractionHand hand){
-        if(player.getItemInHand(hand).getItem() instanceof DyeItem){
-            DyeColor color = ((DyeItem)player.getItemInHand(hand).getItem()).getDyeColor();
+        DyeColor dye = player.getItemInHand(hand).get(DataComponents.DYE);
+        if(dye != null){
             if(this.hasGroup() && this.getGroup().getActiveTarget() != null){
                 PortalGroup group = this.getGroup();
                 PortalTarget target = group.getTarget(group.getActiveTargetIndex());
                 if(target != null){
-                    target.color = color;
+                    target.color = dye;
                     group.setTarget(group.getActiveTargetIndex(), target);
                 }
             }

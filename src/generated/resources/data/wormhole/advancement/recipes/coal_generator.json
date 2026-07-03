@@ -5,10 +5,10 @@
       "id": "wormhole:coal_generator"
     },
     "title": {
-      "translate": "wormhole.advancement.recipes/misc/coal_generator.title"
+      "translate": "wormhole.advancement.recipes/coal_generator.title"
     },
     "description": {
-      "translate": "wormhole.advancement.recipes/misc/coal_generator.description"
+      "translate": "wormhole.advancement.recipes/coal_generator.description"
     },
     "frame": "task",
     "show_toast": false,

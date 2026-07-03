@@ -6,6 +6,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
@@ -15,7 +16,7 @@ import net.minecraft.world.level.saveddata.SavedDataType;
  */
 public class PortalGroupCapabilitySaveData extends SavedData {
 
-    private static final String IDENTIFIER = "wormhole_portal_groups";
+    private static final Identifier IDENTIFIER = Identifier.fromNamespaceAndPath("wormhole", "portal_groups");
 
     private final PortalGroupCapability capability;
 

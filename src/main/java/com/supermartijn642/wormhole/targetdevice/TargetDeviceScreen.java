@@ -167,9 +167,9 @@ public class TargetDeviceScreen extends ItemBaseWidget {
         if(block == null)
             graphics.submitSprite(DIMENSION_ICON, 121, 59, 9, 9);
         else
-            graphics.submitCustomRendering(
+            graphics.submitFeatures(
                 119, 57, 13, 13,
-                poseStack -> ScreenBlockRenderer.drawBlock(poseStack, block, 6.5, 6.5, 5.5, 45, 40)
+                (poseStack, output) -> ScreenBlockRenderer.drawBlock(poseStack, output, block, 6.5, 6.5, 5.5, 45, 40)
             );
         graphics.submitText(dimensionName, 132, 60, p -> p.color(Integer.MAX_VALUE));
         // direction

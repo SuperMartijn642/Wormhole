@@ -39,6 +39,7 @@ public class PortalOverviewScreen extends PortalGroupScreen {
     public static final Identifier WARNING_ICON = Identifier.fromNamespaceAndPath("wormhole", "gui/select_target_screen/warning_icon");
     public static final Identifier SEPARATOR = Identifier.fromNamespaceAndPath("wormhole", "gui/select_target_screen/separator");
     private static final int WIDTH = 280, HEIGHT = 185;
+    private static final PortalRendererHelper.RenderState PORTAL_RENDER_STATE = new PortalRendererHelper.RenderState();
 
     private WormholeColoredButton activateButton;
 
@@ -126,9 +127,9 @@ public class PortalOverviewScreen extends PortalGroupScreen {
             if(block == null)
                 graphics.submitSprite(DIMENSION_ICON, 151, 115, 9, 9);
             else
-                graphics.submitCustomRendering(
+                graphics.submitFeatures(
                     149, 113, 13, 13,
-                    poseStack -> ScreenBlockRenderer.drawBlock(poseStack, block, 6.5, 6.5, 5.5, 45, 40)
+                    (poseStack, output) -> ScreenBlockRenderer.drawBlock(poseStack, output, block, 6.5, 6.5, 5.5, 45, 40)
                 );
             graphics.submitText(target.getDimensionDisplayName(), 162, 116, p -> p.color(Integer.MAX_VALUE));
         }
@@ -138,9 +139,10 @@ public class PortalOverviewScreen extends PortalGroupScreen {
     protected void renderForeground(WidgetRenderContext context, GuiGraphicsHelper graphics, int mouseX, int mouseY, PortalGroup group){
         super.renderForeground(context, graphics, mouseX, mouseY, group);
 
-        graphics.submitCustomRendering(
+        PortalRendererHelper.updateState(PORTAL_RENDER_STATE, group.shape);
+        graphics.submitFeatures(
             this.x + 8, this.y + 19, 132, 132,
-            poseStack -> PortalRendererHelper.drawPortal(poseStack, group.shape, 0, 0, 132, 132)
+            (poseStack, output) -> PortalRendererHelper.submitPortal(poseStack, output, PORTAL_RENDER_STATE, 132, 132)
         );
     }
 
