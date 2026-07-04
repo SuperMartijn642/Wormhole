@@ -17,6 +17,7 @@ import com.supermartijn642.wormhole.targetdevice.TargetDeviceScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -42,7 +43,7 @@ public class WormholeClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient(){
-        LevelRenderEvents.AFTER_BLOCK_OUTLINE_EXTRACTION.register(WormholeClient::onBlockHighlightExtract);
+        LevelExtractionEvents.AFTER_BLOCK_OUTLINE_EXTRACTION.register(WormholeClient::onBlockHighlightExtract);
         LevelRenderEvents.BEFORE_BLOCK_OUTLINE.register(WormholeClient::onBlockHighlightDraw);
 
         // Register container screen for the coal generator
@@ -106,14 +107,14 @@ public class WormholeClient implements ClientModInitializer {
             POSE_STACK.pushPose();
             BlockPos pos = block.left();
             POSE_STACK.translate(pos.getX(), pos.getY(), pos.getZ());
-            RenderUtils.renderShape(POSE_STACK, block.right(), 66 / 255f, 108 / 255f, 245 / 255f, true);
+            RenderUtils.submitShape(context.submitNodeCollector(), POSE_STACK, block.right(), 66 / 255f, 108 / 255f, 245 / 255f, 1, true);
             POSE_STACK.popPose();
         }
         for(Pair<BlockPos,BlockShape> block : state.energyBlockShapes){
             POSE_STACK.pushPose();
             BlockPos pos = block.left();
             POSE_STACK.translate(pos.getX(), pos.getY(), pos.getZ());
-            RenderUtils.renderShape(POSE_STACK, block.right(), 242 / 255f, 34 / 255f, 34 / 255f, false);
+            RenderUtils.submitShape(context.submitNodeCollector(), POSE_STACK, block.right(), 242 / 255f, 34 / 255f, 34 / 255f, 1, false);
             POSE_STACK.popPose();
         }
 
