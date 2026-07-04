@@ -65,7 +65,7 @@ public class PortalRendererHelper {
     );
 
     static{
-        ((RenderTypeExtension)INVALID_BLOCKS_RENDER_TYPE).setColorModulator(new Vector4f(0.8f, 0.5f, 0.5f, 0.8f));
+        ((RenderTypeExtension)INVALID_BLOCKS_RENDER_TYPE).wormholeSetColorModulator(new Vector4f(0.8f, 0.5f, 0.5f, 0.8f));
     }
 
     public static void updateState(RenderState renderState, PortalShape shape){

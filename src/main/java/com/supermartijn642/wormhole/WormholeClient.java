@@ -15,7 +15,7 @@ import com.supermartijn642.wormhole.portal.screen.PortalTargetColorScreen;
 import com.supermartijn642.wormhole.portal.screen.PortalTargetScreen;
 import com.supermartijn642.wormhole.targetdevice.TargetDeviceScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.state.level.BlockOutlineRenderState;
 import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.minecraft.core.BlockPos;
@@ -88,7 +88,7 @@ public class WormholeClient {
         event.addCustomRenderer(WormholeClient::onBlockHighlightDraw);
     }
 
-    private static boolean onBlockHighlightDraw(BlockOutlineRenderState outlineRenderState, MultiBufferSource.BufferSource bufferSource, PoseStack poseStack, boolean translucentPass, LevelRenderState levelRenderState){
+    private static boolean onBlockHighlightDraw(BlockOutlineRenderState outlineRenderState, SubmitNodeCollector output, PoseStack poseStack, LevelRenderState levelRenderState){
         GeneratorHighlightState state = levelRenderState.getRenderData(GENERATOR_HIGHLIGHT_DATA);
         if(state == null)
             return true;
@@ -101,14 +101,14 @@ public class WormholeClient {
             POSE_STACK.pushPose();
             BlockPos pos = block.left();
             POSE_STACK.translate(pos.getX(), pos.getY(), pos.getZ());
-            RenderUtils.renderShape(POSE_STACK, block.right(), 66 / 255f, 108 / 255f, 245 / 255f, true);
+            RenderUtils.submitShape(output, POSE_STACK, block.right(), 66 / 255f, 108 / 255f, 245 / 255f, 1, true);
             POSE_STACK.popPose();
         }
         for(Pair<BlockPos,BlockShape> block : state.energyBlockShapes){
             POSE_STACK.pushPose();
             BlockPos pos = block.left();
             POSE_STACK.translate(pos.getX(), pos.getY(), pos.getZ());
-            RenderUtils.renderShape(POSE_STACK, block.right(), 242 / 255f, 34 / 255f, 34 / 255f, false);
+            RenderUtils.submitShape(output, POSE_STACK, block.right(), 242 / 255f, 34 / 255f, 34 / 255f, 1, false);
             POSE_STACK.popPose();
         }
 

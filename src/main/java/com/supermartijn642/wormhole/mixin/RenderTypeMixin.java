@@ -1,13 +1,21 @@
 package com.supermartijn642.wormhole.mixin;
 
+import com.mojang.blaze3d.buffers.GpuBufferSlice;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.supermartijn642.wormhole.extensions.RenderTypeExtension;
+import net.minecraft.client.renderer.DynamicUniforms;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.joml.Vector4fc;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * Created 26/06/2026 by SuperMartijn642
@@ -16,24 +24,31 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 public class RenderTypeMixin implements RenderTypeExtension {
 
     @Unique
-    private Vector4fc colorModulator;
+    private static final Vector3f NO_OFFSET = new Vector3f(DynamicUniforms.NO_OFFSET);
+
     @Unique
-    private final Vector4f dummyColor = new Vector4f();
+    private Vector4f colorModulator;
+
+    @Final
+    @Shadow
+    private RenderSetup state;
 
     @Override
-    public void setColorModulator(Vector4fc color){
+    public void wormholeSetColorModulator(Vector4f color){
         this.colorModulator = color;
     }
 
-    @ModifyArg(
-        method = "draw",
+    @Inject(
+        method = "writeDynamicTransforms",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/renderer/DynamicUniforms;writeTransform(Lorg/joml/Matrix4fc;Lorg/joml/Vector4fc;Lorg/joml/Vector3fc;Lorg/joml/Matrix4fc;)Lcom/mojang/blaze3d/buffers/GpuBufferSlice;"
+            target = "Lnet/minecraft/client/renderer/DynamicUniforms;writeTransform(Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;)Lcom/mojang/blaze3d/buffers/GpuBufferSlice;",
+            shift = At.Shift.BEFORE
         ),
-        index = 1
+        cancellable = true
     )
-    private Vector4fc modifyColorModulator(Vector4fc original){
-        return this.colorModulator == null ? original : this.dummyColor.set(original).mul(this.colorModulator);
+    private void modifyColorModulator(Matrix4f modelViewMatrix, CallbackInfoReturnable<GpuBufferSlice> ci){
+        if(this.colorModulator != null)
+            ci.setReturnValue(RenderSystem.getDynamicUniforms().writeTransform(modelViewMatrix, this.colorModulator, NO_OFFSET, this.state.textureTransform.createMatrix()));
     }
 }
