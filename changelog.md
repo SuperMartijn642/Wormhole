@@ -1,3 +1,6 @@
+### Wormhole 1.1.16a
+- Fixed crash due to broken mixin
+
 ## Update to Minecraft 26.2
 
 ## Update to Minecraft 26.1
