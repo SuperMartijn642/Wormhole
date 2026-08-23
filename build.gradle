@@ -153,6 +153,10 @@ tasks.configureEach {
         it.dependsOn "prepareDataResources"
 }
 
+mixin {
+    disableAnnotationProcessorCheck()
+}
+
 // Force the jar to be reobfuscated
 jar.finalizedBy('reobfJar')
 
