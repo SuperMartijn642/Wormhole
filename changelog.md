@@ -1,3 +1,6 @@
+### Wormhole 1.1.17
+- Added Turkish translations (thanks to RuyaSavascisi!)
+
 ## Update to Minecraft 26.1
 
 ### Wormhole 1.1.16
