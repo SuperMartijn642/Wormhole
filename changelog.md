@@ -1,3 +1,7 @@
+### Wormhole 1.1.17
+- Added Turkish translations (thanks to RuyaSavascisi!)
+- Fixed portals not draining energy
+
 ## Update to Minecraft 26.2
 
 ## Update to Minecraft 26.1
