@@ -1,3 +1,6 @@
+### Wormhole 1.1.17
+- Added Turkish translations (thanks to RuyaSavascisi!)
+
 ### Wormhole 1.1.16a
 - Fixed crash due to broken mixin
 
