@@ -1,3 +1,7 @@
+### Wormhole 1.1.17
+- Added Turkish translations (thanks to RuyaSavascisi!)
+- Fixed portals not draining energy
+
 ### Wormhole 1.1.16a
 - Fixed crash due to missing Team Reborn Energy API
 
