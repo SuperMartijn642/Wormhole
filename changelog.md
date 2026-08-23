@@ -1,2 +1,6 @@
+### Wormhole 1.1.17
+- Added Turkish translations (thanks to RuyaSavascisi!)
+- Fixed portals not draining energy
+
 ### Wormhole 1.1.16
 - Initial release of Wormhole for Minecraft 1.21.11
