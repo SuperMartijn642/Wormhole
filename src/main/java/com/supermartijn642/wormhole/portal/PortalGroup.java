@@ -208,7 +208,7 @@ public class PortalGroup {
         for(BlockPos pos : this.shape.energyCells){
             BlockEntity entity = this.level.getBlockEntity(pos);
             if(entity instanceof IEnergyCellEntity){
-                drained += ((IEnergyCellEntity)entity).extractEnergy(energy - drained, false, null);
+                drained += ((IEnergyCellEntity)entity).extractEnergy(energy - drained, true, null);
                 if(drained >= energy)
                     break;
             }
