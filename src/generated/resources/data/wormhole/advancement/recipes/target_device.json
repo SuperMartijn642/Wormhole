@@ -19,7 +19,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "wormhole:target_device"
+        "recipes": "wormhole:target_device"
       }
     },
     "recipe_condition": {

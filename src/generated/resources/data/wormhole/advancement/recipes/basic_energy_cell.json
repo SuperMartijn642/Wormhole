@@ -19,7 +19,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "wormhole:basic_energy_cell"
+        "recipes": "wormhole:basic_energy_cell"
       }
     },
     "recipe_condition": {

@@ -375,7 +375,7 @@ public class PortalTargetScreen extends PortalGroupScreen {
     protected boolean mousePressed(int mouseX, int mouseY, MouseButtonInfo info, boolean isDoubleClick, boolean hasBeenHandled, PortalGroup group){
         hasBeenHandled |= super.mousePressed(mouseX, mouseY, info, isDoubleClick, hasBeenHandled, group);
 
-        if(info.button() == 0){
+        if(info.button() == 1){
             if(mouseX > 5 && mouseX < 135 && mouseY > 16 && mouseY < 176){
                 int targetIndex = (mouseY - 16) / 16 + this.scrollOffset;
                 if(group.getTarget(targetIndex) != null){

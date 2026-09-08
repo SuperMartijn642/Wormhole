@@ -226,7 +226,7 @@ public class TargetDeviceScreen extends ItemBaseWidget {
     protected boolean mousePressed(int mouseX, int mouseY, MouseButtonInfo info, boolean isDoubleClick, boolean hasBeenHandled, ItemStack object){
         hasBeenHandled |= super.mousePressed(mouseX, mouseY, info, isDoubleClick, hasBeenHandled, object);
 
-        if(info.button() == 0){
+        if(info.button() == 1){
             if(mouseX > 5 && mouseX < 111 && mouseY > 16 && mouseY < 176){
                 int targetIndex = (mouseY - 16) / 16;
                 if(this.getOrDefault(list -> list.size() > targetIndex && list.get(targetIndex) != null, false)){
