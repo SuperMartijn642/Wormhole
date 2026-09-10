@@ -1,3 +1,6 @@
+### Wormhole 1.1.17a
+- Added icon and banner images for new NeoForge 26.2.0.50-beta mod list
+
 ### Wormhole 1.1.17
 - Added Turkish translations (thanks to RuyaSavascisi!)
 - Fixed portals not draining energy
