@@ -3,17 +3,27 @@ package com.supermartijn642.wormhole.generator;
 import com.supermartijn642.wormhole.Wormhole;
 import com.supermartijn642.wormhole.WormholeConfig;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
-import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.component.CookingFuel;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ResolvableInt;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
+
+import java.util.Optional;
 
 /**
  * Created 12/18/2020 by SuperMartijn642
@@ -169,6 +179,16 @@ public class CoalGeneratorBlockEntity extends GeneratorBlockEntity {
     }
 
     private int getBurnTime(ItemStack stack){
-        return (int)Math.floor(stack.getBurnTime(RecipeType.SMELTING, this.level.fuelValues()) / 2.5);
+        if(!(this.level instanceof ServerLevel))
+            return 0;
+        LootContext context = new LootContext.Builder(
+            new LootParams.Builder((ServerLevel)this.level)
+                .withParameter(LootContextParams.BLOCK_STATE, this.getBlockState())
+                .withParameter(LootContextParams.BLOCK_ENTITY, this)
+                .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(this.getBlockPos()))
+                .withParameter(LootContextParams.CONTAINER, _ -> null)
+                .create(LootContextParamSets.CONTAINER_PROCESS)).create(Optional.empty()
+        );
+        return (int)Math.floor(ResolvableInt.getFromItem(stack, DataComponents.COOKING_FUEL, CookingFuel::burnTime, context, 0) / 2.5);
     }
 }

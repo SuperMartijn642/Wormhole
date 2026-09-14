@@ -1,6 +1,7 @@
 package com.supermartijn642.wormhole.portal.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import com.supermartijn642.core.ClientUtils;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
@@ -16,7 +17,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
-import org.joml.Quaternionf;
 
 import java.util.List;
 
@@ -37,8 +37,8 @@ public class ScreenBlockRenderer {
         poseStack.scale(1, -1, -1);
         poseStack.scale((float)scale, (float)scale, (float)scale);
 
-        poseStack.mulPose(new Quaternionf().setAngleAxis(pitch / 180 * Math.PI, 1, 0, 0));
-        poseStack.mulPose(new Quaternionf().setAngleAxis(yaw / 180 * Math.PI, 0, 1, 0));
+        poseStack.rotate(Axis.XP, pitch / 180 * (float)Math.PI);
+        poseStack.rotate(Axis.YP, yaw / 180 * (float)Math.PI);
 
         poseStack.translate(-0.5, -0.5, -0.5);
 

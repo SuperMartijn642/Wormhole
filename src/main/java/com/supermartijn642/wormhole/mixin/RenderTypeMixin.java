@@ -1,9 +1,9 @@
 package com.supermartijn642.wormhole.mixin;
 
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
 import com.supermartijn642.wormhole.extensions.RenderTypeExtension;
-import net.minecraft.client.renderer.DynamicUniforms;
+import net.minecraft.client.renderer.DynamicGpuData;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import org.joml.Matrix4f;
@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class RenderTypeMixin implements RenderTypeExtension {
 
     @Unique
-    private static final Vector3f NO_OFFSET = new Vector3f(DynamicUniforms.NO_OFFSET);
+    private static final Vector3f NO_OFFSET = new Vector3f(DynamicGpuData.NO_OFFSET);
 
     @Unique
     private Vector4f colorModulator;
@@ -42,7 +42,7 @@ public class RenderTypeMixin implements RenderTypeExtension {
         method = "writeDynamicTransforms",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/renderer/DynamicUniforms;writeTransform(Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;)Lcom/mojang/blaze3d/buffers/GpuBufferSlice;",
+            target = "Lnet/minecraft/client/renderer/DynamicGpuData;writeTransform(Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;)Lcom/mojang/renderpearl/api/buffers/GpuBufferSlice;",
             shift = At.Shift.BEFORE
         ),
         cancellable = true

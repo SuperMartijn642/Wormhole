@@ -1,6 +1,7 @@
 package com.supermartijn642.wormhole.portal.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import com.supermartijn642.core.ClientUtils;
 import com.supermartijn642.wormhole.PortalBlock;
 import com.supermartijn642.wormhole.extensions.RenderTypeExtension;
@@ -9,7 +10,6 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.client.color.block.BlockTintSource;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.BlockModelRenderState;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
@@ -17,7 +17,6 @@ import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
-import net.minecraft.client.renderer.rendertype.OutputTarget;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
@@ -31,9 +30,11 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import org.joml.*;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
-import java.lang.Math;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,9 +54,9 @@ public class PortalRendererHelper {
      */
     private static final RenderType INVALID_BLOCKS_RENDER_TYPE = RenderType.create(
         "wormhole_invalid_blocks",
-        RenderSetup.builder(RenderPipelines.ENTITY_TRANSLUCENT_CULL)
+        RenderSetup.builder(RenderPipelines.ITEM_TRANSLUCENT)
             .withTexture("Sampler0", TextureAtlas.LOCATION_BLOCKS)
-            .setOutputTarget(OutputTarget.ITEM_ENTITY_TARGET)
+            .setOitPipelines(RenderPipelines.OIT_ITEM)
             .useLightmap()
             .useOverlay()
             .affectsCrumbling()
@@ -186,8 +187,8 @@ public class PortalRendererHelper {
         poseStack.pushPose();
         poseStack.translate(width / 2, height / 2, 0);
         poseStack.scale(scale, -scale, -scale);
-        poseStack.mulPose(new Quaternionf().setAngleAxis(Math.PI / 4, 1, 0, 0));
-        poseStack.mulPose(new Quaternionf().setAngleAxis((double)(System.currentTimeMillis() % ROTATE_TIME) / ROTATE_TIME * 2 * Math.PI, 0, 1, 0));
+        poseStack.rotate(Axis.XP, (float)Math.PI / 4);
+        poseStack.rotate(Axis.YP, (float)(System.currentTimeMillis() % ROTATE_TIME) / ROTATE_TIME * 2 * (float)Math.PI);
         poseStack.translate(-center.x(), -center.y(), -center.z());
 
         // Frame
